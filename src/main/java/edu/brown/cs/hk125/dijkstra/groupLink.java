@@ -1,4 +1,4 @@
-package edu.brown.cs.sl234.dijkstra;
+package edu.brown.cs.hk125.dijkstra;
 
 /**
  * A groupLink stores a group of links together. A groupLink comes in handy when
@@ -13,7 +13,7 @@ package edu.brown.cs.sl234.dijkstra;
  */
 public class groupLink extends Link {
 
-	public groupLink(String source, Double distance, String name) {
-		super(source, "", distance, name);
-	}
+  public groupLink(String source, Double distance, String name) {
+    super(source, "", distance, name);
+  }
 }
