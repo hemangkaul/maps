@@ -263,7 +263,7 @@ public class Dijkstra {
    * node.
    *
    * @param stop
-   *          , the node to stop the Dijkstra proces at
+   *          , the node to stop the Dijkstra process at
    * @return the list of paths to the 'stop' node.
    * @throws SQLException
    *           , if querying is used in the infogetter and there is an error in
