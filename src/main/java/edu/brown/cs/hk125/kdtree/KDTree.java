@@ -1,6 +1,7 @@
 package edu.brown.cs.hk125.kdtree;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.common.collect.MinMaxPriorityQueue;
 
@@ -9,13 +10,12 @@ public class KDTree {
   KDNode root;
   int dim;
 
-  public KDTree(ArrayList<? extends KDData> elementList) {
+  public KDTree(List<? extends KDData> elementList) {
     this.dim = elementList.get(0).dimensions();
     this.root = buildTree(0, elementList);
   }
 
-  private KDNode buildTree(int dimension,
-      ArrayList<? extends KDData> elementList) {
+  private KDNode buildTree(int dimension, List<? extends KDData> elementList) {
     if (elementList.isEmpty()) {
       return null;
     }
@@ -42,7 +42,7 @@ public class KDTree {
   }
 
   public KDData findNN(KDData target) {
-    return null;
+    return findNNHelper(0, target, null, Double.MAX_VALUE, root);
   }
 
   public KDData findNNHelper(int dimension, KDData target, KDData best,

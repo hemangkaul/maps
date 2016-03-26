@@ -3,12 +3,32 @@ package edu.brown.cs.hk125.maps;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
 
+/**
+ * The ReadEvaluatePrintLoopClass evaluates and prints the read input, allowing
+ * it to loop.
+ *
+ * @author hk125
+ *
+ */
 public class ReadEvaluatePrintLoop {
 
-  public static void execute(String input) throws IllegalArgumentException,
-      NumberFormatException {
+  /**
+   * Execute is a static method which evaluates and prints the results.
+   *
+   * @param input
+   *          is the command the user inputs
+   * @param tree
+   *          is the tree
+   * @throws IllegalArgumentException
+   *           if the argument is illegal
+   * @throws NumberFormatException
+   *           if the user gives an argument that is not a number
+   */
+  public static void execute(String input, KDTree tree)
+      throws IllegalArgumentException, NumberFormatException {
     String command = input.trim();
     List<String> commands = new ArrayList<>();
     boolean latlng = false;
@@ -39,8 +59,18 @@ public class ReadEvaluatePrintLoop {
       Double lng2 = Double.parseDouble(commands.get(3));
       LatLng source = new LatLng(lat1, lng1);
       LatLng target = new LatLng(lat2, lng2);
+      LatLng sourcePoint = (LatLng) tree.findNN(source);
+      LatLng targetPoint = (LatLng) tree.findNN(target);
+      // ADD MORE
     } else {
-
+      // ADD MORE!!!!!!!!!!!!!!!!!!!
     }
+  }
+
+  /**
+   * printResults() prints the results of the search.
+   */
+  private void printResults(List<String> results) {
+
   }
 }

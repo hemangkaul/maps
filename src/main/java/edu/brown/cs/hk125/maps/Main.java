@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Map;
 
 import joptsimple.OptionParser;
@@ -24,6 +25,7 @@ import spark.template.freemarker.FreeMarkerEngine;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.hk125.kdtree.KDTree;
 import freemarker.template.Configuration;
 
 /**
@@ -106,14 +108,20 @@ public final class Main {
       System.out.println("Temporary");
       String command;
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+      // TEMP ********
+      KDTree tree = new KDTree(new ArrayList<>());
+
       try {
         while ((command = br.readLine()) != null) {
-          ReadEvaluatePrintLoop.execute(command);
+          ReadEvaluatePrintLoop.execute(command, tree);
         }
       } catch (IOException e) {
         System.out.println("ERROR: IOException: " + e);
+        System.exit(1);
       } catch (IllegalArgumentException e) {
         System.out.println("ERROR: IllegalArgumentException: " + e);
+        System.exit(1);
       }
     }
   }
