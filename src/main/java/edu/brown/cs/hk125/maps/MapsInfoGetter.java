@@ -9,10 +9,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.brown.cs.hk125.dijkstra.Link;
 import edu.brown.cs.hk125.dijkstra.groupLink;
 import edu.brown.cs.hk125.dijkstra.infoGetter;
+import edu.brown.cs.hk125.latlng.LatLng;
 
 /**
  * MapsInfoGetter's primary role is to return the neighboring nodes given a
@@ -44,16 +46,18 @@ public class MapsInfoGetter implements infoGetter {
    * Returns a list of all the node's undiscovered neighbors, with one
    * additional consideration: the "distance" value for the neighbor is the
    * normal distance value (distance from neighbor to start node + extraDist)
-   * plus the distance from the neighbor to the end node.
+   * plus the distance from the neighbor to the end node (A* search).
    *
    * The distance from the neighbor to the end node is added to implement A*
    * search; this optimizes the search algorithm to try and get it to search
-   * more in the general direction of the destination.
+   * more in the general direction of the destination, thus
    *
    * @param nodeName
    *          , the id of the Node
-   * @param endNode
-   *          , the id of the final destination
+   * @param endLat
+   *          , the latitude of the end node
+   * @param endLng
+   *          , the longitude of the end node
    * @param hm
    *          , a hashmap of discovered nodes
    * @param extraDist
@@ -62,20 +66,38 @@ public class MapsInfoGetter implements infoGetter {
    * @return a list of all the node's undiscovered neighbors
    *
    * @throws SQLException
+   *           , if there are errors in the query!
+   * @throws MapLengthException
+   *           , if for some reason, the database returns no latitude or
+   *           longitude for a
    */
-  public ArrayList<Link> getNeighborsAStar(String nodeName, String endNode,
-      HashMap<String, Link> hm, double extraDist) throws SQLException {
-    // Write the query as a string
-    String query = "SELECT film, count(film) FROM actor_film WHERE film IN "
-        + "(SELECT film FROM actor_film WHERE actor = '" + nodeName
-        + "') GROUP BY film ORDER BY count(film) DESC";
+  public ArrayList<Link> getNeighborsAStar(String nodeName, double endLat,
+      double endLng, HashMap<String, Link> hm, double extraDist)
+      throws SQLException, IllegalArgumentException {
 
-    // This will return a list of all the films the actor appeared in,
-    // sorted by number of actors in each film
+    // Here we get the latitude and longitude of the present node.
+    Map<String, Double> latLng = getLatLng(nodeName);
+    Double lat = latLng.get("Latitude");
+    Double lng = latLng.get("Longitude");
+
+    // Makes sure the present node exists in the database!
+    if ((lat == null) || (lng == null)) {
+      throw new IllegalArgumentException(
+          "The node you inputed does not have an associated latitude or "
+              + "longitude in the database. Please check if your id is correct!");
+    }
+
+    // Write the query as a string
+    String query = "SELECT Way.id, Way.end, Node.latitude, Node.longitude "
+        + "FROM Way INNER JOIN Node ON Way.end == Node.id WHERE start = ?";
+
+    // This will return all the ways which start at our startNode, as well
+    // as the latitude and longitude of their end points.
 
     // Create a PreparedStatement
     PreparedStatement prep;
     prep = conn.prepareStatement(query);
+    prep.setString(1, nodeName);
 
     // Execute the query and retrieve a ResultStatement
     ResultSet rs = prep.executeQuery();
@@ -83,9 +105,24 @@ public class MapsInfoGetter implements infoGetter {
     // Add the results to this list
     List<Link> toReturn = new ArrayList<Link>();
     while (rs.next()) {
-      Link toAdd = new groupLink(nodeName, (1 / rs.getDouble(2)) + extraDist,
-          rs.getString(1)); // make sure to add extraDist!
-      toReturn.add(toAdd);
+      String id = rs.getString(1);
+      if (!(hm.containsKey(id))) {
+        double neighborLat = rs.getDouble(3);
+        double neighborLng = rs.getDouble(4);
+        double wayLength = LatLng.distance(lat, lng, neighborLat, neighborLng);
+        // length between the start and end points of the Way
+
+        double heuristicLength = LatLng.distance(neighborLat, neighborLng,
+            endLat, endLng);
+
+        Link toAdd = new Link(nodeName, rs.getString(2), wayLength
+            + heuristicLength + extraDist, id); // make
+        // sure
+        // to
+        // add
+        // extraDist!
+        toReturn.add(toAdd);
+      }
     }
     // Close the ResultSet and the PreparedStatement
     rs.close();
@@ -105,8 +142,26 @@ public class MapsInfoGetter implements infoGetter {
 
   @Override
   public boolean isIn(String nodeName) throws SQLException {
-    // TODO Auto-generated method stub
-    return false;
+    String query = "SELECT id FROM Node WHERE id = ?";
+
+    // Create a PreparedStatement
+    PreparedStatement prep;
+    prep = conn.prepareStatement(query);
+    prep.setString(1, nodeName);
+    // Sets "WHERE id = ?" to "WHERE id = nodeName"
+
+    // Execute the query and retrieve a ResultStatement
+    ResultSet rs = prep.executeQuery();
+
+    // Add the results to this list
+    List<String> toReturn = new ArrayList<String>();
+    while (rs.next()) {
+      toReturn.add(rs.getString(1));
+    } //
+    rs.close();
+    prep.close();
+    return (!toReturn.isEmpty());
+    // if the list is empty, then nodeName is NOT in the database!
   }
 
   /**
@@ -118,4 +173,93 @@ public class MapsInfoGetter implements infoGetter {
     return null;
   }
 
+  /**
+   * Returns the latitude and longitude of a node given its id, in the form of a
+   * HashMap with keys "Latitude" and "Longitude".
+   *
+   * @param nodeName
+   *          , the id of a node
+   * @return the latitude and longitude of a node given its id, in the form of a
+   *         HashMap with keys "Latitude" and "Longitude"
+   * @throws SQLException
+   *           , if there is an error with the query
+   */
+  public Map<String, Double> getLatLng(String nodeName) throws SQLException {
+    String query = "SELECT latitude, longitude FROM Node WHERE id = ?";
+
+    // Create a PreparedStatement
+    PreparedStatement prep;
+    prep = conn.prepareStatement(query);
+    prep.setString(1, nodeName);
+    // Sets "WHERE id = ?" to "WHERE id = nodeName"
+
+    // Execute the query and retrieve a ResultStatement
+    ResultSet rs = prep.executeQuery();
+
+    // Add the results to this list
+    Map<String, Double> mapToReturn = new HashMap<String, Double>();
+    while (rs.next()) {
+      mapToReturn.put("Lat", rs.getDouble(1));
+      mapToReturn.put("Long", rs.getDouble(2));
+    } //
+    rs.close();
+    prep.close();
+
+    return mapToReturn;
+  }
+
+  /**
+   * Given two streets which intersect, returns the Node Id of the intersection.
+   *
+   * @param street
+   *          , the name of the street
+   * @param crossStreet
+   *          , the name of the street which crosses it
+   * @return the Node ID of the intersection of street and crossStreet
+   * @throws SQLException
+   *           , if there's an error with the query
+   * @throws IllegalArgumentException
+   *           , if the streets don't intersect, or if the streets don't exist
+   */
+  public String getIntersection(String street, String crossStreet)
+      throws SQLException, IllegalArgumentException {
+    String query = "SELECT start, end FROM Way WHERE (name == ?) OR (name == ?)";
+
+    // Create a PreparedStatement
+    PreparedStatement prep;
+    prep = conn.prepareStatement(query);
+    prep.setString(1, street);
+    prep.setString(2, crossStreet);
+    // Sets the street names in the query
+
+    // Execute the query and retrieve a ResultStatement
+    ResultSet rs = prep.executeQuery();
+
+    // Add the results to this list
+    List<String> starts = new ArrayList<String>();
+    List<String> ends = new ArrayList<String>();
+    while (rs.next()) {
+      starts.add(rs.getString(1));
+      ends.add(rs.getString(2));
+    } //
+    rs.close();
+    prep.close();
+
+    if (starts.size() != 2) {
+      throw new IllegalArgumentException(
+          "One or more of the streets is not in the database!");
+    } else {
+      String s1 = starts.get(0);
+      String s2 = starts.get(1);
+      String e1 = ends.get(0);
+      String e2 = ends.get(1);
+      if ((s1.equals(s2)) || (s1.equals(e2))) {
+        return s1;
+      } else if ((e1.equals(s2)) || (e1.equals(e2))) {
+        return e1;
+      } else {
+        throw new IllegalArgumentException("These streets don't intersect!");
+      }
+    }
+  }
 }
