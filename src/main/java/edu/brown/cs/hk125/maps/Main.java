@@ -3,8 +3,10 @@ package edu.brown.cs.hk125.maps;
 //this is the package we're a part of. We can access all
 //other classes in this package
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Map;
@@ -102,6 +104,17 @@ public final class Main {
       runSparkServer();
     } else {
       System.out.println("Temporary");
+      String command;
+      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      try {
+        while ((command = br.readLine()) != null) {
+          ReadEvaluatePrintLoop.execute(command);
+        }
+      } catch (IOException e) {
+        System.out.println("ERROR: IOException: " + e);
+      } catch (IllegalArgumentException e) {
+        System.out.println("ERROR: IllegalArgumentException: " + e);
+      }
     }
   }
 
