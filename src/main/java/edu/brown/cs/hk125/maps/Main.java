@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import joptsimple.OptionParser;
@@ -25,7 +27,9 @@ import spark.template.freemarker.FreeMarkerEngine;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.hk125.dijkstra.AStar;
 import edu.brown.cs.hk125.kdtree.KDTree;
+import edu.brown.cs.hk125.latlng.LatLng;
 import freemarker.template.Configuration;
 
 /**
@@ -70,6 +74,8 @@ public final class Main {
   // does not include ./run or ./runCorrect if present
   private String[] args;
 
+  private String db;
+
   private static final Gson GSON = new Gson();
 
   // GSOn used to handle Json translations between backend / frontend
@@ -97,6 +103,30 @@ public final class Main {
                                             // arguments
     // into the accepted options and their arguments, plus any non-options
 
+    if (args.length > 2) {
+      System.out.println("ERROR: Illegal number of arguments");
+    } else if (args.length == 2) {
+      if (args[0].contains("gui")) {
+        db = args[1];
+      } else {
+        db = args[0];
+      }
+    }
+
+    MapsInfoGetter ig = null;
+    AStar dj = null;
+
+    try {
+      ig = new MapsInfoGetter(db);
+      dj = new AStar("", ig);
+    } catch (SQLException e) {
+      System.out.println("ERROR: SQL exception: " + e);
+      System.exit(1);
+    } catch (ClassNotFoundException e) {
+      System.out.println("ERROR: ClassNotFound Exception: " + e);
+      System.exit(1);
+    }
+
     if (options.has("gui")) {
       if (options.has("port") && options.hasArgument("port")) {
         // set the port if necessary
@@ -105,12 +135,13 @@ public final class Main {
       }
       runSparkServer();
     } else {
-      System.out.println("Temporary");
       String command;
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+      // TEMP ***************
 
-      // TEMP ********
-      KDTree tree = new KDTree(new ArrayList<>());
+      List<LatLng> elementList = new ArrayList<>();
+
+      KDTree<LatLng> tree = new KDTree<>(elementList);
 
       try {
         while ((command = br.readLine()) != null) {
@@ -123,6 +154,8 @@ public final class Main {
         System.out.println("ERROR: IllegalArgumentException: " + e);
         System.exit(1);
       }
+
+      // ********************
     }
   }
 

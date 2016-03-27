@@ -6,22 +6,22 @@ package edu.brown.cs.hk125.kdtree;
  * @author hk125
  *
  */
-public class KDNode {
+public class KDNode<T extends KDData> {
 
   /**
    * the datum held by the Node.
    */
-  private KDData datum;
+  private T datum;
 
   /**
    * the left Node.
    */
-  private KDNode left;
+  private KDNode<T> left;
 
   /**
    * the right Node.
    */
-  private KDNode right;
+  private KDNode<T> right;
 
   /**
    * The public constructor for a KDNode.
@@ -33,7 +33,7 @@ public class KDNode {
    * @param rightNode
    *          the right node
    */
-  public KDNode(KDData kddata, KDNode leftNode, KDNode rightNode) {
+  public KDNode(T kddata, KDNode<T> leftNode, KDNode<T> rightNode) {
     this.setDatum(checkDatum(kddata));
     this.setLeft(leftNode);
     this.setRight(rightNode);
@@ -46,7 +46,7 @@ public class KDNode {
    *          the datum to be set
    * @return the KDData
    */
-  private static KDData checkDatum(KDData datum) {
+  private T checkDatum(T datum) {
     if (datum.equals(null)) {
       throw new IllegalArgumentException(datum + "is null");
     } else {
@@ -59,7 +59,7 @@ public class KDNode {
    *
    * @return the datum
    */
-  public KDData getDatum() {
+  public T getDatum() {
     return datum;
   }
 
@@ -69,7 +69,7 @@ public class KDNode {
    * @param kddata
    *          the datum you want to set the node to
    */
-  private void setDatum(KDData kddata) {
+  private void setDatum(T kddata) {
     this.datum = kddata;
   }
 
@@ -78,7 +78,7 @@ public class KDNode {
    *
    * @return the left node
    */
-  public KDNode getLeft() {
+  public KDNode<T> getLeft() {
     return left;
   }
 
@@ -88,7 +88,7 @@ public class KDNode {
    * @param leftNode
    *          the left node you want to set left to
    */
-  private void setLeft(KDNode leftNode) {
+  private void setLeft(KDNode<T> leftNode) {
     this.left = leftNode;
   }
 
@@ -97,7 +97,7 @@ public class KDNode {
    *
    * @return the right node
    */
-  public KDNode getRight() {
+  public KDNode<T> getRight() {
     return right;
   }
 
@@ -107,10 +107,11 @@ public class KDNode {
    * @param rightNode
    *          the right node you want to set right to
    */
-  private void setRight(KDNode rightNode) {
+  private void setRight(KDNode<T> rightNode) {
     this.right = rightNode;
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public boolean equals(Object o) {
     if (o.equals(null)) {
@@ -119,7 +120,7 @@ public class KDNode {
     if (!(o instanceof KDNode)) {
       return false;
     }
-    KDNode other = (KDNode) o;
+    KDNode<T> other = (KDNode<T>) o;
     return ((this.datum.equals(other.datum))
         && (this.right.equals(other.right)) && (this.left.equals(other.left)));
   }
