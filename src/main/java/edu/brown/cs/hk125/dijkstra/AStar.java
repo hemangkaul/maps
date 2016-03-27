@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.PriorityQueue;
 
 /**
- * Performs A* search,
+ * Performs A* search, an extension of Dijkstra's algorithm.
  *
  * @author sl234
  *
@@ -28,7 +28,7 @@ public class AStar extends Dijkstra {
    * @throws IllegalArgumentException
    *           , if the stop node isn't in the database
    */
-  protected void addNewestNeighborsAStar(HashMap<String, Link> discovered,
+  private void addNewestNeighborsAStar(HashMap<String, Link> discovered,
       String endNode) throws SQLException, IllegalArgumentException {
     String newest = getNewest();
     PriorityQueue<Link> closestUndiscovered = getClosestUndiscovered();
@@ -82,11 +82,10 @@ public class AStar extends Dijkstra {
   @Override
   public HashMap<String, Link> findPaths(String stop) throws SQLException,
       IllegalArgumentException {
-    HashMap<String, Link> mapToReturn = new HashMap<String, Link>();
-    // This is the HashMap we will return. It is intended to be a copy of the
-    // private variable 'discovered'.
 
     HashMap<String, Link> discovered = getDiscovered();
+    // A copy of our current HashMap of discovered nodes
+
     while (!(discovered.containsKey(stop))) {
       // if stop has already been discovered, we need do no more!
       addNewestNeighborsAStar(discovered, stop);
@@ -98,13 +97,12 @@ public class AStar extends Dijkstra {
       String neighborName = newAddition.getEnd(); // name of this
                                                   // neighbor
       discovered.put(neighborName, newAddition);
-      setDiscovered(discovered);
       // updating our Hashmap of discovered nodes
 
       setNewest(neighborName);
     }
-    mapToReturn.putAll(getDiscovered());
-    return mapToReturn;
+    setDiscovered(discovered); // updating the field in the parent class
+    return discovered;
   }
 
 }

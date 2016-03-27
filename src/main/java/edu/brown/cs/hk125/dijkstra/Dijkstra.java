@@ -141,7 +141,8 @@ public class Dijkstra {
   }
 
   /**
-   * @return the ig
+   * @return the ig, note that infoGetter is immutable; it has no private
+   *         fields!
    */
   protected infoGetter getIg() {
     return ig;
@@ -154,7 +155,7 @@ public class Dijkstra {
    *           , if the infogetter uses SQL querying and there is an error in
    *           the querying
    */
-  protected void addNewestNeighbors() throws SQLException {
+  private void addNewestNeighbors() throws SQLException {
     double distOfNewest = getDiscovered().get(newest).getDistance();
     // the distance the newest node is from the start node
     for (Link n : getIg().getNeighbors(newest, getDiscovered(), distOfNewest)) {
