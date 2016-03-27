@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.brown.cs.hk125.dijkstra.InfoGetterAStar;
 import edu.brown.cs.hk125.dijkstra.Link;
 import edu.brown.cs.hk125.dijkstra.groupLink;
-import edu.brown.cs.hk125.dijkstra.infoGetter;
 import edu.brown.cs.hk125.latlng.LatLng;
 
 /**
@@ -27,7 +27,7 @@ import edu.brown.cs.hk125.latlng.LatLng;
  * @author sl234
  *
  */
-public class MapsInfoGetter implements infoGetter {
+public class MapsInfoGetter implements InfoGetterAStar {
 
   private Connection conn;
 
@@ -271,5 +271,16 @@ public class MapsInfoGetter implements infoGetter {
         throw new IllegalArgumentException("These streets don't intersect!");
       }
     }
+  }
+
+  @Override
+  public Double heuristicValue(String node, String endNode)
+      throws SQLException, IllegalArgumentException {
+    // TODO Auto-generated method stub
+    Map<String, Double> nodeCoords = getLatLng(node);
+    Map<String, Double> endCoords = getLatLng(endNode);
+    return LatLng.distance(nodeCoords.get("Latitude"),
+        nodeCoords.get("Longitude"), endCoords.get("Latitude"),
+        endCoords.get("Longitude"));
   }
 }

@@ -31,35 +31,6 @@ public interface infoGetter {
       double extraDist) throws SQLException;
 
   /**
-   * Returns a list of the given node's undiscovered neighbors, where the
-   * distances of those neighbors are altered by the specifications of A*
-   * search.
-   *
-   * @param nodeName
-   *          , name of the node whose neighbors we are searching for
-   * @param endNode
-   *          , name of the node we are searching for in the overall dijkstra
-   *          process
-   * @param hm
-   *          , a hashMap containing neighbors which are 'not allowed.' I.e. we
-   *          want to find the neighbors NOT in this hashmap!
-   * @param extraDist
-   *          , when we return our neighbors, we add 'extraDist' to the distance
-   *          variable of the neighbor.
-   * @return a list of the given node's undiscovered neighbors, where the
-   *         distances of those neighbors are altered by the specifications of
-   *         A* search.
-   * @throws SQLException
-   *           , if SQL querying is used and there is an issue with the query
-   *
-   * @throws IllegalArgumentException
-   *           , if the end Node is not in the database
-   */
-  public List<Link> getNeighborsAStar(String nodeName, String endNode,
-      HashMap<String, Link> hm, double extraDist) throws SQLException,
-      IllegalArgumentException;
-
-  /**
    * Specifies if nodeName is in the system / graph.
    *
    * @param nodeName

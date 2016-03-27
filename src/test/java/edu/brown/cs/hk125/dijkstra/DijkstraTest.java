@@ -125,15 +125,7 @@ public class DijkstraTest {
     @Override
     public ArrayList<Link> expandGroupLink(groupLink g, HashMap<String, Link> hm)
         throws SQLException {
-      // We will not be testing expandGroupLink here
-      return null;
-    }
-
-    @Override
-    public List<Link> getNeighborsAStar(String nodeName, String endNode,
-        HashMap<String, Link> hm, double extraDist) throws SQLException,
-        IllegalArgumentException {
-      // We will not be using getNeighborsAStar here
+      // We will not be using expandGroupLink here
       return null;
     }
   }
