@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import joptsimple.OptionParser;
@@ -28,6 +29,7 @@ import com.google.gson.Gson;
 
 import edu.brown.cs.hk125.dijkstra.AStar;
 import edu.brown.cs.hk125.kdtree.KDTree;
+import edu.brown.cs.hk125.latlng.LatLng;
 import freemarker.template.Configuration;
 
 /**
@@ -136,7 +138,10 @@ public final class Main {
       String command;
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
       // TEMP ***************
-      KDTree tree = new KDTree(new ArrayList<>());
+
+      List<LatLng> elementList = new ArrayList<>();
+
+      KDTree<LatLng> tree = new KDTree<>(elementList);
 
       try {
         while ((command = br.readLine()) != null) {
