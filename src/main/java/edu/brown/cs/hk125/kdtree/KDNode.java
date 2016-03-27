@@ -1,49 +1,114 @@
 package edu.brown.cs.hk125.kdtree;
 
+/**
+ * KDNode represents a node of the KD Tree.
+ *
+ * @author hk125
+ *
+ */
 public class KDNode {
 
+  /**
+   * the datum held by the Node.
+   */
   private KDData datum;
+
+  /**
+   * the left Node.
+   */
   private KDNode left;
+
+  /**
+   * the right Node.
+   */
   private KDNode right;
 
-  public KDNode(KDData datum, KDNode left, KDNode right) {
-    this.setDatum(checkDatum(datum));
-    this.setLeft(left);
-    this.setRight(right);
+  /**
+   * The public constructor for a KDNode.
+   *
+   * @param kddata
+   *          the datum held by the node
+   * @param leftNode
+   *          the left node
+   * @param rightNode
+   *          the right node
+   */
+  public KDNode(KDData kddata, KDNode leftNode, KDNode rightNode) {
+    this.setDatum(checkDatum(kddata));
+    this.setLeft(leftNode);
+    this.setRight(rightNode);
   }
 
+  /**
+   * checks if the datum is valid.
+   *
+   * @param datum
+   *          the datum to be set
+   * @return the KDData
+   */
   private static KDData checkDatum(KDData datum) {
     if (datum.equals(null)) {
       throw new IllegalArgumentException(datum + "is null");
-    } else
+    } else {
       return datum;
+    }
   }
 
-  // CHANGE - accesses private instance of mutable variable
+  /**
+   * returns the datum.
+   *
+   * @return the datum
+   */
   public KDData getDatum() {
     return datum;
   }
 
-  public void setDatum(KDData datum) {
-    this.datum = datum;
+  /**
+   * sets the datum.
+   *
+   * @param kddata
+   *          the datum you want to set the node to
+   */
+  private void setDatum(KDData kddata) {
+    this.datum = kddata;
   }
 
-  // CHANGE - accesses private instance of mutable variable
+  /**
+   * returns the left node.
+   *
+   * @return the left node
+   */
   public KDNode getLeft() {
     return left;
   }
 
-  public void setLeft(KDNode left) {
-    this.left = left;
+  /**
+   * sets the left node.
+   *
+   * @param leftNode
+   *          the left node you want to set left to
+   */
+  private void setLeft(KDNode leftNode) {
+    this.left = leftNode;
   }
 
-  // CHANGE - accesses private instance of mutable variable
+  /**
+   * returns the right node.
+   *
+   * @return the right node
+   */
   public KDNode getRight() {
     return right;
   }
 
-  public void setRight(KDNode right) {
-    this.right = right;
+  /**
+   * sets the right node.
+   *
+   * @param rightNode
+   *          the right node you want to set right to
+   */
+  private void setRight(KDNode rightNode) {
+    this.right = rightNode;
   }
 
   @Override

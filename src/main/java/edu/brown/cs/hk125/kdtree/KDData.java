@@ -9,6 +9,8 @@ package edu.brown.cs.hk125.kdtree;
 public interface KDData {
   /**
    * dimensions returns the dimensions of the KDData.
+   *
+   * @return the number of dimensions
    */
   public int dimensions();
 
@@ -17,6 +19,8 @@ public interface KDData {
    *
    * @param dim
    *          represents the dimension you wish to compare on
+   * @param other
+   *          is the data you wish to compare to
    * @return positive, if current is greater than other on dimension dim,
    *         negative if current is less and 0 if they are equal.
    */

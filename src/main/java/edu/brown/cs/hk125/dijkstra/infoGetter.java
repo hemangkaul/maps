@@ -1,8 +1,8 @@
 package edu.brown.cs.hk125.dijkstra;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Retrieves information for a node; intended for use in Dijkstra's algorithm.
@@ -27,8 +27,8 @@ public interface infoGetter {
    * @throws SQLException
    *           , if SQL querying is used and there is an issue with the query
    */
-  public ArrayList<Link> getNeighbors(String nodeName,
-      HashMap<String, Link> hm, double extraDist) throws SQLException;
+  public List<Link> getNeighbors(String nodeName, HashMap<String, Link> hm,
+      double extraDist) throws SQLException;
 
   /**
    * Specifies if nodeName is in the system / graph.
@@ -52,6 +52,6 @@ public interface infoGetter {
    * @throws SQLException
    *           if SQL querying is used and ther is an issue with the query
    */
-  public ArrayList<Link> expandGroupLink(groupLink g, HashMap<String, Link> hm)
+  public List<Link> expandGroupLink(groupLink g, HashMap<String, Link> hm)
       throws SQLException;
 }

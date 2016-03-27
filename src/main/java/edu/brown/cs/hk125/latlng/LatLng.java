@@ -10,21 +10,32 @@ import edu.brown.cs.hk125.kdtree.KDData;
  */
 public class LatLng implements KDData {
 
-  private static final double radius = 3959;
+  /**
+   * the radius of the earth in miles.
+   */
+  private static final double RADIUS = 3959;
+
+  /**
+   * the latitude.
+   */
   private double lat;
+
+  /**
+   * the longitude.
+   */
   private double lng;
 
   /**
    * The constructor method for the LatLng class.
    *
-   * @param lat
+   * @param latitude
    *          is the latitude of the point
-   * @param lng
+   * @param longitude
    *          is the longitude of the point
    */
-  public LatLng(double lat, double lng) {
-    this.lat = lat;
-    this.lng = lng;
+  public LatLng(double latitude, double longitude) {
+    this.lat = latitude;
+    this.lng = longitude;
   }
 
   @Override
@@ -63,7 +74,7 @@ public class LatLng implements KDData {
     double a = Math.pow(Math.sin(dLat / 2), 2)
         + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
     double c = 2 * Math.asin(Math.sqrt(a));
-    return radius * c;
+    return RADIUS * c;
   }
 
   /**
@@ -91,7 +102,7 @@ public class LatLng implements KDData {
     double a = Math.pow(Math.sin(dLat / 2), 2)
         + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
     double c = 2 * Math.asin(Math.sqrt(a));
-    return radius * c;
+    return RADIUS * c;
   }
 
   @Override
