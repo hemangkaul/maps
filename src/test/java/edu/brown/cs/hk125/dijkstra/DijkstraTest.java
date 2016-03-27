@@ -1,4 +1,4 @@
-package edu.brown.cs.sl234.bacon;
+package edu.brown.cs.hk125.dijkstra;
 
 import static org.junit.Assert.assertTrue;
 
@@ -13,11 +13,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import edu.brown.cs.sl234.dijkstra.Dijkstra;
-import edu.brown.cs.sl234.dijkstra.Link;
-import edu.brown.cs.sl234.dijkstra.groupLink;
-import edu.brown.cs.sl234.dijkstra.infoGetter;
 
 public class DijkstraTest {
 
@@ -131,6 +126,14 @@ public class DijkstraTest {
     public ArrayList<Link> expandGroupLink(groupLink g, HashMap<String, Link> hm)
         throws SQLException {
       // We will not be testing expandGroupLink here
+      return null;
+    }
+
+    @Override
+    public List<Link> getNeighborsAStar(String nodeName, String endNode,
+        HashMap<String, Link> hm, double extraDist) throws SQLException,
+        IllegalArgumentException {
+      // We will not be using getNeighborsAStar here
       return null;
     }
   }

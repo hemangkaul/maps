@@ -1,4 +1,4 @@
-package edu.brown.cs.sl234.bacon;
+package edu.brown.cs.hk125.dijkstra;
 
 import static org.junit.Assert.assertTrue;
 
@@ -10,7 +10,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.brown.cs.sl234.dijkstra.Link;
+import edu.brown.cs.hk125.dijkstra.Link;
 
 public class LinkTest {
 
