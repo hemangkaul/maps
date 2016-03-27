@@ -70,9 +70,10 @@ public class MapsInfoGetter implements infoGetter {
    * @throws IllegalArgumentException
    *           , if there are Illegal arguments given!
    */
-  public ArrayList<Link> getNeighborsAStar(String nodeName, double endLat,
-      double endLng, HashMap<String, Link> hm, double extraDist)
-      throws SQLException, IllegalArgumentException {
+  @Override
+  public ArrayList<Link> getNeighborsAStar(String nodeName, String endNode,
+      HashMap<String, Link> hm, double extraDist) throws SQLException,
+      IllegalArgumentException {
 
     // Here we get the latitude and longitude of the present node.
     Map<String, Double> latLng = getLatLng(nodeName);
@@ -86,6 +87,16 @@ public class MapsInfoGetter implements infoGetter {
               + "longitude in the database. Please check if your id is correct!");
     }
 
+    // Here we get the latitude and longitude of the end node.
+    Map<String, Double> endLatLng = getLatLng(endNode);
+    Double endLat = endLatLng.get("Latitude");
+    Double endLng = endLatLng.get("Longitude");
+
+    // Makes sure the present node exists in the database!
+    if ((endLat == null) || (endLng == null)) {
+      throw new IllegalArgumentException(
+          "The end node does not exist in the database!");
+    }
     // Write the query as a string
     String query = "SELECT Way.id, Way.end, Node.latitude, Node.longitude "
         + "FROM Way INNER JOIN Node ON Way.end == Node.id WHERE start = ?";

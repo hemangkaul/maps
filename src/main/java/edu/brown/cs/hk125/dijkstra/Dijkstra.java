@@ -2,6 +2,7 @@ package edu.brown.cs.hk125.dijkstra;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 
@@ -63,9 +64,9 @@ public class Dijkstra {
       this.ig = ig;
       this.setStartNode(startNode);
       this.newest = startNode;
-      discovered = new HashMap<String, Link>();
-      discovered.put(startNode, new Link(startNode, startNode, 0.0, ""));
-      closestUndiscovered = new PriorityQueue<Link>();
+      setDiscovered(new HashMap<String, Link>());
+      getDiscovered().put(startNode, new Link(startNode, startNode, 0.0, ""));
+      setClosestUndiscovered(new PriorityQueue<Link>());
     }
   }
 
@@ -91,11 +92,60 @@ public class Dijkstra {
     return newest;
   }
 
+  /**
+   * Sets newest to something else.
+   *
+   * @param newest
+   */
+  protected void setNewest(String newest) {
+    this.newest = newest;
+  }
+
+  /**
+   * Returns the HashMap of Discovered Nodes
+   *
+   * @return
+   */
+  protected HashMap<String, Link> getDiscovered() {
+    return (HashMap<String, Link>) Collections.unmodifiableMap(discovered);
+  }
+
+  /**
+   * Sets discovered to something else.
+   *
+   * @param discovered
+   */
+  protected void setDiscovered(HashMap<String, Link> discovered) {
+    this.discovered = discovered;
+  }
+
   // You're not allowed to set the newest node though. Makes no sense in
   // implementation,
   // since then the newest node might be different than actual newest node in
   // the
   // 'discovered' HashMap
+
+  /**
+   * @return the closestUndiscovered
+   */
+  protected PriorityQueue<Link> getClosestUndiscovered() {
+    return closestUndiscovered;
+  }
+
+  /**
+   * @param closestUndiscovered
+   *          the closestUndiscovered to set
+   */
+  protected void setClosestUndiscovered(PriorityQueue<Link> closestUndiscovered) {
+    this.closestUndiscovered = closestUndiscovered;
+  }
+
+  /**
+   * @return the ig
+   */
+  protected infoGetter getIg() {
+    return ig;
+  }
 
   /**
    * Adds the neighbors from "newest" into the closestUndiscovered.
@@ -104,11 +154,11 @@ public class Dijkstra {
    *           , if the infogetter uses SQL querying and there is an error in
    *           the querying
    */
-  private void addNewestNeighbors() throws SQLException {
-    double distOfNewest = discovered.get(newest).getDistance();
+  protected void addNewestNeighbors() throws SQLException {
+    double distOfNewest = getDiscovered().get(newest).getDistance();
     // the distance the newest node is from the start node
-    for (Link n : ig.getNeighbors(newest, discovered, distOfNewest)) {
-      closestUndiscovered.add(n);
+    for (Link n : getIg().getNeighbors(newest, getDiscovered(), distOfNewest)) {
+      getClosestUndiscovered().add(n);
       // Our closestUndiscovered queue already contains all the neighbors of
       // our
       // discovered nodes... except for the newest node just added!
@@ -156,20 +206,20 @@ public class Dijkstra {
    *           , if querying is used in the infogetter and there is an error in
    *           the querying
    */
-  private Link topOption() throws SQLException {
-    if (closestUndiscovered.isEmpty()) {
+  protected Link topOption() throws SQLException {
+    if (getClosestUndiscovered().isEmpty()) {
       return new Link("", "", -1.0, ""); // we will use the -1.0 to tell us
                                          // there are no more nodes to
                                          // discover!
     } else {
-      Link curHead = closestUndiscovered.poll();
+      Link curHead = getClosestUndiscovered().poll();
       // poll also removes the link while retrieving it
       if (curHead instanceof groupLink) { // if it's a groupLink, it's time to
                                           // expand!
-        closestUndiscovered.addAll(ig.expandGroupLink((groupLink) curHead,
-            discovered));
+        getClosestUndiscovered().addAll(
+            getIg().expandGroupLink((groupLink) curHead, getDiscovered()));
       } else { // curHead is a normal Link
-        if (!(discovered.containsKey(curHead.getEnd()))) {
+        if (!(getDiscovered().containsKey(curHead.getEnd()))) {
           return curHead;
         }
       }
@@ -185,10 +235,7 @@ public class Dijkstra {
    * to.
    *
    * If the end point has already been found, simply returns all the discovered
-   * nodes. Note this functionality likely won't be used in Bacon, as we will
-   * frequently be switching startNodes, and hence making new "Dijkstra" objects
-   * each time, but it could be useful if Dijkstra is being used for a constant
-   * startNode.
+   * nodes.
    *
    * @param stop
    *          , the node to stop the Dijkstra process at
@@ -204,7 +251,7 @@ public class Dijkstra {
     // This is the HashMap we will return. It is intended to be a copy of the
     // private variable 'discovered'.
 
-    while (!(discovered.containsKey(stop))) {
+    while (!(getDiscovered().containsKey(stop))) {
       // if stop has already been discovered, we need do no more!
       addNewestNeighbors();
       Link newAddition = topOption();
@@ -214,12 +261,12 @@ public class Dijkstra {
       }
       String neighborName = newAddition.getEnd(); // name of this
                                                   // neighbor
-      discovered.put(neighborName, newAddition);
+      getDiscovered().put(neighborName, newAddition);
       // updating our Hashmap of discovered nodes
 
       newest = neighborName;
     }
-    mapToReturn.putAll(discovered);
+    mapToReturn.putAll(getDiscovered());
     return mapToReturn;
   }
 
