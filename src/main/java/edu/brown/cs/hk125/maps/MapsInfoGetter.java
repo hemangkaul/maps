@@ -71,7 +71,7 @@ public class MapsInfoGetter implements infoGetter {
    *           , if there are Illegal arguments given!
    */
   @Override
-  public ArrayList<Link> getNeighborsAStar(String nodeName, String endNode,
+  public List<Link> getNeighborsAStar(String nodeName, String endNode,
       HashMap<String, Link> hm, double extraDist) throws SQLException,
       IllegalArgumentException {
 
@@ -137,7 +137,7 @@ public class MapsInfoGetter implements infoGetter {
     // Close the ResultSet and the PreparedStatement
     rs.close();
     prep.close();
-    return (ArrayList<Link>) toReturn;
+    return toReturn;
   }
 
   /**

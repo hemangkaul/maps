@@ -51,11 +51,11 @@ public interface infoGetter {
    *         A* search.
    * @throws SQLException
    *           , if SQL querying is used and there is an issue with the query
-   * 
+   *
    * @throws IllegalArgumentException
    *           , if the end Node is not in the database
    */
-  public ArrayList<Link> getNeighborsAStar(String nodeName, String endNode,
+  public List<Link> getNeighborsAStar(String nodeName, String endNode,
       HashMap<String, Link> hm, double extraDist) throws SQLException,
       IllegalArgumentException;
 
