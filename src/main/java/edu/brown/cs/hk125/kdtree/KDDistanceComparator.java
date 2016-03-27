@@ -11,16 +11,19 @@ import java.util.Comparator;
  */
 public class KDDistanceComparator implements Comparator<KDData> {
 
+  /**
+   * the target for the distance
+   */
   private KDData target;
 
   /**
    * This is the constructor for a KDDistanceComparator.
    *
-   * @param target
+   * @param compareTo
    *          is the KDData we want to find the distance from
    */
-  public KDDistanceComparator(KDData target) {
-    this.target = target;
+  public KDDistanceComparator(KDData compareTo) {
+    this.target = compareTo;
   }
 
   @Override

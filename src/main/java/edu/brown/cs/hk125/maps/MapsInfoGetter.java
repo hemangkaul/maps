@@ -67,12 +67,11 @@ public class MapsInfoGetter implements infoGetter {
    *
    * @throws SQLException
    *           , if there are errors in the query!
-   * @throws MapLengthException
-   *           , if for some reason, the database returns no latitude or
-   *           longitude for a
+   * @throws IllegalArgumentException
+   *           , if there are Illegal arguments given!
    */
   @Override
-  public ArrayList<Link> getNeighborsAStar(String nodeName, String endNode,
+  public List<Link> getNeighborsAStar(String nodeName, String endNode,
       HashMap<String, Link> hm, double extraDist) throws SQLException,
       IllegalArgumentException {
 
@@ -138,15 +137,15 @@ public class MapsInfoGetter implements infoGetter {
     // Close the ResultSet and the PreparedStatement
     rs.close();
     prep.close();
-    return (ArrayList<Link>) toReturn;
+    return toReturn;
   }
 
   /**
    * Not needed, so we return null!
    */
   @Override
-  public ArrayList<Link> getNeighbors(String nodeName,
-      HashMap<String, Link> hm, double extraDist) throws SQLException {
+  public List<Link> getNeighbors(String nodeName, HashMap<String, Link> hm,
+      double extraDist) throws SQLException {
     // Write the query as a string
     return null;
   }
@@ -179,7 +178,7 @@ public class MapsInfoGetter implements infoGetter {
    * Not needed, so we return null!
    */
   @Override
-  public ArrayList<Link> expandGroupLink(groupLink g, HashMap<String, Link> hm)
+  public List<Link> expandGroupLink(groupLink g, HashMap<String, Link> hm)
       throws SQLException {
     return null;
   }
