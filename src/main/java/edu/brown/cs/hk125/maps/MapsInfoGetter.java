@@ -209,8 +209,8 @@ public class MapsInfoGetter implements InfoGetterAStar {
     // Add the results to this list
     Map<String, Double> mapToReturn = new HashMap<String, Double>();
     while (rs.next()) {
-      mapToReturn.put("Lat", rs.getDouble(1));
-      mapToReturn.put("Long", rs.getDouble(2));
+      mapToReturn.put("Latitude", rs.getDouble(1));
+      mapToReturn.put("Longitude", rs.getDouble(2));
     } //
     rs.close();
     prep.close();
@@ -233,7 +233,7 @@ public class MapsInfoGetter implements InfoGetterAStar {
    */
   public String getIntersection(String street, String crossStreet)
       throws SQLException, IllegalArgumentException {
-    String query = "SELECT start, end FROM Way WHERE (name == ?) OR (name == ?)";
+    String query = "SELECT name, start, end FROM Way WHERE (name == ?) OR (name == ?)";
 
     // Create a PreparedStatement
     PreparedStatement prep;
@@ -245,40 +245,66 @@ public class MapsInfoGetter implements InfoGetterAStar {
     // Execute the query and retrieve a ResultStatement
     ResultSet rs = prep.executeQuery();
 
-    // Add the results to this list
-    List<String> starts = new ArrayList<String>();
-    List<String> ends = new ArrayList<String>();
+    // start and end nodes of streets named 'street'
+    List<String> streetNodes = new ArrayList<String>();
+
+    // start and end nodes of streets named 'crossStreet'
+    List<String> crossNodes = new ArrayList<String>();
+
     while (rs.next()) {
-      starts.add(rs.getString(1));
-      ends.add(rs.getString(2));
+      if (rs.getString(1).equals(street)) {
+        // is the street named 'street'
+        streetNodes.add(rs.getString(2));
+        streetNodes.add(rs.getString(3));
+      }
+      if (rs.getString(1).equals(crossStreet)) {
+        // is the street named 'crossStreet?'
+        // Note if street and crossStreet have the same name,
+        // the nodes will be added to both lists!
+        crossNodes.add(rs.getString(2));
+        crossNodes.add(rs.getString(3));
+      }
     } //
     rs.close();
     prep.close();
 
-    if (starts.size() != 2) {
+    if (streetNodes.isEmpty() || crossNodes.isEmpty()) {
       throw new IllegalArgumentException(
           "One or more of the streets is not in the database!");
     } else {
-      String s1 = starts.get(0);
-      String s2 = starts.get(1);
-      String e1 = ends.get(0);
-      String e2 = ends.get(1);
-      if ((s1.equals(s2)) || (s1.equals(e2))) {
-        return s1;
-      } else if ((e1.equals(s2)) || (e1.equals(e2))) {
-        return e1;
-      } else {
+      // only the common nodes between streetNodes and crossNodes are retained
+      streetNodes.retainAll(crossNodes);
+      if (streetNodes.isEmpty()) {
+        // if it's empty the streets have no nodes in common, and thus don't
+        // intersect
         throw new IllegalArgumentException("These streets don't intersect!");
+      } else {
+        // if it's not empty, the streets have at least one node in common. We
+        // simply return the first
+        return streetNodes.get(0);
       }
     }
   }
 
+  /**
+   * Given a subject node and an end node, heuristicValue node returns the
+   * "heuristic" for the subject node. How the heuristic value is calculated
+   * will vary between different A* searches, but for ours, it is simply the
+   * distance between the subject node and the end node, calculated using the
+   * Haversine formula.
+   */
   @Override
   public Double heuristicValue(String node, String endNode)
       throws SQLException, IllegalArgumentException {
     // TODO Auto-generated method stub
     Map<String, Double> nodeCoords = getLatLng(node);
     Map<String, Double> endCoords = getLatLng(endNode);
+
+    // if either the node or endNode does not exist in the database, throw an
+    // error
+    if (nodeCoords.isEmpty() || endCoords.isEmpty()) {
+      throw new IllegalArgumentException();
+    }
     return LatLng.distance(nodeCoords.get("Latitude"),
         nodeCoords.get("Longitude"), endCoords.get("Latitude"),
         endCoords.get("Longitude"));
