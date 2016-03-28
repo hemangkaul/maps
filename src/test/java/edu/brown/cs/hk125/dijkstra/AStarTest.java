@@ -296,12 +296,15 @@ public class AStarTest {
     // Error 2
     String messageTwo;
     try {
-      @SuppressWarnings("unused")
       Dijkstra errorAStarTwo = new AStar("start", ig);
+      @SuppressWarnings("unused")
+      HashMap<String, Link> nodeNotFound = errorAStarTwo.findPaths("unknown");
       messageTwo = "Whattt? The error wasn't generated, OMG!";
     } catch (IllegalArgumentException e) {
       messageTwo = "Great, the error was thrown! Cool beans!";
     }
+
+    System.out.println(messageTwo);
 
     assertTrue(message.equals("Great, the error was thrown! Yippee!"));
     assertTrue(messageTwo.equals("Great, the error was thrown! Cool beans!"));
@@ -350,23 +353,15 @@ public class AStarTest {
     expectedMap.put("n3", new Link("n2", "n3", 4.0));
     expectedMap.put("n4", new Link("n2", "n4", 6.5));
     // round the decimals!
-    expectedMap.put("n5", new Link("n3", "n5",
-        Math.round(4.0 + Math.sqrt(5)) * 100000.0 / 100000.0));
-    expectedMap.put("n6", new Link("n5", "n6", 8.0));
+    expectedMap.put("n5",
+        new Link("n3", "n5",
+            Math.round((4.0 + Math.sqrt(5)) * 100000.0) / 100000.0));
+    expectedMap.put("n6", new Link("n4", "n6", 8.0));
 
     testInfoGetter ig = new testInfoGetter();
     ig.fillDatabase();
 
     Dijkstra testDijkstra = new AStar("start", ig);
-
-    HashMap<String, Link> results = testDijkstra.findPaths("n7");
-    for (String s : results.keySet()) {
-      System.out.println(s);
-      System.out.println(results.get(s).getSource());
-      System.out.println(results.get(s).getEnd());
-      System.out.println(results.get(s).getDistance());
-      System.out.println("");
-    }
 
     assertTrue(testDijkstra.findPaths("n7").equals(expectedMap));
     // expectedMap is the entire graph. nonexistent doesn't exist; if our
