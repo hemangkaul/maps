@@ -27,7 +27,6 @@ import spark.template.freemarker.FreeMarkerEngine;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
-import edu.brown.cs.hk125.dijkstra.AStar;
 import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
 import freemarker.template.Configuration;
@@ -114,11 +113,9 @@ public final class Main {
     }
 
     MapsInfoGetter ig = null;
-    AStar dj = null;
 
     try {
       ig = new MapsInfoGetter(db);
-      dj = new AStar("", ig);
     } catch (SQLException e) {
       System.out.println("ERROR: SQL exception: " + e);
       System.exit(1);
@@ -145,13 +142,16 @@ public final class Main {
 
       try {
         while ((command = br.readLine()) != null) {
-          ReadEvaluatePrintLoop.execute(command, tree);
+          ReadEvaluatePrintLoop.execute(command, tree, ig);
         }
       } catch (IOException e) {
         System.out.println("ERROR: IOException: " + e);
         System.exit(1);
       } catch (IllegalArgumentException e) {
         System.out.println("ERROR: IllegalArgumentException: " + e);
+        System.exit(1);
+      } catch (SQLException e) {
+        System.out.println("ERROR: SQLException: " + e);
         System.exit(1);
       }
 
