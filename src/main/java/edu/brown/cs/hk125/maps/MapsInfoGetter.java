@@ -22,7 +22,7 @@ import edu.brown.cs.hk125.latlng.LatLng;
  *
  * It does this by querying the database for Ways starting with the node_id.
  *
- * MapInfoGetter incorporates A* Search directly.
+ * MapInfoGetter incorporates A* Search.
  *
  * @author sl234
  *
