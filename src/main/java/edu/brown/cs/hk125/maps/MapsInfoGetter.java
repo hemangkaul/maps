@@ -115,18 +115,21 @@ public class MapsInfoGetter implements InfoGetterAStar {
     // Add the results to this list
     List<Link> toReturn = new ArrayList<Link>();
     while (rs.next()) {
-      String id = rs.getString(1);
-      if (!(hm.containsKey(id))) {
+      String neighbor = rs.getString(2);
+      if (!(hm.containsKey(neighbor))) {
         double neighborLat = rs.getDouble(3);
         double neighborLng = rs.getDouble(4);
-        double wayLength = LatLng.distance(lat, lng, neighborLat, neighborLng);
         // length between the start and end points of the Way
+        double wayLength = LatLng.distance(lat, lng, neighborLat, neighborLng);
 
+        // We could use the heuristicValue method but this is literally the same
+        // thing, plus it vastly reduces the amount of querying necessary (i.e.
+        // we don't have to query for endNode for EVERY different neighbor)
         double heuristicLength = LatLng.distance(neighborLat, neighborLng,
             endLat, endLng);
 
-        Link toAdd = new Link(nodeName, rs.getString(2), wayLength
-            + heuristicLength + extraDist, id); // make
+        Link toAdd = new Link(nodeName, neighbor, wayLength + heuristicLength
+            + extraDist, rs.getString(1)); // make
         // sure
         // to
         // add

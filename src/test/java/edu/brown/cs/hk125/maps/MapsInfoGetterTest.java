@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -11,6 +12,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import edu.brown.cs.hk125.dijkstra.Link;
 
 public class MapsInfoGetterTest {
 
@@ -53,6 +56,41 @@ public class MapsInfoGetterTest {
   @Test
   public void getNeighborsAStarTest() throws ClassNotFoundException,
       SQLException {
+    // In this test, we find the neighbors of /n/1 which are not already
+    // discovered
+    // As an end node, we'll use /n/5
+    Map<String, Link> discovered = new HashMap<String, Link>();
+    discovered.put("/n/0", new Link("/n/0", "/n/0", 0.0, ""));
+    // /n/0 is the start node!
+    discovered.put("n/1/", new Link("/n/0", "/n/1", 0.03336, "/w/0"));
+
+    // Below (commented out) is what the lists should look like
+    // we don't actually use expectedList in our test because the distance
+    // values
+    // are rounded, but expectedList was helpful to look at when writing the
+    // assertion statements
+
+    // List<Link> expectedList = new ArrayList<Link>();
+    // expectedList.add(new Link("/n/1", "/n/2", 0.09158, "/w/1"));
+    // expectedList.add(new Link("/n/1", "/n/4", 0.09158, "/w/3"));
+
+    List<Link> neighbors = smallMapsMig.getNeighborsAStar("/n/1", "/n/4",
+        (HashMap<String, Link>) discovered, 0.03336);
+
+    assertTrue(neighbors.size() == 2); // there should be two links in the
+                                       // list...
+
+    // neighbor one
+    assertTrue(neighbors.get(0).getSource().equals("/n/1"));
+    assertTrue(neighbors.get(0).getEnd().equals("/n/2"));
+    assertTrue(neighbors.get(0).getDistance() - 0.09158 < 0.0001);
+    assertTrue(neighbors.get(0).getName().equals("/w/1"));
+
+    // neighbor two
+    assertTrue(neighbors.get(1).getSource().equals("/n/1"));
+    assertTrue(neighbors.get(1).getEnd().equals("/n/4"));
+    assertTrue(neighbors.get(1).getDistance() - 0.09158 < 0.0001);
+    assertTrue(neighbors.get(1).getName().equals("/w/3"));
   }
 
   @Test
