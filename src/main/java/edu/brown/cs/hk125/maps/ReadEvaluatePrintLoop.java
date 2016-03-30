@@ -79,6 +79,7 @@ public class ReadEvaluatePrintLoop {
       System.out.println(startNode);
       String endNode = targetPoint.getID();
       System.out.println(endNode);
+
       AStar maps = new AStar(startNode, ig);
 
       List<Link> path = maps.getPath(endNode);
@@ -90,6 +91,7 @@ public class ReadEvaluatePrintLoop {
       // given street names, not lat/lon values
       String startNode = ig.getIntersection(commands.get(0), commands.get(1));
       String endNode = ig.getIntersection(commands.get(2), commands.get(3));
+
       Dijkstra maps = new AStar(startNode, ig);
 
       List<Link> path = maps.getPath(endNode);

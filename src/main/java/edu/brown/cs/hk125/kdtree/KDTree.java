@@ -133,6 +133,8 @@ public class KDTree<T extends KDData> {
       wentLeft = false;
     }
 
+    bestDist = target.distance(best);
+
     if (Math.abs(dimDif) < best.distance(target)) {
       if (wentLeft) {
         best = findNNHelper((dimension + 1) % dim, target, best, bestDist,

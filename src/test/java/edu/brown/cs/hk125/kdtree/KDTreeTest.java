@@ -106,10 +106,15 @@ public class KDTreeTest {
     KDTree<LatLng> kd = new KDTree<LatLng>(elementList);
     LatLng target = new LatLng(6, 6);
     LatLng target2 = new LatLng(5, 7);
+    LatLng target3 = new LatLng(998, 998);
+    LatLng target4 = new LatLng(998, 1000);
     LatLng result = kd.findNN(target);
     LatLng result2 = kd.findNN(target2);
+    LatLng result3 = kd.findNN(target4);
     assertTrue(target.equals(result));
     assertTrue(target.equals(result2));
+    System.out.println(result3);
+    assertTrue(target3.equals(result3));
   }
 
   @Test
@@ -121,9 +126,13 @@ public class KDTreeTest {
     KDTree<LatLng> kd = new KDTree<LatLng>(elementList);
     LatLng target = new LatLng(6, 6);
     LatLng target2 = new LatLng(5, 7);
+    LatLng target3 = new LatLng(-10, -8);
+    LatLng target4 = new LatLng(-9, -9);
     LatLng result = kd.findNN(target);
     LatLng result2 = kd.findNN(target2);
+    LatLng result3 = kd.findNN(target3);
     assertTrue(target.equals(result));
     assertTrue(target.equals(result2));
+    assertTrue(target4.equals(result3));
   }
 }

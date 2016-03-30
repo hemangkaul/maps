@@ -323,6 +323,9 @@ public class Dijkstra {
     } else {
       // if it doesn't contain stop, that means stop is not in any way
       // connected to start
+      for (String elem : pathMap.keySet()) {
+        System.out.println(elem);
+      }
       return null;
     }
   }

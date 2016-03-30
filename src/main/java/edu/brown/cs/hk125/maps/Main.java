@@ -143,20 +143,25 @@ public final class Main {
         KDTree<LatLng> tree = new KDTree<>(elementList);
         System.out.println("Ready");
         while ((command = br.readLine()) != null) {
-
+          // String[] commands = command.split(" ");
+          // LatLng latlng = new LatLng(Double.parseDouble(commands[0]),
+          // Double.parseDouble(commands[1]));
+          //
+          // System.out.println(tree.findNN(latlng));
           ReadEvaluatePrintLoop.execute(command, tree, ig);
           System.out.println("Ready");
         }
 
       } catch (IOException e) {
         System.out.println("ERROR: IOException: " + e);
-        System.exit(1);
+
+        // System.exit(1);
       } catch (IllegalArgumentException e) {
         System.out.println("ERROR: IllegalArgumentException: " + e);
-        System.exit(1);
+        // System.exit(1);
       } catch (SQLException e) {
         System.out.println("ERROR: SQLException: " + e);
-        System.exit(1);
+        // System.exit(1);
       }
 
     }
