@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -110,6 +109,8 @@ public final class Main {
       } else {
         db = args[0];
       }
+    } else if (args.length == 1) {
+      db = args[0];
     }
 
     MapsInfoGetter ig = null;
@@ -132,18 +133,21 @@ public final class Main {
       }
       runSparkServer();
     } else {
+
       String command;
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-      // TEMP ***************
-
-      List<LatLng> elementList = new ArrayList<>();
-
-      KDTree<LatLng> tree = new KDTree<>(elementList);
 
       try {
+
+        List<LatLng> elementList = ig.getLatLngList();
+        KDTree<LatLng> tree = new KDTree<>(elementList);
+        System.out.println("Ready");
         while ((command = br.readLine()) != null) {
+
           ReadEvaluatePrintLoop.execute(command, tree, ig);
+          System.out.println("Ready");
         }
+
       } catch (IOException e) {
         System.out.println("ERROR: IOException: " + e);
         System.exit(1);
@@ -155,7 +159,6 @@ public final class Main {
         System.exit(1);
       }
 
-      // ********************
     }
   }
 

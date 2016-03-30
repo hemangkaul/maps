@@ -30,6 +30,7 @@ import edu.brown.cs.hk125.latlng.LatLng;
 public class MapsInfoGetter implements InfoGetterAStar {
 
   private Connection conn;
+  private Map<String, LatLng> cache = new HashMap<>();
 
   public MapsInfoGetter(String db) throws ClassNotFoundException, SQLException {
     // Set up a connection
@@ -77,6 +78,11 @@ public class MapsInfoGetter implements InfoGetterAStar {
 
     // Here we get the latitude and longitude of the present node.
     Map<String, Double> latLng = getLatLng(nodeName);
+
+    // LatLng latlng = cache.get(nodeName);
+    // Double lat = latlng.getLat();
+    // Double lng = latlng.getLng();
+
     Double lat = latLng.get("Latitude");
     Double lng = latLng.get("Longitude");
 
@@ -89,6 +95,10 @@ public class MapsInfoGetter implements InfoGetterAStar {
 
     // Here we get the latitude and longitude of the end node.
     Map<String, Double> endLatLng = getLatLng(endNode);
+    // LatLng endlatlng = cache.get(endNode);
+    // Double endLat = latlng.getLat();
+    // Double endLng = latlng.getLng();
+
     Double endLat = endLatLng.get("Latitude");
     Double endLng = endLatLng.get("Longitude");
 
@@ -222,6 +232,41 @@ public class MapsInfoGetter implements InfoGetterAStar {
   }
 
   /**
+   * Returns a list of all the LatLng points in the database.
+   *
+   * @return a list of all the LatLng points in the database
+   * @throws SQLException
+   *           , if there is an error with the query
+   */
+  public List<LatLng> getLatLngList() throws SQLException {
+    String query = "SELECT id, latitude, longitude FROM Node";
+
+    // Create a PreparedStatement
+    PreparedStatement prep;
+    prep = conn.prepareStatement(query);
+
+    // Execute the query and retrieve a ResultStatement
+    ResultSet rs = prep.executeQuery();
+
+    // Add the LatLngs to the elementList;
+
+    List<LatLng> elementList = new ArrayList<>();
+
+    while (rs.next()) {
+      double lat = rs.getDouble(2);
+      double lng = rs.getDouble(3);
+      String id = rs.getString(1);
+      LatLng add = new LatLng(lat, lng, id);
+      cache.put(id, add);
+      elementList.add(add);
+    }
+    rs.close();
+    prep.close();
+
+    return elementList;
+  }
+
+  /**
    * Given two streets which intersect, returns the Node Id of the intersection.
    *
    * @param street
@@ -249,10 +294,10 @@ public class MapsInfoGetter implements InfoGetterAStar {
     ResultSet rs = prep.executeQuery();
 
     // start and end nodes of streets named 'street'
-    List<String> streetNodes = new ArrayList<String>();
+    List<String> streetNodes = new ArrayList<>();
 
     // start and end nodes of streets named 'crossStreet'
-    List<String> crossNodes = new ArrayList<String>();
+    List<String> crossNodes = new ArrayList<>();
 
     while (rs.next()) {
       if (rs.getString(1).equals(street)) {

@@ -222,6 +222,15 @@ public class KDTree<T extends KDData> {
     return best;
   }
 
+  /**
+   * finds all KDData within a radius.
+   *
+   * @param target
+   *          the center of the search radius
+   * @param radius
+   *          the radius you want to search within
+   * @return a list of the elements which are in the radius
+   */
   public List<T> radiusSearch(T target, double radius) {
     List<T> inside = new ArrayList<>();
     List<T> insideList = rsHelper(0, inside, target, radius, root);
@@ -230,6 +239,21 @@ public class KDTree<T extends KDData> {
     return inside;
   }
 
+  /**
+   * a helper function for the radius search.
+   *
+   * @param dimension
+   *          the dimension you are comparing on
+   * @param inside
+   *          the list of elements inside the radius
+   * @param target
+   *          the target element
+   * @param radius
+   *          the radius you are searching within
+   * @param curr
+   *          the current node
+   * @return a list of the elements within a certain radius from the target
+   */
   private List<T> rsHelper(int dimension, List<T> inside, T target,
       double radius, KDNode<T> curr) {
 

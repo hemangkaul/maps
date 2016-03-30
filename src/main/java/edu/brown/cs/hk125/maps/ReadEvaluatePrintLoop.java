@@ -33,19 +33,23 @@ public class ReadEvaluatePrintLoop {
    * @throws SQLException
    *           , if querying is used and there is an error with the query
    */
-  public static void execute(String input, KDTree tree, MapsInfoGetter ig)
-      throws IllegalArgumentException, NumberFormatException, SQLException {
+  public static void execute(String input, KDTree<LatLng> tree,
+      MapsInfoGetter ig) throws IllegalArgumentException,
+      NumberFormatException, SQLException {
     String command = input.trim();
     List<String> commands = new ArrayList<>();
     boolean latlng = false;
     if (command.startsWith("\"")) {
+
       String[] splitQuotes = command.split("\"");
       for (String quote : splitQuotes) {
-        if (!quote.matches("/s")) {
+        if (!quote.matches("[ ]+") && !quote.matches("")) {
           commands.add(quote);
+          System.out.println(quote);
         }
       }
       if (commands.size() != 4) {
+        System.out.println(commands.size());
         throw new IllegalArgumentException("Wrong number of arguments!");
       }
     } else {
@@ -59,16 +63,29 @@ public class ReadEvaluatePrintLoop {
       latlng = true;
     }
     if (latlng) {
+      // given lat/lon values
       Double lat1 = Double.parseDouble(commands.get(0));
       Double lng1 = Double.parseDouble(commands.get(1));
       Double lat2 = Double.parseDouble(commands.get(2));
       Double lng2 = Double.parseDouble(commands.get(3));
-      LatLng source = new LatLng(lat1, lng1);
-      LatLng target = new LatLng(lat2, lng2);
-      LatLng sourcePoint = (LatLng) tree.findNN(source);
-      LatLng targetPoint = (LatLng) tree.findNN(target);
 
-      // ADD MORE!!!!!!!!!!!!!!!!!!!
+      LatLng source = new LatLng(lat1, lng1, "");
+      LatLng target = new LatLng(lat2, lng2, "");
+
+      LatLng sourcePoint = tree.findNN(source);
+      LatLng targetPoint = tree.findNN(target);
+
+      String startNode = sourcePoint.getID();
+      System.out.println(startNode);
+      String endNode = targetPoint.getID();
+      System.out.println(endNode);
+      AStar maps = new AStar(startNode, ig);
+
+      List<Link> path = maps.getPath(endNode);
+      List<Link> pathWithoutFirst = path.subList(1, path.size());
+
+      System.out.println(path);
+      printResults(pathWithoutFirst);
     } else {
       // given street names, not lat/lon values
       String startNode = ig.getIntersection(commands.get(0), commands.get(1));
@@ -77,19 +94,21 @@ public class ReadEvaluatePrintLoop {
 
       List<Link> path = maps.getPath(endNode);
       List<Link> pathWithoutFirst = path.subList(1, path.size());
-      // we don't want to print out the first element of the path,
-      // since it's just the start node to itself
-      for (Link l : pathWithoutFirst) {
-        System.out.println(l.getSource() + " -> " + l.getEnd() + " : "
-            + l.getName());
-      }
+      printResults(pathWithoutFirst);
     }
   }
 
   /**
-   * printResults() prints the results of the search.
+   *
+   * @param results
    */
-  private void printResults(List<String> results) {
+  private static void printResults(List<Link> results) {
+    // we don't want to print out the first element of the path,
+    // since it's just the start node to itself
 
+    for (Link l : results) {
+      System.out.println(l.getSource() + " -> " + l.getEnd() + " : "
+          + l.getName());
+    }
   }
 }

@@ -1,5 +1,7 @@
 package edu.brown.cs.hk125.latlng;
 
+import com.google.common.base.Objects;
+
 import edu.brown.cs.hk125.kdtree.KDData;
 
 /**
@@ -26,6 +28,11 @@ public class LatLng implements KDData {
   private double lng;
 
   /**
+   * the id of the LatLng.
+   */
+  private String id;
+
+  /**
    * The constructor method for the LatLng class.
    *
    * @param latitude
@@ -33,9 +40,22 @@ public class LatLng implements KDData {
    * @param longitude
    *          is the longitude of the point
    */
+  public LatLng(double latitude, double longitude, String name) {
+    this.lat = latitude;
+    this.lng = longitude;
+    this.id = name;
+  }
+
+  /**
+   * an alternate constructor for the LatLng class.
+   *
+   * @param latitude
+   * @param longitude
+   */
   public LatLng(double latitude, double longitude) {
     this.lat = latitude;
     this.lng = longitude;
+    this.id = "";
   }
 
   @Override
@@ -103,6 +123,38 @@ public class LatLng implements KDData {
         + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
     double c = 2 * Math.asin(Math.sqrt(a));
     return RADIUS * c;
+  }
+
+  /**
+   * get the lat.
+   *
+   * @return the lat
+   */
+  public double getLat() {
+    return lat;
+  }
+
+  /**
+   * get the lng.
+   *
+   * @return the lng
+   */
+  public double getLng() {
+    return lng;
+  }
+
+  /**
+   * get the id.
+   *
+   * @return the id
+   */
+  public String getID() {
+    return id;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.lat, this.lng);
   }
 
   @Override
