@@ -30,3 +30,28 @@ Design Details Specific to Code:
 	3) This was the solution we ended up going with. It took some work but it stylistically made the most sense, and it didn't require extra querying. We made a new class called AStar whose superclass was Dijkstra. We added a new method to infoGetter called getNearestNeighborAStar, which took the end node as a parameter. Then, in the AStar class, we overrode a few methods / made a new method so that infoGetter.getNearestNeighborAStar would be called instead of infoGetter.getNearestNeighbor.
 
 	We think a further improvement would be to combine Dijkstra and AStar into a single class called GraphSearch. Then, when creating a new GraphSearch, we can specify whether we wnat to use Dijkstra or AStar. Time did not avail for us to implement this.
+
+- Fitting together each of the prior projects:
+
+	We used Hemang's (hk125) KDTree implementation to find the nearest LatLng point to a given inputed latitude and longitude.
+
+	We used Steven's Dijkstra implementation from Bacon to perform the nearest neighbor search -- finding the shortest path from one point to another.
+
+How to run your tests:
+	
+	Junit tests are automatically run when running "mvn package".
+
+	To run system tests, ...
+
+How to build / run your program from the command line:
+
+	After running mvn package, simply enter "./run /ltmp/hk125/maps.sqlite3" for the REPL, or "./run --gui /ltmp/hk125/maps.sqlite3" for the gui. The default port is :4567, but you can re-set it by adding "--port [port number]" to the run line ("./run -- gui ...").
+
+Things to do if time avails (i.e. high time cost per expected increase in final grade) 
+
+-- Style: Switch from protected variables to immutable copies in Dijkstra / AStar.
+-- Style: Combine AStar and Dijkstra into a GraphSearch Class
+-- Testing: Test Dijkstra / KDTree on Large Database to make sure it works
+-- Test parsing
+-- Testing: KDTree testing -- perhaps implement a Point class to help with testing?
+-- Handle UTF-8 characters
