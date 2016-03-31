@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +18,10 @@ import joptsimple.OptionParser;
 import joptsimple.OptionSet;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
+import spark.QueryParamsMap;
 import spark.Request;
 import spark.Response;
+import spark.Route;
 import spark.Spark;
 import spark.TemplateViewRoute;
 import spark.template.freemarker.FreeMarkerEngine;
@@ -188,6 +191,7 @@ public final class Main {
 
     // Setup Spark Routes
     Spark.get("/home", new FrontHandler(), freeMarker);
+    Spark.post("/autocorrect", new AutoCorrectHandler());
   }
 
   /**
@@ -201,6 +205,65 @@ public final class Main {
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables = ImmutableMap.of();
       return new ModelAndView(variables, "main.ftl");
+    }
+  }
+
+  /**
+   * Whenever the user types a keystroke in the gui, a post request is set. This
+   * handles the post request and updates the suggested words.
+   *
+   * @author sl234
+   *
+   */
+  private class AutoCorrectHandler implements Route {
+    public static final int IND_FIVE = 4;
+    public static final int IND_FOUR = 3;
+
+    // we need these to avoid Magic Style error
+
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      String streetOne = qm.value("aOne"); // name of actor one
+      String streetTwo = qm.value("aTwo"); // name of actor two
+
+      // Generator g = new Generator(true, true, 2, actorTrie);
+      // we active WhiteSpace, Prefix, and Led (up to distance of 2) for
+      // generating
+      // Ranker r = new Ranker(false, actorTrie, (ArrayList<String>) actorList);
+
+      ArrayList<String> topFiveOne = new ArrayList<String>();
+      ArrayList<String> topFiveTwo = new ArrayList<String>();
+      // if (!(actorOne.equals(""))) {
+      // topFiveOne = r.topRanked(actorOne, g);
+      // }
+      // if (!(actorTwo.equals(""))) {
+      // topFiveTwo = r.topRanked(actorTwo, g);
+      // }
+      // if either of the entries are blank, we don't want to print out
+      // any led suggestions
+
+      while (topFiveOne.size() < IND_FIVE + 1) {
+        topFiveOne.add("");
+      } // make sure we return at five items (no Out of Bound errors)
+
+      while (topFiveTwo.size() < IND_FIVE + 1) {
+        topFiveTwo.add("");
+        // same thing
+      }
+
+      Map<String, String> variables = new ImmutableMap.Builder<String, String>()
+          .put("first", topFiveOne.get(0)).put("second", topFiveOne.get(1))
+          .put("third", topFiveOne.get(2))
+          .put("fourth", topFiveOne.get(IND_FOUR))
+          .put("fifth", topFiveOne.get(IND_FIVE))
+          .put("firstTwo", topFiveTwo.get(0))
+          .put("secondTwo", topFiveTwo.get(1))
+          .put("thirdTwo", topFiveTwo.get(2))
+          .put("fourthTwo", topFiveTwo.get(IND_FOUR))
+          .put("fifthTwo", topFiveTwo.get(IND_FIVE)).build();
+
+      return GSON.toJson(variables);
     }
   }
 

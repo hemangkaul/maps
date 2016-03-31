@@ -304,8 +304,6 @@ public class AStarTest {
       messageTwo = "Great, the error was thrown! Cool beans!";
     }
 
-    System.out.println(messageTwo);
-
     assertTrue(message.equals("Great, the error was thrown! Yippee!"));
     assertTrue(messageTwo.equals("Great, the error was thrown! Cool beans!"));
   }
