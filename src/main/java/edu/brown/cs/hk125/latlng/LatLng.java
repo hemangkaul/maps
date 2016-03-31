@@ -41,8 +41,8 @@ public class LatLng implements KDData {
    *          is the longitude of the point
    */
   public LatLng(double latitude, double longitude, String name) {
-    this.lat = latitude;
-    this.lng = longitude;
+    setLat(latitude);
+    setLng(longitude);
     this.id = name;
   }
 
@@ -53,8 +53,8 @@ public class LatLng implements KDData {
    * @param longitude
    */
   public LatLng(double latitude, double longitude) {
-    this.lat = latitude;
-    this.lng = longitude;
+    setLat(latitude);
+    setLng(longitude);
     this.id = "";
   }
 
@@ -135,12 +135,37 @@ public class LatLng implements KDData {
   }
 
   /**
+   * set the lat, check for -90 < lat < 90.
+   *
+   * @param latitude
+   */
+  private void setLat(double latitude) {
+    if (latitude > 90 || latitude < -90) {
+      throw new IllegalArgumentException("Latitude must be between 90 and -90");
+    }
+    this.lat = latitude;
+  }
+
+  /**
    * get the lng.
    *
    * @return the lng
    */
   public double getLng() {
     return lng;
+  }
+
+  /**
+   * set the lng, check for -90 < lng < 90.
+   *
+   * @param longitude
+   */
+  private void setLng(double longitude) {
+    if (longitude > 180 || longitude < -180) {
+      throw new IllegalArgumentException(
+          "Longitude must be between 180 and -180");
+    }
+    this.lng = longitude;
   }
 
   /**

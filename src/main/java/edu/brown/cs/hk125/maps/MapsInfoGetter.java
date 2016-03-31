@@ -80,13 +80,19 @@ public class MapsInfoGetter implements InfoGetterAStar {
       IllegalArgumentException {
 
     // Here we get the latitude and longitude of the present node.
-    // Map<String, Double> latLng = getLatLng(nodeName);
-    // Double lat = latLng.get("Latitude");
-    // Double lng = latLng.get("Longitude");
 
-    LatLng latlng = cache.get(nodeName);
-    Double lat = latlng.getLat();
-    Double lng = latlng.getLng();
+    Double lat;
+    Double lng;
+
+    if (cache.containsKey(nodeName)) {
+      LatLng latlng = cache.get(nodeName);
+      lat = latlng.getLat();
+      lng = latlng.getLng();
+    } else {
+      Map<String, Double> latLng = getLatLng(nodeName);
+      lat = latLng.get("Latitude");
+      lng = latLng.get("Longitude");
+    }
 
     // Makes sure the present node exists in the database!
     if ((lat == null) || (lng == null)) {
@@ -96,12 +102,19 @@ public class MapsInfoGetter implements InfoGetterAStar {
     }
 
     // Here we get the latitude and longitude of the end node.
-    // Map<String, Double> endLatLng = getLatLng(endNode);
-    // Double endLat = endLatLng.get("Latitude");
-    // Double endLng = endLatLng.get("Longitude");
-    LatLng endlatlng = cache.get(endNode);
-    Double endLat = endlatlng.getLat();
-    Double endLng = endlatlng.getLng();
+
+    Double endLat;
+    Double endLng;
+
+    if (cache.containsKey(nodeName)) {
+      LatLng endlatlng = cache.get(endNode);
+      endLat = endlatlng.getLat();
+      endLng = endlatlng.getLng();
+    } else {
+      Map<String, Double> endLatLng = getLatLng(endNode);
+      endLat = endLatLng.get("Latitude");
+      endLng = endLatLng.get("Longitude");
+    }
 
     // Makes sure the present node exists in the database!
     if ((endLat == null) || (endLng == null)) {
@@ -233,7 +246,8 @@ public class MapsInfoGetter implements InfoGetterAStar {
   }
 
   /**
-   * Returns a list of all the LatLng points in the database.
+   * Returns a list of all the LatLng points in the database and adds them to
+   * the cache.
    *
    * @return a list of all the LatLng points in the database
    * @throws SQLException
@@ -267,6 +281,13 @@ public class MapsInfoGetter implements InfoGetterAStar {
     return elementList;
   }
 
+  /**
+   * gets all the way names and adds them to the trie, while adding all the ways
+   * to the wayCache.
+   *
+   * @return trie with all the names of the ways
+   * @throws SQLException
+   */
   public Trie getWayTrie() throws SQLException {
     String query = "SELECT start, end, name FROM Way";
 
@@ -301,6 +322,11 @@ public class MapsInfoGetter implements InfoGetterAStar {
     prep.close();
 
     return trie;
+  }
+
+  public Map<LatLng, LatLng> getTile() {
+
+    return null;
   }
 
   /**
