@@ -62,17 +62,11 @@ public class KDTree<T extends KDData> {
       length = size / 2;
     }
 
-    T rootVal = elementList.remove(length);
-    List<T> left = new ArrayList<>();
-    List<T> right = new ArrayList<>();
-    for (int i = 0; i < length; i++) {
-      left.add(elementList.remove(0));
-    }
+    T rootVal = elementList.get(length);
 
-    right.addAll(elementList);
-
-    return new KDNode<T>(rootVal, buildTree((dimension + 1) % dim, left),
-        buildTree((dimension + 1) % dim, right));
+    return new KDNode<T>(rootVal, buildTree((dimension + 1) % dim,
+        elementList.subList(0, length)), buildTree((dimension + 1) % dim,
+        elementList.subList(length + 1, elementList.size())));
   }
 
   /**

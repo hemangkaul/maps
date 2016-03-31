@@ -76,9 +76,7 @@ public class ReadEvaluatePrintLoop {
       LatLng targetPoint = tree.findNN(target);
 
       String startNode = sourcePoint.getID();
-      System.out.println(startNode);
       String endNode = targetPoint.getID();
-      System.out.println(endNode);
 
       AStar maps = new AStar(startNode, ig);
 
@@ -96,11 +94,16 @@ public class ReadEvaluatePrintLoop {
 
       List<Link> path = maps.getPath(endNode);
       List<Link> pathWithoutFirst = path.subList(1, path.size());
-      printResults(pathWithoutFirst);
+      if (pathWithoutFirst.isEmpty()) {
+        System.out.println(startNode + " -/- " + endNode);
+      } else {
+        printResults(pathWithoutFirst);
+      }
     }
   }
 
   /**
+   * Prints the results if there are any.
    *
    * @param results
    */

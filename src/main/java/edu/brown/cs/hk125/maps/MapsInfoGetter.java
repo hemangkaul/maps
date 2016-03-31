@@ -16,6 +16,7 @@ import edu.brown.cs.hk125.dijkstra.InfoGetterAStar;
 import edu.brown.cs.hk125.dijkstra.Link;
 import edu.brown.cs.hk125.dijkstra.groupLink;
 import edu.brown.cs.hk125.latlng.LatLng;
+import edu.brown.cs.hk125.trie.AutoCorrector;
 import edu.brown.cs.hk125.trie.Trie;
 
 /**
@@ -89,6 +90,7 @@ public class MapsInfoGetter implements InfoGetterAStar {
       lat = latlng.getLat();
       lng = latlng.getLng();
     } else {
+      // only make call to database if the cache doesn't contain
       Map<String, Double> latLng = getLatLng(nodeName);
       lat = latLng.get("Latitude");
       lng = latLng.get("Longitude");
@@ -106,11 +108,12 @@ public class MapsInfoGetter implements InfoGetterAStar {
     Double endLat;
     Double endLng;
 
-    if (cache.containsKey(nodeName)) {
+    if (cache.containsKey(endNode)) {
       LatLng endlatlng = cache.get(endNode);
       endLat = endlatlng.getLat();
       endLng = endlatlng.getLng();
     } else {
+      // only make call to database if the cache doesn't contain
       Map<String, Double> endLatLng = getLatLng(endNode);
       endLat = endLatLng.get("Latitude");
       endLng = endLatLng.get("Longitude");
@@ -157,7 +160,7 @@ public class MapsInfoGetter implements InfoGetterAStar {
         // sure
         // to
         // add
-        // extraDist!
+        // extraDist!"\\P{L}+");
         toReturn.add(toAdd);
       }
     }
@@ -288,7 +291,7 @@ public class MapsInfoGetter implements InfoGetterAStar {
    * @return trie with all the names of the ways
    * @throws SQLException
    */
-  public Trie getWayTrie() throws SQLException {
+  public AutoCorrector getAutoCorrector() throws SQLException {
     String query = "SELECT start, end, name FROM Way";
 
     // Create a PreparedStatement
@@ -299,7 +302,8 @@ public class MapsInfoGetter implements InfoGetterAStar {
     ResultSet rs = prep.executeQuery();
 
     // Add the LatLngs to the elementList;
-    Trie trie = new Trie();
+
+    List<String> elementList = new ArrayList<>();
 
     while (rs.next()) {
       String startNode = rs.getString(1);
@@ -308,25 +312,55 @@ public class MapsInfoGetter implements InfoGetterAStar {
       LatLng start = cache.get(startNode);
       LatLng end = cache.get(endNode);
 
-      Double distance = start.distance(end);
-
       Map<LatLng, LatLng> hm = new HashMap<>();
 
       hm.put(start, end);
 
-      wayCache.put(hm, distance);
+      // 1.0 is the traffic value
+      wayCache.put(hm, 1.0);
 
-      trie.insert(rs.getString(3));
+      elementList.add(rs.getString(3));
     }
     rs.close();
     prep.close();
 
-    return trie;
+    Trie trie = new Trie(elementList);
+    return new AutoCorrector(trie);
   }
 
-  public Map<LatLng, LatLng> getTile() {
+  public List<Map<LatLng, LatLng>> getTiles(double topleftLat,
+      double topleftLng, double bottomrightLat, double bottomrightLng) {
 
     return null;
+  }
+
+  public Map<LatLng, LatLng> getLine() {
+
+    return null;
+  }
+
+  private void setTiles() throws SQLException {
+    String query = "SELECT MAX(latitude), MAX(longitude), MIN(latitude), MIN(longitude) FROM Node";
+
+    // Create a PreparedStatement
+    PreparedStatement prep;
+    prep = conn.prepareStatement(query);
+
+    // Execute the query and retrieve a ResultStatement
+    ResultSet rs = prep.executeQuery();
+
+    // Add the LatLngs to the elementList;
+
+    while (rs.next()) {
+      double topLat = rs.getDouble(1);
+      double leftLng = rs.getDouble(2);
+      double bottomLat = rs.getDouble(3);
+      double rightLng = rs.getDouble(4);
+
+    }
+    rs.close();
+    prep.close();
+
   }
 
   /**
@@ -407,7 +441,6 @@ public class MapsInfoGetter implements InfoGetterAStar {
   @Override
   public Double heuristicValue(String node, String endNode)
       throws SQLException, IllegalArgumentException {
-    // TODO Auto-generated method stub
     Map<String, Double> nodeCoords = getLatLng(node);
     Map<String, Double> endCoords = getLatLng(endNode);
 

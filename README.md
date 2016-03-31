@@ -10,6 +10,7 @@ Bacon (Dijkstra) - Steven (sl234)
 Known Bugs - none that we know of.
 
 Design Details Specific to Code:
+- For our AutoCorrector we decided that an exact match wasn't always the best result. Consider the case where a user is beginning to input "Thayer Street"... the database contains ways which are named both "Thayer Street" and also "Thayer St". However, there are significantly more entries with the name "Thayer Street" than there are entries with the name "Thayer St"... therefore, it follows that, when a user reaches "Thayer St..." in typing their input, it is also significantly more likely that they mean to go to "Thayer Street", and not its cheap knock off "Thayer St".
 
 - We faced a decision implementing the A* Search. 
 	

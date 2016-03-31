@@ -1,5 +1,10 @@
 package edu.brown.cs.hk125.trie;
 
+import java.util.List;
+
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+
 /**
  * Representative of the Trie data structure.
  *
@@ -14,10 +19,21 @@ public class Trie {
   private Node root;
 
   /**
+   * the set of all unigrams.
+   */
+  private Multiset<String> unigrams;
+
+  /**
+   * the set of all bigrams.
+   */
+  private Multiset<Bigram> bigrams;
+
+  /**
    * the constructor of the Trie.
    */
-  public Trie() {
+  public Trie(List<String> corpus) {
     this.root = new Node(null, false);
+    setTrie(corpus);
   }
 
   /**
@@ -83,5 +99,54 @@ public class Trie {
       }
       insertHelp(word.substring(1), child);
     }
+  }
+
+  public Multiset<String> getUnigrams() {
+    return unigrams;
+  }
+
+  public Multiset<Bigram> getBigrams() {
+    return bigrams;
+  }
+
+  /**
+   * sets the unigram and bigram sets and inserts all elements into the trie.
+   *
+   * @param corpus
+   */
+  private void setTrie(List<String> corpus) {
+    unigrams = HashMultiset.create();
+    bigrams = HashMultiset.create();
+    if (corpus.isEmpty()) {
+      return;
+    }
+
+    int numElements = corpus.size();
+
+    for (int i = 0; i < numElements; i++) {
+      String token = corpus.get(i).toLowerCase();
+      String[] bigramCalc = token.split(" ");
+      if (bigramCalc.length > 1) {
+        for (int j = 0; j < bigramCalc.length; j++) {
+          unigrams.add(bigramCalc[j]);
+          insert(bigramCalc[j]);
+          if (j != bigramCalc.length - 1) {
+            Bigram bigram = new Bigram(bigramCalc[j], bigramCalc[j + 1]);
+            bigrams.add(bigram);
+          }
+        }
+      }
+    }
+    //
+    // for (String token : corpus) {
+    // token = token.toLowerCase();
+    // wordlist.add(token);
+    // unigrams.add(token);
+    // insert(token);
+    // }
+    // for (int k = 0; k < wordlist.size() - 1; k++) {
+    // Bigram bigram = new Bigram(wordlist.get(k), wordlist.get(k + 1));
+    // bigrams.add(bigram);
+    // }
   }
 }
