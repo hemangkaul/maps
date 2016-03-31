@@ -1,0 +1,23 @@
+helpTest.txt
+
+41.709574 -71.256164  Thayer Street, Spruce Lane
+
+41.825108 -71.393951 Governor Street, Benevolent Street
+
+
+/n/0|41.82|-71.4
+/n/1|41.8203|-71.4
+/n/2|41.8206|-71.4
+/n/3|41.82|-71.4003
+/n/4|41.8203|-71.4003
+/n/5|41.8206|-71.4003
+
+/w/0|Chihiro Ave|residential|/n/0|/n/1
+/w/1|Chihiro Ave|residential|/n/1|/n/2
+/w/2|Radish Spirit Blvd|residential|/n/0|/n/3
+/w/3|Sootball Ln|residential|/n/1|/n/4
+/w/4|Kamaji Pl|residential|/n/2|/n/5
+/w/5|Yubaba St|residential|/n/3|/n/4
+/w/6|Yubaba St|residential|/n/4|/n/5
+
+41

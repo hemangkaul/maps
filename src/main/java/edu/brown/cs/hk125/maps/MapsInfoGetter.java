@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import edu.brown.cs.hk125.dijkstra.InfoGetterAStar;
 import edu.brown.cs.hk125.dijkstra.Link;
 import edu.brown.cs.hk125.dijkstra.groupLink;
 import edu.brown.cs.hk125.latlng.LatLng;
+import edu.brown.cs.hk125.trie.Trie;
 
 /**
  * MapsInfoGetter's primary role is to return the neighboring nodes given a
@@ -31,6 +33,7 @@ public class MapsInfoGetter implements InfoGetterAStar {
 
   private Connection conn;
   private Map<String, LatLng> cache = new HashMap<>();
+  private Map<Map<LatLng, LatLng>, Double> wayCache = new ConcurrentHashMap<>();
 
   public MapsInfoGetter(String db) throws ClassNotFoundException, SQLException {
     // Set up a connection
@@ -77,14 +80,13 @@ public class MapsInfoGetter implements InfoGetterAStar {
       IllegalArgumentException {
 
     // Here we get the latitude and longitude of the present node.
-    Map<String, Double> latLng = getLatLng(nodeName);
+    // Map<String, Double> latLng = getLatLng(nodeName);
+    // Double lat = latLng.get("Latitude");
+    // Double lng = latLng.get("Longitude");
 
-    // LatLng latlng = cache.get(nodeName);
-    // Double lat = latlng.getLat();
-    // Double lng = latlng.getLng();
-
-    Double lat = latLng.get("Latitude");
-    Double lng = latLng.get("Longitude");
+    LatLng latlng = cache.get(nodeName);
+    Double lat = latlng.getLat();
+    Double lng = latlng.getLng();
 
     // Makes sure the present node exists in the database!
     if ((lat == null) || (lng == null)) {
@@ -94,13 +96,12 @@ public class MapsInfoGetter implements InfoGetterAStar {
     }
 
     // Here we get the latitude and longitude of the end node.
-    Map<String, Double> endLatLng = getLatLng(endNode);
-    // LatLng endlatlng = cache.get(endNode);
-    // Double endLat = latlng.getLat();
-    // Double endLng = latlng.getLng();
-
-    Double endLat = endLatLng.get("Latitude");
-    Double endLng = endLatLng.get("Longitude");
+    // Map<String, Double> endLatLng = getLatLng(endNode);
+    // Double endLat = endLatLng.get("Latitude");
+    // Double endLng = endLatLng.get("Longitude");
+    LatLng endlatlng = cache.get(endNode);
+    Double endLat = endlatlng.getLat();
+    Double endLng = endlatlng.getLng();
 
     // Makes sure the present node exists in the database!
     if ((endLat == null) || (endLng == null)) {
@@ -264,6 +265,42 @@ public class MapsInfoGetter implements InfoGetterAStar {
     prep.close();
 
     return elementList;
+  }
+
+  public Trie getWayTrie() throws SQLException {
+    String query = "SELECT start, end, name FROM Way";
+
+    // Create a PreparedStatement
+    PreparedStatement prep;
+    prep = conn.prepareStatement(query);
+
+    // Execute the query and retrieve a ResultStatement
+    ResultSet rs = prep.executeQuery();
+
+    // Add the LatLngs to the elementList;
+    Trie trie = new Trie();
+
+    while (rs.next()) {
+      String startNode = rs.getString(1);
+      String endNode = rs.getString(2);
+
+      LatLng start = cache.get(startNode);
+      LatLng end = cache.get(endNode);
+
+      Double distance = start.distance(end);
+
+      Map<LatLng, LatLng> hm = new HashMap<>();
+
+      hm.put(start, end);
+
+      wayCache.put(hm, distance);
+
+      trie.insert(rs.getString(3));
+    }
+    rs.close();
+    prep.close();
+
+    return trie;
   }
 
   /**
