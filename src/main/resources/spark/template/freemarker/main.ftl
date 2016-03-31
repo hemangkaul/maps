@@ -16,26 +16,25 @@
 
   <section class="mapsContainer">
     <article class="left-input">
-    <div class = "inputs">
-      <form method="POST" action="/results">
-        <h3>Start Point</h3>
-        <label>Street</label><input type="text" name="streetOne" id="streetOne" /><br>
-        <label>Cross Street </label><input type="text" name="crossOne" id="crossOne" /><br><br>
-        <h3>End Point</h3>
-        <label>Street </label><input type="text" name="streetTwo" id="streetTwo" /><br>
-        <label>Cross Street </label><input type="text" name="crossTwo" id="crossTwo" /><br><br>
-        <input type="submit" id="submit" value="Find Path!" />
-      </form>
-    </div>
-
-        <div id="first"></div>
-        <div id="second"></div>
-        <div id="third"></div>
-        <div id="fourth"></div>
-        <div id="fifth"></div>
+      <div class="inputs">
+        <form method="POST" action="/results">
+          <h3>Start Point</h3>
+          <label>Street</label><input type="text" name="streetOne" id="streetOne" /><br>
+          <label>Cross Street </label><input type="text" name="crossOne" id="crossOne" /><br><br><br>
+          <h3>End Point</h3>
+          <label>Street </label><input type="text" name="streetTwo" id="streetTwo" /><br>
+          <label>Cross Street </label><input type="text" name="crossTwo" id="crossTwo" /><br><br><br>
+          <input type="submit" id="submit" value="Find Path!" />
+        </form>
+      </div>
+      <div class="autocorrect" id="first"></div>
+      <div class="autocorrect" id="second"></div>
+      <div class="autocorrect" id="third"></div>
+      <div class="autocorrect" id="fourth"></div>
+      <div class="autocorrect" id="fifth"></div>
     </article>
     <article class="right-canvas">
-      <canvas id="compteur1" width="300" height="300"></canvas>
+      <canvas id="map"></canvas>
     </article>
 
     <!-- Again, we're serving up the unminified source for clarity. -->
