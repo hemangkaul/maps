@@ -224,44 +224,31 @@ public final class Main {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
-      String streetOne = qm.value("aOne"); // name of actor one
-      String streetTwo = qm.value("aTwo"); // name of actor two
+      String street = qm.value("street"); // name of the edited street
 
       // Generator g = new Generator(true, true, 2, actorTrie);
       // we active WhiteSpace, Prefix, and Led (up to distance of 2) for
       // generating
+
       // Ranker r = new Ranker(false, actorTrie, (ArrayList<String>) actorList);
 
-      ArrayList<String> topFiveOne = new ArrayList<String>();
-      ArrayList<String> topFiveTwo = new ArrayList<String>();
+      List<String> topFive = new ArrayList<String>();
+
       // if (!(actorOne.equals(""))) {
       // topFiveOne = r.topRanked(actorOne, g);
       // }
-      // if (!(actorTwo.equals(""))) {
-      // topFiveTwo = r.topRanked(actorTwo, g);
-      // }
+
       // if either of the entries are blank, we don't want to print out
       // any led suggestions
 
-      while (topFiveOne.size() < IND_FIVE + 1) {
-        topFiveOne.add("");
+      while (topFive.size() < IND_FIVE + 1) {
+        topFive.add("");
       } // make sure we return at five items (no Out of Bound errors)
 
-      while (topFiveTwo.size() < IND_FIVE + 1) {
-        topFiveTwo.add("");
-        // same thing
-      }
-
       Map<String, String> variables = new ImmutableMap.Builder<String, String>()
-          .put("first", topFiveOne.get(0)).put("second", topFiveOne.get(1))
-          .put("third", topFiveOne.get(2))
-          .put("fourth", topFiveOne.get(IND_FOUR))
-          .put("fifth", topFiveOne.get(IND_FIVE))
-          .put("firstTwo", topFiveTwo.get(0))
-          .put("secondTwo", topFiveTwo.get(1))
-          .put("thirdTwo", topFiveTwo.get(2))
-          .put("fourthTwo", topFiveTwo.get(IND_FOUR))
-          .put("fifthTwo", topFiveTwo.get(IND_FIVE)).build();
+          .put("first", topFive.get(0)).put("second", topFive.get(1))
+          .put("third", topFive.get(2)).put("fourth", topFive.get(IND_FOUR))
+          .put("fifth", topFive.get(IND_FIVE)).build();
 
       return GSON.toJson(variables);
     }

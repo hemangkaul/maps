@@ -1,40 +1,71 @@
 html {
-	height: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 form {
-	margin: 0 auto;
+  margin: 0 auto;
 }
 
-input[type=submit] {
-	padding: 5px 10px;
-	color: black;
-	background-color: #CCCCCC;
-	border: 2px solid #4CAF50;
+#submit {
+  padding: 5px 10px;
+  color: white;
+  background-color: #0011D0;
 }
 
-.input[type=submit]:hover {
-	background-color: #4CAF50;
-	color: white;
+#submit:hover {
+  background-color: #0099FF;
+  color: white;
 }
+
+.inputs {
+  background-color: #81f5ac;
+  width: 100%;
+}
+label {
+  display: inline-block;
+  float: left;
+  clear: left;
+  width: 80px;
+  text-align: right;
+  margin: 5px;
+}
+
+input {
+  display: inline-block;
+  float: left;
+}
+
 
 /* Pattern styles */
+
 .mapsContainer {
   display: table;
   height: 100%;
   width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 .left-input {
   background-color: #ffffff;
+  height: 100%;
   width: 30%;
   float: left;
-  padding: 5px;
+  padding: 0px;
 }
 
 .right-canvas {
   background-color: #000000;
+  height: 100%;
   width: 67%;
   float: left;
-  padding: 5px;
+  padding: 0px;
 }
