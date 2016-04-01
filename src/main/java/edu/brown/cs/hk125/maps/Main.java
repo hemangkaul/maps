@@ -31,7 +31,6 @@ import com.google.gson.Gson;
 
 import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
-import edu.brown.cs.hk125.trie.AutoCorrector;
 import freemarker.template.Configuration;
 
 /**
@@ -153,11 +152,11 @@ public final class Main {
           //
           // System.out.println(tree.findNN(latlng));
 
-          AutoCorrector ac = ig.getAutoCorrector();
-
-          System.out.println(ac.suggestions(command));
-          // ReadEvaluatePrintLoop.execute(command, tree, ig);
-          // System.out.println("Ready");
+          // AutoCorrector ac = ig.getAutoCorrector();
+          //
+          // System.out.println(ac.suggestions(command));
+          ReadEvaluatePrintLoop.execute(command, tree, ig);
+          System.out.println("Ready");
         }
 
       } catch (IOException e) {

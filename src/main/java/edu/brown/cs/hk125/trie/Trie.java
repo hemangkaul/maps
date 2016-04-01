@@ -101,10 +101,20 @@ public class Trie {
     }
   }
 
+  /**
+   * get the unigrams list.
+   *
+   * @return the set of unigrams
+   */
   public Multiset<String> getUnigrams() {
     return unigrams;
   }
 
+  /**
+   * get the bigrams list.
+   *
+   * @return the set of bigrams
+   */
   public Multiset<Bigram> getBigrams() {
     return bigrams;
   }
@@ -113,6 +123,7 @@ public class Trie {
    * sets the unigram and bigram sets and inserts all elements into the trie.
    *
    * @param corpus
+   *          the list of all the words to be added.
    */
   private void setTrie(List<String> corpus) {
     unigrams = HashMultiset.create();

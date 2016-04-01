@@ -4,16 +4,43 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import edu.brown.cs.hk125.trie.Node;
-import edu.brown.cs.hk125.trie.Trie;
-
+/**
+ * The levenshtein edit distance algorithm.
+ *
+ * @author hk125
+ *
+ */
 public class LevenshteinEditDistance {
 
+  /**
+   * the levenshtein algorithm.
+   *
+   * @param word
+   *          the word to be edited
+   * @param trie
+   *          the trie to search in
+   * @param distance
+   *          the edit distance
+   * @return a set of the possible edits
+   */
   public static Set<String> levenshtein(String word, Trie trie, int distance) {
     Set<String> words = new HashSet<>();
     return levenshteinHelp(trie, word, distance, words);
   }
 
+  /**
+   * the helper function for the levenshtein distance.
+   *
+   * @param trie
+   *          the trie to search in
+   * @param word
+   *          the word to edit
+   * @param distance
+   *          the edit distance
+   * @param words
+   *          the set of words generated
+   * @return the set of words which are possible edits
+   */
   public static Set<String> levenshteinHelp(Trie trie, String word,
       int distance, Set<String> words) {
 

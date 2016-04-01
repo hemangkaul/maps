@@ -15,21 +15,57 @@ import com.google.common.collect.Multiset;
  *
  */
 public class Ranker {
+
+  /**
+   * a set of the unigrams.
+   */
   private Multiset<String> unigrams;
+
+  /**
+   * a set of the bigrams.
+   */
   private Multiset<Bigram> bigrams;
+
+  /**
+   * a set of the matches.
+   */
   private Multiset<String> matchList;
+
+  /**
+   * the previous word.
+   */
   private String previous;
 
-  private static final int TOTAL = 10;
+  /**
+   * the max matches
+   */
+  private static final int MAX = 10;
 
-  public Ranker(Multiset<String> unigrams, Multiset<Bigram> bigrams,
-      Multiset<String> matchList, String previous) {
-    this.unigrams = unigrams;
-    this.bigrams = bigrams;
-    this.matchList = matchList;
-    this.previous = previous;
+  /**
+   * the constructor for Ranker.
+   *
+   * @param unis
+   *          the set of unigrams
+   * @param bis
+   *          the set of bigrams
+   * @param matches
+   *          the set of matches
+   * @param prev
+   *          the previous string
+   */
+  public Ranker(Multiset<String> unis, Multiset<Bigram> bis,
+      Multiset<String> matches, String prev) {
+    this.unigrams = unis;
+    this.bigrams = bis;
+    this.matchList = matches;
+    this.previous = prev;
   }
 
+  /**
+   * results ranks the results.
+   *
+   * @return a list of the results ranked
+   */
   public List<String> results() {
     GramComparator gc = new GramComparator(unigrams, bigrams, previous);
     Set<String> sorted = new HashSet<>();
@@ -37,8 +73,8 @@ public class Ranker {
     List<String> sorted2 = new ArrayList<>();
     sorted2.addAll(sorted);
     sorted2.sort(gc);
-    if (sorted.size() > TOTAL) {
-      return sorted2.subList(0, TOTAL);
+    if (sorted.size() > MAX) {
+      return sorted2.subList(0, MAX);
     } else {
       return sorted2;
     }

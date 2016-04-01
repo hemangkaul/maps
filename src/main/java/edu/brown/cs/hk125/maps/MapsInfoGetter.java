@@ -34,7 +34,7 @@ public class MapsInfoGetter implements InfoGetterAStar {
 
   private Connection conn;
   private Map<String, LatLng> cache = new HashMap<>();
-  private Map<Map<LatLng, LatLng>, Double> wayCache = new ConcurrentHashMap<>();
+  private Map<String, Double> trafficCache = new ConcurrentHashMap<>();
 
   public MapsInfoGetter(String db) throws ClassNotFoundException, SQLException {
     // Set up a connection
@@ -292,7 +292,7 @@ public class MapsInfoGetter implements InfoGetterAStar {
    * @throws SQLException
    */
   public AutoCorrector getAutoCorrector() throws SQLException {
-    String query = "SELECT start, end, name FROM Way";
+    String query = "SELECT start, end, name, id FROM Way";
 
     // Create a PreparedStatement
     PreparedStatement prep;
@@ -312,14 +312,17 @@ public class MapsInfoGetter implements InfoGetterAStar {
       LatLng start = cache.get(startNode);
       LatLng end = cache.get(endNode);
 
+      String name = rs.getString(3);
+      String id = rs.getString(4);
+
       Map<LatLng, LatLng> hm = new HashMap<>();
 
       hm.put(start, end);
 
       // 1.0 is the traffic value
-      wayCache.put(hm, 1.0);
+      trafficCache.put(id, 1.0);
 
-      elementList.add(rs.getString(3));
+      elementList.add(name);
     }
     rs.close();
     prep.close();
