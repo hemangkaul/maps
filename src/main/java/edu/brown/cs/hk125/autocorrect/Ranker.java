@@ -1,4 +1,4 @@
-package edu.brown.cs.hk125.trie;
+package edu.brown.cs.hk125.autocorrect;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.Multiset;
+
+import edu.brown.cs.hk125.trie.Bigram;
 
 /**
  * Ranker ranks a list of words for the autocorrect program according to either
@@ -59,6 +61,13 @@ public class Ranker {
     this.bigrams = bis;
     this.matchList = matches;
     this.previous = prev;
+  }
+
+  public Ranker(Multiset<String> unis, Multiset<String> matches) {
+    this.unigrams = unis;
+    this.bigrams = null;
+    this.matchList = matches;
+    this.previous = null;
   }
 
   /**

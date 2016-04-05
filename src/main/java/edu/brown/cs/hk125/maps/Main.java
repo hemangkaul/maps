@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -28,9 +29,9 @@ import spark.template.freemarker.FreeMarkerEngine;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
+import edu.brown.cs.hk125.autocorrect.AutoCorrector;
 import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
-import edu.brown.cs.hk125.trie.AutoCorrector;
 import freemarker.template.Configuration;
 
 /**
@@ -124,6 +125,7 @@ public final class Main {
 
     try {
       ig = new MapsInfoGetter(db);
+      mapsAC = ig.getMapsAutoCorrector();
     } catch (SQLException e) {
       System.out.println("ERROR: SQL exception: " + e);
       System.exit(1);
@@ -229,23 +231,10 @@ public final class Main {
 
     @Override
     public Object handle(final Request req, final Response res) {
-      System.out.println("Checkpoint");
       QueryParamsMap qm = req.queryMap();
       String street = qm.value("street"); // name of the edited street
-
-      MapsInfoGetter ig = null;
-      AutoCorrector ac = null;
-
-      try {
-        ig = new MapsInfoGetter(db);
-        ac = ig.getAutoCorrector();
-      } catch (SQLException e) {
-        System.out.println("ERROR: SQL exception: " + e);
-        System.exit(1);
-      } catch (ClassNotFoundException e) {
-        System.out.println("ERROR: ClassNotFound Exception: " + e);
-        System.exit(1);
-      }
+      System.out.println(street);
+      System.out.println("Got it");
 
       // Generator g = new Generator(true, true, 2, actorTrie);
       // we active WhiteSpace, Prefix, and Led (up to distance of 2) for
@@ -256,12 +245,14 @@ public final class Main {
       // We will use whiteSpace, prefix, and Levenshtein (up to distance of 2)
       // to generate suggestions
 
-      List<String> topFive = ac.suggestions(street);
+      List<String> topFive = mapsAC.suggestions(street);
 
       // We don't want suggestions (which will be produced by Levenshtein) if
       // the entry is blank!
       if (!(street.equals(""))) {
         topFive = mapsAC.suggestions(street);
+      } else {
+        topFive = new ArrayList<>();
       }
 
       // if either of the entries are blank, we don't want to print out

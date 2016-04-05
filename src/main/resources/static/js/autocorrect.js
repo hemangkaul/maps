@@ -34,7 +34,7 @@ $("#crossOne").on('keyup', function() {
 $("#streetTwo").on('keyup', function() {
 	var sTwo = $("#streetTwo").val();
 
-	var postParameters = {"street": STwo};
+	var postParameters = {"street": sTwo};
 	$.post("/autocorrect", postParameters, function(responseJSON){
 		responseObject = JSON.parse(responseJSON);
 		$("#first").text(responseObject.first);

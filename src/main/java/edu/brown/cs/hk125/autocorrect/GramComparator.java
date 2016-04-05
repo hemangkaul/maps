@@ -1,8 +1,10 @@
-package edu.brown.cs.hk125.trie;
+package edu.brown.cs.hk125.autocorrect;
 
 import java.util.Comparator;
 
 import com.google.common.collect.Multiset;
+
+import edu.brown.cs.hk125.trie.Bigram;
 
 /**
  * GramComparator compares grams.
@@ -45,7 +47,7 @@ public class GramComparator implements Comparator<String> {
 
   @Override
   public int compare(String s1, String s2) {
-    if (previous != null) {
+    if (previous != null && bigrams != null) {
       Bigram one = new Bigram(previous, s1);
       Bigram two = new Bigram(previous, s2);
       int oneCount = bigrams.count(one);
@@ -71,11 +73,13 @@ public class GramComparator implements Comparator<String> {
    *         and the lexigraphical difference if else
    */
   public int compareHelp(String s1, String s2) {
-    if (s1.contains(" ")) {
-      s1 = s1.split(" ")[0];
-    }
-    if (s2.contains(" ")) {
-      s2 = s2.split(" ")[0];
+    if (bigrams != null) {
+      if (s1.contains(" ")) {
+        s1 = s1.split(" ")[0];
+      }
+      if (s2.contains(" ")) {
+        s2 = s2.split(" ")[0];
+      }
     }
     int oneCount = unigrams.count(s1);
     int twoCount = unigrams.count(s2);

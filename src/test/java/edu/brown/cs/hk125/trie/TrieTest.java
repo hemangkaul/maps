@@ -42,7 +42,7 @@ public class TrieTest {
 
   @Test
   public void makeTrieEmptyTest() {
-    Trie trie = new Trie(new ArrayList<String>());
+    Trie trie = new Trie(new ArrayList<String>(), true);
     Multiset<String> unigrams = trie.getUnigrams();
     Multiset<Bigram> bigrams = trie.getBigrams();
     assertTrue(unigrams.isEmpty());

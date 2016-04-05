@@ -1,7 +1,10 @@
-package edu.brown.cs.hk125.trie;
+package edu.brown.cs.hk125.autocorrect;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import edu.brown.cs.hk125.trie.Node;
+import edu.brown.cs.hk125.trie.Trie;
 
 /**
  * Represents the whitespace algorithm

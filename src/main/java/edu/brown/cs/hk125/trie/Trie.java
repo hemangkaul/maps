@@ -31,9 +31,9 @@ public class Trie {
   /**
    * the constructor of the Trie.
    */
-  public Trie(List<String> corpus) {
+  public Trie(List<String> corpus, boolean single) {
     this.root = new Node(null, false);
-    setTrie(corpus);
+    setTrie(corpus, single);
   }
 
   /**
@@ -125,7 +125,7 @@ public class Trie {
    * @param corpus
    *          the list of all the words to be added.
    */
-  private void setTrie(List<String> corpus) {
+  private void setTrie(List<String> corpus, boolean single) {
     unigrams = HashMultiset.create();
     bigrams = HashMultiset.create();
     if (corpus.isEmpty()) {
@@ -136,28 +136,22 @@ public class Trie {
 
     for (int i = 0; i < numElements; i++) {
       String token = corpus.get(i).toLowerCase();
-      String[] bigramCalc = token.split(" ");
-      if (bigramCalc.length > 1) {
-        for (int j = 0; j < bigramCalc.length; j++) {
-          unigrams.add(bigramCalc[j]);
-          insert(bigramCalc[j]);
-          if (j != bigramCalc.length - 1) {
-            Bigram bigram = new Bigram(bigramCalc[j], bigramCalc[j + 1]);
-            bigrams.add(bigram);
+      if (single) {
+        unigrams.add(token);
+        insert(token);
+      } else {
+        String[] bigramCalc = token.split(" ");
+        if (bigramCalc.length > 1) {
+          for (int j = 0; j < bigramCalc.length; j++) {
+            unigrams.add(bigramCalc[j]);
+            insert(bigramCalc[j]);
+            if (j != bigramCalc.length - 1) {
+              Bigram bigram = new Bigram(bigramCalc[j], bigramCalc[j + 1]);
+              bigrams.add(bigram);
+            }
           }
         }
       }
     }
-    //
-    // for (String token : corpus) {
-    // token = token.toLowerCase();
-    // wordlist.add(token);
-    // unigrams.add(token);
-    // insert(token);
-    // }
-    // for (int k = 0; k < wordlist.size() - 1; k++) {
-    // Bigram bigram = new Bigram(wordlist.get(k), wordlist.get(k + 1));
-    // bigrams.add(bigram);
-    // }
   }
 }

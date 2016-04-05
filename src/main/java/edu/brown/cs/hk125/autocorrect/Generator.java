@@ -1,10 +1,12 @@
-package edu.brown.cs.hk125.trie;
+package edu.brown.cs.hk125.autocorrect;
 
 import java.util.List;
 import java.util.Set;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+
+import edu.brown.cs.hk125.trie.Trie;
 
 /**
  * Generates a list of suggestions for a entered phrase or word, based on a
@@ -16,9 +18,9 @@ import com.google.common.collect.Multiset;
 public class Generator {
 
   /**
-   * edit distance set to 2.
+   * edit distance set to 1.
    */
-  private static final int LED = 2;
+  private static final int LED = 1;
 
   /**
    * the trie being used for generating suggestions.

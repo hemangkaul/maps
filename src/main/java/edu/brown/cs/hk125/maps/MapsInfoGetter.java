@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import edu.brown.cs.hk125.autocorrect.AutoCorrector;
 import edu.brown.cs.hk125.dijkstra.InfoGetterAStar;
 import edu.brown.cs.hk125.dijkstra.Link;
 import edu.brown.cs.hk125.dijkstra.groupLink;
 import edu.brown.cs.hk125.latlng.LatLng;
-import edu.brown.cs.hk125.trie.AutoCorrector;
 import edu.brown.cs.hk125.trie.Trie;
 
 /**
@@ -291,7 +291,7 @@ public class MapsInfoGetter implements InfoGetterAStar {
    * @return trie with all the names of the ways
    * @throws SQLException
    */
-  public AutoCorrector getAutoCorrector() throws SQLException {
+  public AutoCorrector getMapsAutoCorrector() throws SQLException {
     String query = "SELECT start, end, name, id FROM Way";
 
     // Create a PreparedStatement
@@ -327,8 +327,8 @@ public class MapsInfoGetter implements InfoGetterAStar {
     rs.close();
     prep.close();
 
-    Trie trie = new Trie(elementList);
-    return new AutoCorrector(trie);
+    Trie trie = new Trie(elementList, true);
+    return new MapsAutoCorrector(trie);
   }
 
   public List<Map<LatLng, LatLng>> getTiles(double topleftLat,
@@ -359,8 +359,8 @@ public class MapsInfoGetter implements InfoGetterAStar {
       double leftLng = rs.getDouble(2);
       double bottomLat = rs.getDouble(3);
       double rightLng = rs.getDouble(4);
-
     }
+
     rs.close();
     prep.close();
 

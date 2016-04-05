@@ -1,8 +1,11 @@
-package edu.brown.cs.hk125.trie;
+package edu.brown.cs.hk125.autocorrect;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import edu.brown.cs.hk125.trie.Node;
+import edu.brown.cs.hk125.trie.Trie;
 
 /**
  * the prefix matching algorithm.
