@@ -77,6 +77,8 @@ public final class Main {
 
   private String db;
 
+  private AutoCorrector mapsAC;
+
   private static final Gson GSON = new Gson();
 
   // GSOn used to handle Json translations between backend / frontend
@@ -251,11 +253,16 @@ public final class Main {
 
       // Ranker r = new Ranker(false, actorTrie, (ArrayList<String>) actorList);
 
+      // We will use whiteSpace, prefix, and Levenshtein (up to distance of 2)
+      // to generate suggestions
+
       List<String> topFive = ac.suggestions(street);
 
-      // if (!(actorOne.equals(""))) {
-      // topFiveOne = r.topRanked(actorOne, g);
-      // }
+      // We don't want suggestions (which will be produced by Levenshtein) if
+      // the entry is blank!
+      if (!(street.equals(""))) {
+        topFive = mapsAC.suggestions(street);
+      }
 
       // if either of the entries are blank, we don't want to print out
       // any led suggestions
