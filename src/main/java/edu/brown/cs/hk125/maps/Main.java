@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +30,7 @@ import com.google.gson.Gson;
 
 import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
+import edu.brown.cs.hk125.trie.AutoCorrector;
 import freemarker.template.Configuration;
 
 /**
@@ -104,7 +104,9 @@ public final class Main {
                                             // arguments
     // into the accepted options and their arguments, plus any non-options
 
+    // ********************** CHANGE THIS
     if (args.length > 2) {
+      db = args[3];
       System.out.println("ERROR: Illegal number of arguments");
     } else if (args.length == 2) {
       if (args[0].contains("gui")) {
@@ -158,10 +160,8 @@ public final class Main {
           ReadEvaluatePrintLoop.execute(command, tree, ig);
           System.out.println("Ready");
         }
-
       } catch (IOException e) {
         System.out.println("ERROR: IOException: " + e);
-
         // System.exit(1);
       } catch (IllegalArgumentException e) {
         System.out.println("ERROR: IllegalArgumentException: " + e);
@@ -207,7 +207,7 @@ public final class Main {
   private static class FrontHandler implements TemplateViewRoute {
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of();
+      Map<String, Object> variables = ImmutableMap.of("title", "Maps");
       return new ModelAndView(variables, "main.ftl");
     }
   }
@@ -227,8 +227,23 @@ public final class Main {
 
     @Override
     public Object handle(final Request req, final Response res) {
+      System.out.println("Checkpoint");
       QueryParamsMap qm = req.queryMap();
       String street = qm.value("street"); // name of the edited street
+
+      MapsInfoGetter ig = null;
+      AutoCorrector ac = null;
+
+      try {
+        ig = new MapsInfoGetter(db);
+        ac = ig.getAutoCorrector();
+      } catch (SQLException e) {
+        System.out.println("ERROR: SQL exception: " + e);
+        System.exit(1);
+      } catch (ClassNotFoundException e) {
+        System.out.println("ERROR: ClassNotFound Exception: " + e);
+        System.exit(1);
+      }
 
       // Generator g = new Generator(true, true, 2, actorTrie);
       // we active WhiteSpace, Prefix, and Led (up to distance of 2) for
@@ -236,7 +251,7 @@ public final class Main {
 
       // Ranker r = new Ranker(false, actorTrie, (ArrayList<String>) actorList);
 
-      List<String> topFive = new ArrayList<String>();
+      List<String> topFive = ac.suggestions(street);
 
       // if (!(actorOne.equals(""))) {
       // topFiveOne = r.topRanked(actorOne, g);
