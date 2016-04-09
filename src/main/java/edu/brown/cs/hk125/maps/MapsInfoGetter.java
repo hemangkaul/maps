@@ -30,7 +30,7 @@ import edu.brown.cs.hk125.trie.Trie;
  * @author sl234
  *
  */
-public class MapsInfoGetter implements InfoGetterAStar {
+public class MapsInfoGetter implements InfoGetterAStar, Tiler {
 
   private Connection conn;
   private Map<String, LatLng> cache = new HashMap<>();
@@ -342,7 +342,8 @@ public class MapsInfoGetter implements InfoGetterAStar {
     return null;
   }
 
-  private void setTiles() throws SQLException {
+  @Override
+  public void setTiles() throws SQLException {
     String query = "SELECT MAX(latitude), MAX(longitude), MIN(latitude), MIN(longitude) FROM Node";
 
     // Create a PreparedStatement
@@ -364,6 +365,12 @@ public class MapsInfoGetter implements InfoGetterAStar {
     rs.close();
     prep.close();
 
+  }
+
+  @Override
+  public Tile getTile() throws SQLException {
+    // TODO Auto-generated method stub
+    return null;
   }
 
   /**
@@ -456,4 +463,5 @@ public class MapsInfoGetter implements InfoGetterAStar {
         nodeCoords.get("Longitude"), endCoords.get("Latitude"),
         endCoords.get("Longitude"));
   }
+
 }
