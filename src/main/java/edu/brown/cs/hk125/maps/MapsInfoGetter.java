@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
 
 import edu.brown.cs.hk125.autocorrect.AutoCorrector;
@@ -33,8 +34,11 @@ import edu.brown.cs.hk125.trie.Trie;
 public class MapsInfoGetter implements InfoGetterAStar, Tiler {
 
   private Connection conn;
-  private Map<String, LatLng> cache = new HashMap<>();
+  private Map<String, LatLng> pointCache = new HashMap<>();
   private Map<String, Double> trafficCache = new ConcurrentHashMap<>();
+  Map<LatLng, LatLng> wayCache = new HashMap<>();
+  private List<Tile> tileCache = new ArrayList<>();
+  private static final double TILESIZE = 0.001;
 
   public MapsInfoGetter(String db) throws ClassNotFoundException, SQLException {
     // Set up a connection
@@ -85,8 +89,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     Double lat;
     Double lng;
 
-    if (cache.containsKey(nodeName)) {
-      LatLng latlng = cache.get(nodeName);
+    if (pointCache.containsKey(nodeName)) {
+      LatLng latlng = pointCache.get(nodeName);
       lat = latlng.getLat();
       lng = latlng.getLng();
     } else {
@@ -108,8 +112,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     Double endLat;
     Double endLng;
 
-    if (cache.containsKey(endNode)) {
-      LatLng endlatlng = cache.get(endNode);
+    if (pointCache.containsKey(endNode)) {
+      LatLng endlatlng = pointCache.get(endNode);
       endLat = endlatlng.getLat();
       endLng = endlatlng.getLng();
     } else {
@@ -275,7 +279,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       double lng = rs.getDouble(3);
       String id = rs.getString(1);
       LatLng add = new LatLng(lat, lng, id);
-      cache.put(id, add);
+      pointCache.put(id, add);
       elementList.add(add);
     }
     rs.close();
@@ -309,15 +313,13 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       String startNode = rs.getString(1);
       String endNode = rs.getString(2);
 
-      LatLng start = cache.get(startNode);
-      LatLng end = cache.get(endNode);
+      LatLng start = pointCache.get(startNode);
+      LatLng end = pointCache.get(endNode);
 
       String name = rs.getString(3);
       String id = rs.getString(4);
 
-      Map<LatLng, LatLng> hm = new HashMap<>();
-
-      hm.put(start, end);
+      wayCache.put(start, end);
 
       // 1.0 is the traffic value
       trafficCache.put(id, 1.0);
@@ -331,17 +333,6 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     return new MapsAutoCorrector(trie);
   }
 
-  public List<Map<LatLng, LatLng>> getTiles(double topleftLat,
-      double topleftLng, double bottomrightLat, double bottomrightLng) {
-
-    return null;
-  }
-
-  public Map<LatLng, LatLng> getLine() {
-
-    return null;
-  }
-
   @Override
   public void setTiles() throws SQLException {
     String query = "SELECT MAX(latitude), MAX(longitude), MIN(latitude), MIN(longitude) FROM Node";
@@ -353,24 +344,118 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     // Execute the query and retrieve a ResultStatement
     ResultSet rs = prep.executeQuery();
 
-    // Add the LatLngs to the elementList;
+    double topLat = 0;
+    double leftLng = 0;
+    double bottomLat = 0;
+    double rightLng = 0;
 
     while (rs.next()) {
-      double topLat = rs.getDouble(1);
-      double leftLng = rs.getDouble(2);
-      double bottomLat = rs.getDouble(3);
-      double rightLng = rs.getDouble(4);
+      topLat = rs.getDouble(1);
+      leftLng = rs.getDouble(2);
+      bottomLat = rs.getDouble(3);
+      rightLng = rs.getDouble(4);
     }
-
     rs.close();
     prep.close();
 
+    double height = topLat - bottomLat;
+    double width = leftLng - rightLng;
+    double tileHeight = height * TILESIZE;
+    double tileWidth = width * TILESIZE;
+
+    for (int i = 0; (i * tileHeight) < height; i++) {
+      double bottomLatitude = bottomLat + (i * tileHeight);
+      double topLatitude = bottomLatitude + tileHeight;
+      for (int j = 0; (j * tileWidth) < width; j++) {
+        double leftLongitude = leftLng + (i * tileWidth);
+        double rightLongitude = leftLongitude + tileWidth;
+        Tile insert = new Tile(topLatitude, bottomLatitude, leftLongitude,
+            rightLongitude);
+        tileCache.add(insert);
+      }
+    }
+    setTile();
   }
 
   @Override
-  public Tile getTile() throws SQLException {
-    // TODO Auto-generated method stub
-    return null;
+  public Tile getTile(double lat, double lng) throws NoSuchElementException,
+      SQLException {
+    if (tileCache.isEmpty()) {
+      setTiles();
+    }
+    for (Tile tile : tileCache) {
+      if (tile.inTile(lat, lng)) {
+        return tile;
+      }
+    }
+    throw new NoSuchElementException();
+  }
+
+  @Override
+  public void setTile() throws SQLException {
+    if (wayCache.isEmpty()) {
+      fillWayCache();
+    }
+    // run through all the LatLng values
+    for (LatLng start : pointCache.values()) {
+      getTile(start.getLat(), start.getLng()).insertWay(start,
+          wayCache.get(start));
+    }
+  }
+
+  /**
+   * fills the WayCache.
+   *
+   * @throws SQLException
+   */
+  private void fillWayCache() throws SQLException {
+    String query = "SELECT start, end FROM Way";
+
+    // Create a PreparedStatement
+    PreparedStatement prep;
+    prep = conn.prepareStatement(query);
+
+    // Execute the query and retrieve a ResultStatement
+    ResultSet rs = prep.executeQuery();
+
+    while (rs.next()) {
+      String start = rs.getString(1);
+      String end = rs.getString(2);
+      if (pointCache.isEmpty()) {
+        fillPointCache();
+      }
+      LatLng startPoint = pointCache.get(start);
+      LatLng endPoint = pointCache.get(end);
+      wayCache.put(startPoint, endPoint);
+    }
+    rs.close();
+    prep.close();
+  }
+
+  /**
+   * fills the point Cache.
+   *
+   * @throws SQLException
+   */
+  private void fillPointCache() throws SQLException {
+    String query = "SELECT id, latitude, longitude FROM Node";
+
+    // Create a PreparedStatement
+    PreparedStatement prep;
+    prep = conn.prepareStatement(query);
+
+    // Execute the query and retrieve a ResultStatement
+    ResultSet rs = prep.executeQuery();
+
+    while (rs.next()) {
+      double lat = rs.getDouble(2);
+      double lng = rs.getDouble(3);
+      String id = rs.getString(1);
+      LatLng add = new LatLng(lat, lng, id);
+      pointCache.put(id, add);
+    }
+    rs.close();
+    prep.close();
   }
 
   /**
