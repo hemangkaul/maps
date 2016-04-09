@@ -30,6 +30,14 @@ var isDown = false;
 // Used for panning
 var last_position = {};
 
+// Caching the tiles as a map (though more of a list for our purposes) 
+// of tile coordinates to the tiles to draw
+var cache = {};
+
+// cache format:
+// var cache = {
+// 	  {'l': left, 'r': right, 't': top, 'b': bottom} : {{startX: x, startY: y}: {endX: x, endY: y}}
+// }
 
 // The idea is we re-set the top left and top right coordinates,
 // and then re-draw the map using a function that only takes in those coordinates.
@@ -73,9 +81,9 @@ $("#map").on('mousewheel', function(e) {
     // where P_lat and P_long refer to the coordinates the mouse is pointing at
   
     //geographic length of map
-    var length = brLat - tLLat;
+    var length = brLong - tLLong;
     // geographic height of map
-    var height = tLLong - bRLong;
+    var height = tLLat - bRLat;
   
     // x and y coordinates of current cursor, adjusted to the 
     // leftmost and topmost coordinates of the canvas
@@ -88,34 +96,34 @@ $("#map").on('mousewheel', function(e) {
     var proportionHeight = cursorY / this.innerHeight;
     
     // the latitude and longitude of the cursor point
-    var cursorLat = proportionLength * length + tLLat;
-    var cursorLong = proportionLength * height + bRLong;
+    var cursorLat = proportionHeight * height + bRLat;
+    var cursorLong = proportionLength * lenght + tLLong;
     
-    // So (cursorLat - tLLat)/length should not change after zooming.
-    // We know length changes by a factor of zoomFactor
+    // So (cursorLat - bRLat)/height should not change after zooming.
+    // We know height changes by a factor of zoomFactor
     // and cursorLat doesn't change.
     // Thus we can write
     // 
-    //    (cursorLat - new_tLLat)/(zoomFactor * length) = 
-    // 	                            (cursorLat - old_tLLat)/ length
-    // -> (cursorLat - new_tLLat)/zoomFactor = cursorLat - old_ tLLat
-    // -> cursorLat - new_tLLat = zoomFactor*(cursorLat - old_tLLat)
-    // -> - new_tLLat = cursorLat(zoomFactor - 1) - zoomFactor*old_tLLat
-    // -> new_tLLat = cursorLat(1 - zoomFactor) + zoomFactor*old_tLLat
-    var newTLLat = cursorLat*(1 - zoomFactor) + zoomFactor*tLLat;
-    var newBRLat = newTLLat + length*zoomFactor;
+    //    (cursorLat - new_bRLat)/(zoomFactor * height) = 
+    // 	                            (cursorLat - old_bRLat)/ height
+    // -> (cursorLat - new_bRLat)/zoomFactor = cursorLat - old_ bRLat
+    // -> cursorLat - new_bRLat = zoomFactor*(cursorLat - old_bRLat)
+    // -> - new_bRLat = cursorLat(zoomFactor - 1) - zoomFactor*old_bRLat
+    // -> new_bRLat = cursorLat(1 - zoomFactor) + zoomFactor*old_bRLat
+    var newBRLat = cursorLat*(1 - zoomFactor) + zoomFactor*bRLat;
+    var newTLLat = newbRLat + height*zoomFactor;
     
     // similar calculations are done to find newTLLong and newBRLong
-    var newBRLong = cursorLong*(1 - zoomFactor) + zoomFactor*BRLong;
-    var newTLLong = newBRLong + height*zoomFactor;
+    var newTLLong = cursorLong*(1 - zoomFactor) + zoomFactor*TLLong;
+    var newBRLong = newTLLong + length*zoomFactor;
     
     tLLat = newTLLat;
     tLLong = newTLLong;
     bRLat = newBRLat;
-    brLong = newBRLong;
+    bRLong = newBRLong;
     
     zoom += zoomExp;    
-    // re-paint-canvas with new coordinates!  
+    drawmap(tLLat, tLLong, bRLat, bRLong);
   }  
 });
 
@@ -148,19 +156,19 @@ $("#map").on('mousemove', function(e) {
 	  var proportionHeight = deltaY / this.innerHeight;
 	  
 	  //geographic length of map
-	  var length = brLat - tLLat;
+	  var length = bRLong - tLLong;
 	  // geographic height of map
-	  var height = tLLong - bRLong;
+	  var height = tLLat - brLat; 
 	  
-	  var deltaLat = length*proportionWidth;
-	  var deltaLong = height*proportionHeight;
+	  var deltaLong = length*proportionWidth;
+	  var deltaLat = height*proportionHeight;
 	  
 	  tLLat += deltaLat;
 	  tLLong += deltaLong;
 	  bRLat += deltaLat;
 	  bRLong += deltaLong;
 	  
-	  // re-paint canvas with new coordinates!
+	  drawmap(tLLat, tLLong, bRLat, bRLong);
   }
   last_position = {x: e.pageX, y: e.pageY};
   })

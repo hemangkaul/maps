@@ -11,8 +11,10 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
@@ -78,6 +80,8 @@ public final class Main {
 
   private String db;
 
+  private MapsInfoGetter ig;
+
   private AutoCorrector mapsAC;
 
   private static final Gson GSON = new Gson();
@@ -121,7 +125,8 @@ public final class Main {
       db = args[0];
     }
 
-    MapsInfoGetter ig = null;
+    // Set it to null in case if we don't there's an error
+    ig = null;
 
     try {
       ig = new MapsInfoGetter(db);
@@ -200,6 +205,7 @@ public final class Main {
     // Setup Spark Routes
     Spark.get("/home", new FrontHandler(), freeMarker);
     Spark.post("/autocorrect", new AutoCorrectHandler());
+    Spark.post("/tile", new TileHandler());
   }
 
   /**
@@ -213,6 +219,56 @@ public final class Main {
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables = ImmutableMap.of("title", "Maps");
       return new ModelAndView(variables, "main.ftl");
+    }
+  }
+
+  /**
+   * Tile Handler gets a tile from the back end cache, given a Lat Lng point
+   * from the front end.
+   *
+   * @author sl234
+   *
+   */
+  private class TileHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      Double lat = Double.valueOf(qm.value("lat"));
+      Double lng = Double.valueOf(qm.value("lng"));
+
+      Tile tileToReturn = null;
+      try {
+        tileToReturn = ig.getTile(lat, lng);
+      } catch (NoSuchElementException | SQLException e) {
+        System.out.println("ERROR: SQLException: " + e);
+      }
+
+      // This is the list of ways contained within the tile
+      Map<LatLng, LatLng> wayMap = tileToReturn.getTileWays();
+
+      // Here we convert the list of ways from LatLng format to individual
+      // latitude / longitude elements
+      Map<Map<Double, Double>, Map<Double, Double>> ways = new HashMap<>();
+
+      // iterate through wayMap and add converted ways to ways
+      for (LatLng start : wayMap.keySet()) {
+        Map<Double, Double> startMap = new HashMap<>();
+        Map<Double, Double> endMap = new HashMap<>();
+        startMap.put(start.getLat(), start.getLng());
+        endMap.put(wayMap.get(start).getLat(), wayMap.get(start).getLng());
+
+        ways.put(startMap, endMap);
+      }
+
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("l", Double.toString(tileToReturn.getLlng()))
+          .put("r", Double.toString(tileToReturn.getRlng()))
+          .put("t", Double.toString(tileToReturn.getTlat()))
+          .put("b", Double.toString(tileToReturn.getBlat())).put("map", ways)
+          .build();
+
+      return GSON.toJson(variables);
+
     }
   }
 
@@ -233,8 +289,6 @@ public final class Main {
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
       String street = qm.value("street"); // name of the edited street
-      System.out.println(street);
-      System.out.println("Got it");
 
       // Generator g = new Generator(true, true, 2, actorTrie);
       // we active WhiteSpace, Prefix, and Led (up to distance of 2) for

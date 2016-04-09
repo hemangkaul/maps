@@ -56,3 +56,5 @@ Things to do if time avails (i.e. high time cost per expected increase in final 
 -- Test parsing
 -- Testing: KDTree testing -- perhaps implement a Point class to help with testing?
 -- Handle UTF-8 characters
+-- AutoCorrect: Make it so if you click on the suggestions, it auto-completes.
+-- Gui Style: Maps Interface to make it more Maps API - ish. 

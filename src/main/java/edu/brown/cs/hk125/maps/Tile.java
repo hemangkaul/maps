@@ -82,4 +82,47 @@ public class Tile {
     tileWays.put(start, end);
   }
 
+  /**
+   * gets the top lat.
+   *
+   * @return the tlat
+   */
+  public double getTlat() {
+    return tlat;
+  }
+
+  /**
+   * gets the bottom lat.
+   *
+   * @return the blat
+   */
+  public double getBlat() {
+    return blat;
+  }
+
+  /**
+   * gets the left long.
+   *
+   * @return the llng
+   */
+  public double getLlng() {
+    return llng;
+  }
+
+  /**
+   * gets the right long.
+   *
+   * @return the rlng
+   */
+  public double getRlng() {
+    return rlng;
+  }
+
+  /**
+   * @return the tileWays
+   */
+  public Map<LatLng, LatLng> getTileWays() {
+    return tileWays;
+  }
+
 }
