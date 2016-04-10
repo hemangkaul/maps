@@ -145,6 +145,15 @@ public final class Main {
         int portNum = (int) options.valueOf("port");
         Spark.setPort(portNum);
       }
+      // So we create all the tiles beforehand.
+      try {
+        ig.setTiles();
+      } catch (SQLException e) {
+        // TODO Auto-generated catch block
+        System.out.println("ERROR: SQLException: " + e);
+      } catch (NoSuchElementException e) {
+        System.out.println("ERROR: NoSuchElementException: " + e);
+      }
       runSparkServer();
     } else {
 
@@ -205,7 +214,9 @@ public final class Main {
     // Setup Spark Routes
     Spark.get("/home", new FrontHandler(), freeMarker);
     Spark.post("/autocorrect", new AutoCorrectHandler());
+
     Spark.post("/tile", new TileHandler());
+
   }
 
   /**
@@ -250,15 +261,21 @@ public final class Main {
       // latitude / longitude elements
       Map<Map<Double, Double>, Map<Double, Double>> ways = new HashMap<>();
 
+      System.out.println("aight");
+
       // iterate through wayMap and add converted ways to ways
       for (LatLng start : wayMap.keySet()) {
         Map<Double, Double> startMap = new HashMap<>();
         Map<Double, Double> endMap = new HashMap<>();
+        System.out.println(wayMap.get(start).getLat());
+        System.out.println(wayMap.get(start).getLng());
         startMap.put(start.getLat(), start.getLng());
         endMap.put(wayMap.get(start).getLat(), wayMap.get(start).getLng());
 
         ways.put(startMap, endMap);
       }
+
+      System.out.println("close");
 
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("l", Double.toString(tileToReturn.getLlng()))
@@ -267,6 +284,7 @@ public final class Main {
           .put("b", Double.toString(tileToReturn.getBlat())).put("map", ways)
           .build();
 
+      System.out.println("okie");
       return GSON.toJson(variables);
 
     }

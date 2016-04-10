@@ -123,7 +123,7 @@ $("#map").on('mousewheel', function(e) {
     bRLong = newBRLong;
     
     zoom += zoomExp;    
-    drawmap(tLLat, tLLong, bRLat, bRLong);
+    drawMap(tLLat, tLLong, bRLat, bRLong);
   }  
 });
 
@@ -158,7 +158,7 @@ $("#map").on('mousemove', function(e) {
 	  //geographic length of map
 	  var length = bRLong - tLLong;
 	  // geographic height of map
-	  var height = tLLat - brLat; 
+	  var height = tLLat - bRLat; 
 	  
 	  var deltaLong = length*proportionWidth;
 	  var deltaLat = height*proportionHeight;
@@ -168,7 +168,7 @@ $("#map").on('mousemove', function(e) {
 	  bRLat += deltaLat;
 	  bRLong += deltaLong;
 	  
-	  drawmap(tLLat, tLLong, bRLat, bRLong);
+	  drawMap(tLLat, tLLong, bRLat, bRLong);
   }
   last_position = {x: e.pageX, y: e.pageY};
   })
@@ -176,3 +176,7 @@ $("#map").on('mousemove', function(e) {
 $("#map").on('mouseup', function(e) {
   isDown = false;
 })
+
+// draw the initial map
+drawMap(tLLat, tLLong, bRLat, bRLong);
+

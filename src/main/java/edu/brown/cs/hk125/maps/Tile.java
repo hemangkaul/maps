@@ -1,9 +1,9 @@
 package edu.brown.cs.hk125.maps;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import edu.brown.cs.hk125.latlng.LatLng;
+import edu.brown.cs.hk125.map.Way;
 
 /**
  * Tile represents a tile which contains data points.
@@ -34,9 +34,9 @@ public class Tile {
   private double rlng;
 
   /**
-   * a map of starts to ends, i.e. ways.
+   * a list of ways.
    */
-  private Map<LatLng, LatLng> tileWays = new HashMap<LatLng, LatLng>();
+  private List<Way> tileWays = new ArrayList<>();
 
   /**
    * the constructor for a Tile.
@@ -67,7 +67,7 @@ public class Tile {
    * @return true if in the tile and false otherwise
    */
   public boolean inTile(double lat, double lng) {
-    return (lat < tlat && lat > blat && lng > llng && lng < rlng);
+    return (lat <= tlat && lat > blat && lng >= llng && lng < rlng);
   }
 
   /**
@@ -78,8 +78,8 @@ public class Tile {
    * @param end
    *          the end point
    */
-  public void insertWay(LatLng start, LatLng end) {
-    tileWays.put(start, end);
+  public void insertWay(Way way) {
+    tileWays.add(way);
   }
 
   /**
@@ -121,7 +121,7 @@ public class Tile {
   /**
    * @return the tileWays
    */
-  public Map<LatLng, LatLng> getTileWays() {
+  public List<Way> getTileWays() {
     return tileWays;
   }
 

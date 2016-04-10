@@ -18,6 +18,8 @@ import edu.brown.cs.hk125.dijkstra.InfoGetterAStar;
 import edu.brown.cs.hk125.dijkstra.Link;
 import edu.brown.cs.hk125.dijkstra.groupLink;
 import edu.brown.cs.hk125.latlng.LatLng;
+import edu.brown.cs.hk125.map.Node;
+import edu.brown.cs.hk125.map.Way;
 import edu.brown.cs.hk125.trie.Trie;
 
 /**
@@ -34,11 +36,13 @@ import edu.brown.cs.hk125.trie.Trie;
 public class MapsInfoGetter implements InfoGetterAStar, Tiler {
 
   private Connection conn;
+  private Map<String, Node> nodeCache = new HashMap<>();
+  private Map<String, Way> wayzCache = new HashMap<>();
   private Map<String, LatLng> pointCache = new HashMap<>();
   private Map<String, Double> trafficCache = new ConcurrentHashMap<>();
   Map<LatLng, LatLng> wayCache = new HashMap<>();
   private List<Tile> tileCache = new ArrayList<>();
-  private static final double TILESIZE = 0.001;
+  private static final double TILESIZE = 0.01;
 
   public MapsInfoGetter(String db) throws ClassNotFoundException, SQLException {
     // Set up a connection
@@ -164,7 +168,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         // sure
         // to
         // add
-        // extraDist!"\\P{L}+");
+        // extraDist!;
         toReturn.add(toAdd);
       }
     }
@@ -292,11 +296,12 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    * gets all the way names and adds them to the trie, while adding all the ways
    * to the wayCache.
    *
+   *
    * @return trie with all the names of the ways
    * @throws SQLException
    */
   public AutoCorrector getMapsAutoCorrector() throws SQLException {
-    String query = "SELECT start, end, name, id FROM Way";
+    String query = "SELECT start, end, name, type, id FROM Way";
 
     // Create a PreparedStatement
     PreparedStatement prep;
@@ -317,7 +322,12 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       LatLng end = pointCache.get(endNode);
 
       String name = rs.getString(3);
-      String id = rs.getString(4);
+      String type = rs.getString(4);
+      String id = rs.getString(5);
+
+      Way newWay = new Way(startNode, endNode, name, type, id);
+
+      wayzCache.put(id, newWay);
 
       wayCache.put(start, end);
 
@@ -334,8 +344,9 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   }
 
   @Override
-  public void setTiles() throws SQLException {
-    String query = "SELECT MAX(latitude), MAX(longitude), MIN(latitude), MIN(longitude) FROM Node";
+  public void setTiles() throws SQLException, NoSuchElementException {
+    String query = "SELECT MAX(latitude), MAX(longitude), "
+        + "MIN(latitude), MIN(longitude) FROM Node";
 
     // Create a PreparedStatement
     PreparedStatement prep;
@@ -350,27 +361,32 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     double rightLng = 0;
 
     while (rs.next()) {
-      topLat = rs.getDouble(1);
-      leftLng = rs.getDouble(2);
-      bottomLat = rs.getDouble(3);
-      rightLng = rs.getDouble(4);
+      topLat = rs.getDouble(1) + 0.0000001;
+      rightLng = rs.getDouble(2) + 0.0000001;
+      bottomLat = rs.getDouble(3) - 0.0000001;
+      leftLng = rs.getDouble(4) - 0.0000001;
     }
     rs.close();
     prep.close();
 
     double height = topLat - bottomLat;
-    double width = leftLng - rightLng;
+    double width = rightLng - leftLng;
     double tileHeight = height * TILESIZE;
     double tileWidth = width * TILESIZE;
 
     for (int i = 0; (i * tileHeight) < height; i++) {
+
       double bottomLatitude = bottomLat + (i * tileHeight);
       double topLatitude = bottomLatitude + tileHeight;
+
       for (int j = 0; (j * tileWidth) < width; j++) {
-        double leftLongitude = leftLng + (i * tileWidth);
+
+        double leftLongitude = leftLng + (j * tileWidth);
         double rightLongitude = leftLongitude + tileWidth;
+
         Tile insert = new Tile(topLatitude, bottomLatitude, leftLongitude,
             rightLongitude);
+
         tileCache.add(insert);
       }
     }
@@ -381,6 +397,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   public Tile getTile(double lat, double lng) throws NoSuchElementException,
       SQLException {
     if (tileCache.isEmpty()) {
+      System.out.println("check");
       setTiles();
     }
     for (Tile tile : tileCache) {
@@ -392,14 +409,23 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   }
 
   @Override
-  public void setTile() throws SQLException {
+  public void setTile() throws SQLException, NoSuchElementException {
     if (wayCache.isEmpty()) {
       fillWayCache();
     }
+    if (pointCache.isEmpty()) {
+      fillPointCache();
+    }
+
     // run through all the LatLng values
-    for (LatLng start : pointCache.values()) {
-      getTile(start.getLat(), start.getLng()).insertWay(start,
-          wayCache.get(start));
+    for (LatLng start : wayCache.keySet()) {
+      // System.out.println(start.getLat());
+      // System.out.println(start.getLng());
+      // System.out.println(wayCache.get(start).getLat());
+      // System.out.println(wayCache.get(start).getLng());
+      // getTile(start.getLat(), start.getLng()).insertWay(start,
+      // wayCache.get(start));
+
     }
   }
 

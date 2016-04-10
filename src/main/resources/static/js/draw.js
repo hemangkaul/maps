@@ -38,10 +38,9 @@ function drawTile(map) {
 	// geographic length of map
 	var length = bRLong - tLLong;
 	// geographic height of map
-	var height = tLLat - brLat; 
+	var height = tLLat - bRLat; 
 	
 	for (var key in map){
-		
 		// convert each LatLng to an (x, y)
 		startX = key.lng/length * ctx.canvas.width;
 		startY = key.lat/height * ctx.canvas.height;
@@ -50,13 +49,15 @@ function drawTile(map) {
 		
     	ctx.moveTo(startX, startY);
     	ctx.lineTo(endX, endY);
+    	        
 	}
+
 }
 
 /**
  * Drawing the map.
  */
-function drawMap (tLLat, tLLong, bRLat, bRLong) {	
+function drawMap(tLLat, tLLong, bRLat, bRLong) {	
 	
 	// First we have to get the tiles each of the four corners are in
 	
@@ -73,6 +74,5 @@ function drawMap (tLLat, tLLong, bRLat, bRLong) {
 	drawTile(tileBL);
 	drawTile(tileTR);
 	drawTile(tileBR);
-    
     ctx.stroke();
 }
