@@ -19,13 +19,6 @@ public interface Tiler {
   public void setTiles() throws SQLException;
 
   /**
-   * sets a tile's values.
-   *
-   * @throws SQLException
-   */
-  public void setTile() throws SQLException;
-
-  /**
    * given a point return the tile it is in.
    *
    * @param lat
