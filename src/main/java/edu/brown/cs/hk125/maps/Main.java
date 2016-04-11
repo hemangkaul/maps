@@ -18,6 +18,7 @@ import java.util.NoSuchElementException;
 
 import joptsimple.OptionParser;
 import joptsimple.OptionSet;
+import joptsimple.OptionSpec;
 import spark.ExceptionHandler;
 import spark.ModelAndView;
 import spark.QueryParamsMap;
@@ -104,69 +105,50 @@ public final class Main {
     // For example, -gui will cause the package to run as a Gui file
     // and not just in the command prompt.
     // I believe all options must start with - or --, but am not sure.
+    // accepts a port as well!
+    // now we parse the
+    // arguments
+    // into the accepted options and their arguments, plus any non-options
 
     parser.accepts("gui"); // so gui is accepted!
     parser.accepts("port").withOptionalArg().ofType(Integer.class);
-    // accepts a port as well!
-    OptionSet options = parser.parse(args); // now we actually parse the
-                                            // arguments
-    // into the accepted options and their arguments, plus any non-options
+    OptionSpec<File> database = parser.nonOptions().ofType(File.class);
+    OptionSet options = parser.parse(args);
 
-    // ********************** CHANGE THIS
-    if (args.length > 2) {
-      db = args[3];
-      System.out.println("ERROR: Illegal number of arguments");
-    } else if (args.length == 2) {
-      if (args[0].contains("gui")) {
-        db = args[1];
-      } else {
-        db = args[0];
-      }
-    } else if (args.length == 1) {
-      db = args[0];
-    }
+    // get the value of the database
+    db = options.valueOf(database).toString();
 
     // Set it to null in case if we don't there's an error
     ig = null;
+    KDTree<LatLng> tree = null;
 
     try {
       ig = new MapsInfoGetter(db);
       List<LatLng> elementList = ig.getLatLngList();
+      tree = new KDTree<>(elementList);
       mapsAC = ig.getMapsAutoCorrector();
-    } catch (SQLException e) {
-      System.out.println("ERROR: SQL exception: " + e);
-      System.exit(1);
-    } catch (ClassNotFoundException e) {
-      System.out.println("ERROR: ClassNotFound Exception: " + e);
-      System.exit(1);
-    }
 
-    if (options.has("gui")) {
-      if (options.has("port") && options.hasArgument("port")) {
-        // set the port if necessary
-        int portNum = (int) options.valueOf("port");
-        Spark.setPort(portNum);
-      }
-      // So we create all the tiles beforehand.
-      try {
+      if (options.has("gui")) {
+
+        if (options.has("port") && options.hasArgument("port")) {
+
+          // set the port if necessary
+          int portNum = (int) options.valueOf("port");
+          Spark.setPort(portNum);
+
+        }
+
         ig.setTiles();
-      } catch (SQLException e) {
-        // TODO Auto-generated catch block
-        System.out.println("ERROR: SQLException: " + e);
-      } catch (NoSuchElementException e) {
-        System.out.println("ERROR: NoSuchElementException: " + e);
-      }
-      runSparkServer();
-    } else {
 
-      String command;
-      BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        runSparkServer();
 
-      try {// [INFO] Finished at: 2016-04-11T00:49:58-04:00
+      } else {
 
-        List<LatLng> elementList = ig.getLatLngList();
-        KDTree<LatLng> tree = new KDTree<>(elementList);
+        String command;
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
         System.out.println("Ready");
+
         while ((command = br.readLine()) != null) {
           // String[] commands = command.split(" ");
           // LatLng latlng = new LatLng(Double.parseDouble(commands[0]),
@@ -180,17 +162,23 @@ public final class Main {
           ReadEvaluatePrintLoop.execute(command, tree, ig);
           System.out.println("Ready");
         }
-      } catch (IOException e) {
-        System.out.println("ERROR: IOException: " + e);
-        // System.exit(1);
-      } catch (IllegalArgumentException e) {
-        System.out.println("ERROR: IllegalArgumentException: " + e);
-        // System.exit(1);
-      } catch (SQLException e) {
-        System.out.println("ERROR: SQLException: " + e);
-        // System.exit(1);
       }
 
+    } catch (SQLException e) {
+      System.out.println("ERROR: SQL exception: " + e);
+      System.exit(1);
+    } catch (ClassNotFoundException e) {
+      System.out.println("ERROR: ClassNotFound Exception: " + e);
+      System.exit(1);
+    } catch (IOException e) {
+      System.out.println("ERROR: IOException: " + e);
+      System.exit(1);
+    } catch (IllegalArgumentException e) {
+      System.out.println("ERROR: IllegalArgumentException: " + e);
+      System.exit(1);
+    } catch (NoSuchElementException e) {
+      System.out.println("ERROR: NoSuchElementException: " + e);
+      System.exit(1);
     }
   }
 
@@ -283,8 +271,8 @@ public final class Main {
           .put("l", Double.toString(tileToReturn.getLlng()))
           .put("r", Double.toString(tileToReturn.getRlng()))
           .put("t", Double.toString(tileToReturn.getTlat()))
-          .put("b", Double.toString(tileToReturn.getBlat()))
-          .put("ways", GSON.toJson(ways)).build();
+          .put("b", Double.toString(tileToReturn.getBlat())).put("ways", ways)
+          .build();
 
       System.out.println("okie");
       return GSON.toJson(variables);
