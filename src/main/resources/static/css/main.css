@@ -97,8 +97,7 @@ input {
 #map {
   padding: 0;
   margin: 0;
-  position: absolute;
-  border: 1px solid #FF00FF;
+  position: static;
   width: 100%;
   height: 100%;
 }

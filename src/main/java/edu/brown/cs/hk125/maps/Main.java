@@ -243,7 +243,8 @@ public final class Main {
       try {
         tileToReturn = ig.getTile(lat, lng);
       } catch (NoSuchElementException | SQLException e) {
-        System.out.println("ERROR: SQLException: " + e);
+        // System.out.println("ERROR: SQLException: " + e);
+        e.printStackTrace();
       }
 
       // This is the list of ways contained within the tile
@@ -251,18 +252,20 @@ public final class Main {
 
       // Here we convert the list of ways from LatLng format to individual
       // latitude / longitude elements
-      Map<Map<Double, Double>, Map<Double, Double>> ways = new HashMap<>();
+      Map<String, String> ways = new HashMap<>();
       //
       // System.out.println("aight");
 
       // iterate through wayList and add converted ways to ways
       for (Way way : wayList) {
-        Map<Double, Double> startMap = new HashMap<>();
-        Map<Double, Double> endMap = new HashMap<>();
-        startMap.put(way.getStartLatitude(), way.getStartLongitude());
-        endMap.put(way.getEndLatitude(), way.getEndLongitude());
+        Map<String, Double> startMap = new HashMap<>();
+        Map<String, Double> endMap = new HashMap<>();
+        startMap.put("lat", way.getStartLatitude());
+        startMap.put("lng", way.getStartLongitude());
+        endMap.put("lat", way.getEndLatitude());
+        endMap.put("lng", way.getEndLongitude());
 
-        ways.put(startMap, endMap);
+        ways.put(GSON.toJson(startMap), GSON.toJson(endMap));
       }
 
       // System.out.println("close");
@@ -271,8 +274,8 @@ public final class Main {
           .put("l", Double.toString(tileToReturn.getLlng()))
           .put("r", Double.toString(tileToReturn.getRlng()))
           .put("t", Double.toString(tileToReturn.getTlat()))
-          .put("b", Double.toString(tileToReturn.getBlat())).put("ways", ways)
-          .build();
+          .put("b", Double.toString(tileToReturn.getBlat()))
+          .put("ways", GSON.toJson(ways)).build();
 
       System.out.println("okie");
       return GSON.toJson(variables);

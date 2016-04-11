@@ -24,8 +24,8 @@ function getTile(lat, lng) {
 	$.post("/tile", postParameters, function(responseJSON){
 		responseObject = JSON.parse(responseJSON);
 		var tileCoords = {'l': responseObject.l, 'r': responseObject.r, 
-				't': responseObject.t, 'b': responseObject.b};		
-		var tileWays = responseObject.ways;
+				't': responseObject.t, 'b': responseObject.b};	
+		var tileWays = JSON.parse(responseObject.ways);
 		cache.tileCoords = tileWays;
 		drawTile(tileWays);
 	});
@@ -40,21 +40,21 @@ function drawTile(wayMap) {
 	// geographic height of map
 	var height = tLLat - bRLat;
 	
-	for (var way in Object.keys(wayMap)){
+	$.each(wayMap, function(key, value) {
 		// convert each LatLng to an (x, y)
-		alert(way);
-		startX = way.startLongitude/length * ctx.canvas.width;
-		startY = way.startLatitude/height * ctx.canvas.height;
-		endX = way.endLongitude/length * ctx.canvas.width;
-		endY = way.endLatitude/height * ctx.canvas.height;
-		alert(startX);
-		alert(startY);
+		var parsedKey = JSON.parse(key);
+		var parsedVal = JSON.parse(value);
+		
+		startX = (parsedKey.lng - tLLong)/length * ctx.canvas.width;
+		startY = (parsedKey.lat - bRLat)/height * ctx.canvas.height;
+		endX = (parsedVal.lng - tLLong)/length * ctx.canvas.width;
+		endY = (parsedVal.lat - bRLat)/height * ctx.canvas.height;
 		
     	ctx.moveTo(startX, startY);
-    	ctx.lineTo(endX, endY);
-    	        
-	}
-
+    	ctx.lineTo(endX, endY);    	        
+	})
+	
+	ctx.stroke();
 }
 
 /**
@@ -62,6 +62,9 @@ function drawTile(wayMap) {
  */
 function drawMap(tLLat, tLLong, bRLat, bRLong) {	
 	
+	// clear previous canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
 	// First we have to get the tiles each of the four corners are in
 	
 //	// top left tile
@@ -79,10 +82,10 @@ function drawMap(tLLat, tLLong, bRLat, bRLong) {
 //	drawTile(tileBR);
 	
 	//alert(getTile(tLLat, tLLong));
-	
+	ctx.beginPath();
 	getTile(tLLat, tLLong);
 	getTile(bRLat, tLLong);
 	getTile(tLLat, bRLong);
 	getTile(bRLat, bRLong);
-	ctx.stroke();
+	ctx.closePath();
 }

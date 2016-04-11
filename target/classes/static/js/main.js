@@ -62,14 +62,14 @@ $("#map").on('mousewheel', function(e) {
   // and -1 if the user scrolls down
   var zoomExp = e.originalEvent.wheelDelta/120;
   
-  // zoomFactor will equal 1.5 if the user scrolls up,
-  // and 1/1.5 = 2/3 if the user scrolls down
-  var zoomFactor = Math.pow(1.5, zoomExp);
+  // zoomFactor will equal 1/1.5 = 2/3 if the user scrolls up,
+  // and 1.5 if the user scrolls down
+  var zoomFactor = Math.pow(1.5, zoomExp*-1);
   
   // we are zooming in, and we are not currently at max zoom
   // or we are zooming out, and we are not currently at min zoom
-  if (((zoomFactor > 1) && (zoomLevel != 3)) || 
-		  ((zoomFactor < 1) && (zoomLevel != 0))) {
+  if (((zoomFactor < 1) && (zoomLevel != 3)) || 
+		  ((zoomFactor > 1) && (zoomLevel != 0))) {
 	// We want new tLLat, tLLong, bRLat, and bRLong which 
     // satisfy four restraints:
   
@@ -81,7 +81,7 @@ $("#map").on('mousewheel', function(e) {
     // where P_lat and P_long refer to the coordinates the mouse is pointing at
   
     //geographic length of map
-    var length = brLong - tLLong;
+    var length = bRLong - tLLong;
     // geographic height of map
     var height = tLLat - bRLat;
   
@@ -89,15 +89,18 @@ $("#map").on('mousewheel', function(e) {
     // leftmost and topmost coordinates of the canvas
     var cursorX = e.pageX - this.offsetLeft;
     var cursorY = e.pageY - this.offsetTop;
-    
+        
     // what fraction of the total canvas width is the x value?
     // what fraction of the total canvas height is the y value?
-    var proportionLength = cursorX / this.innerWidth;
-    var proportionHeight = cursorY / this.innerHeight;
+    var proportionLength = cursorX / ctx.canvas.width;
+    var proportionHeight = cursorY / ctx.canvas.height;
     
     // the latitude and longitude of the cursor point
     var cursorLat = proportionHeight * height + bRLat;
-    var cursorLong = proportionLength * lenght + tLLong;
+    var cursorLong = proportionLength * length + tLLong;
+    
+    console.log(cursorLat);
+    console.log(cursorLong);
     
     // So (cursorLat - bRLat)/height should not change after zooming.
     // We know height changes by a factor of zoomFactor
@@ -111,10 +114,10 @@ $("#map").on('mousewheel', function(e) {
     // -> - new_bRLat = cursorLat(zoomFactor - 1) - zoomFactor*old_bRLat
     // -> new_bRLat = cursorLat(1 - zoomFactor) + zoomFactor*old_bRLat
     var newBRLat = cursorLat*(1 - zoomFactor) + zoomFactor*bRLat;
-    var newTLLat = newbRLat + height*zoomFactor;
+    var newTLLat = newBRLat + height*zoomFactor;
     
     // similar calculations are done to find newTLLong and newBRLong
-    var newTLLong = cursorLong*(1 - zoomFactor) + zoomFactor*TLLong;
+    var newTLLong = cursorLong*(1 - zoomFactor) + zoomFactor*tLLong;
     var newBRLong = newTLLong + length*zoomFactor;
     
     tLLat = newTLLat;
@@ -122,7 +125,9 @@ $("#map").on('mousewheel', function(e) {
     bRLat = newBRLat;
     bRLong = newBRLong;
     
-    zoom += zoomExp;    
+    zoomLevel += zoomExp;
+    
+    // draw new map
     drawMap(tLLat, tLLong, bRLat, bRLong);
   }  
 });
@@ -152,8 +157,8 @@ $("#map").on('mousemove', function(e) {
 	  
 	  // what fraction of the total canvas width is the deltaX?
 	  // what fraction of the total canvas height is the deltaY?
-	  var proportionWidth = deltaX / this.innerWidth;
-	  var proportionHeight = deltaY / this.innerHeight;
+	  var proportionWidth = deltaX / ctx.canvas.width;
+	  var proportionHeight = deltaY / ctx.canvas.height;
 	  
 	  //geographic length of map
 	  var length = bRLong - tLLong;

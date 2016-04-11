@@ -22,7 +22,7 @@ public class Way {
 
   private String id;
 
-  public Way(double startLat, double startLng, double endLng, double endLat,
+  public Way(double startLat, double startLng, double endLat, double endLng,
       String wayName, String wayType, String wayId) {
     this.startLatitude = startLat;
     this.startLongitude = startLng;
