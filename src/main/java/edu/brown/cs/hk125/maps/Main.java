@@ -84,6 +84,8 @@ public final class Main {
 
   private MapsInfoGetter ig;
 
+  private KDTree<LatLng> tree;
+
   private AutoCorrector mapsAC;
 
   private static final Gson GSON = new Gson();
@@ -120,12 +122,11 @@ public final class Main {
 
     // Set it to null in case if we don't there's an error
     ig = null;
-    KDTree<LatLng> tree = null;
+    tree = null;
 
     try {
       ig = new MapsInfoGetter(db);
-      List<LatLng> elementList = ig.getLatLngList();
-      tree = new KDTree<>(elementList);
+      tree = ig.getKDTree();
       mapsAC = ig.getMapsAutoCorrector();
 
       if (options.has("gui")) {

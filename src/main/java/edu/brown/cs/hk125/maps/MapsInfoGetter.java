@@ -17,8 +17,8 @@ import edu.brown.cs.hk125.autocorrect.AutoCorrector;
 import edu.brown.cs.hk125.dijkstra.InfoGetterAStar;
 import edu.brown.cs.hk125.dijkstra.Link;
 import edu.brown.cs.hk125.dijkstra.groupLink;
+import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
-import edu.brown.cs.hk125.map.Node;
 import edu.brown.cs.hk125.map.Way;
 import edu.brown.cs.hk125.trie.Trie;
 
@@ -36,13 +36,10 @@ import edu.brown.cs.hk125.trie.Trie;
 public class MapsInfoGetter implements InfoGetterAStar, Tiler {
 
   private Connection conn;
-  private Map<String, Node> nodeCache = new HashMap<>();
-  private Map<String, Way> wayzCache = new HashMap<>();
   private Map<String, LatLng> pointCache = new HashMap<>();
+  private Map<String, Tile> tileCache = new HashMap<>();
   private Map<String, Double> trafficCache = new ConcurrentHashMap<>();
-  private Map<LatLng, LatLng> wayCache = new HashMap<>();
-  private List<Way> wayCachee = new ArrayList<>();
-  private List<Tile> tileCache = new ArrayList<>();
+  private List<Way> wayCache = new ArrayList<>();
   private static final double TILESIZE = 0.01;
 
   public MapsInfoGetter(String db) throws ClassNotFoundException, SQLException {
@@ -265,7 +262,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    * @throws SQLException
    *           , if there is an error with the query
    */
-  public List<LatLng> getLatLngList() throws SQLException {
+  public KDTree<LatLng> getKDTree() throws SQLException {
     String query = "SELECT id, latitude, longitude FROM Node";
 
     // Create a PreparedStatement
@@ -290,7 +287,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     rs.close();
     prep.close();
 
-    return elementList;
+    KDTree<LatLng> tree = new KDTree<LatLng>(elementList);
+    return tree;
   }
 
   /**
@@ -329,11 +327,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       Way newWay = new Way(start.getLat(), start.getLng(), end.getLat(),
           end.getLng(), name, type, id);
 
-      wayCachee.add(newWay);
-
-      wayzCache.put(id, newWay);
-
-      wayCache.put(start, end);
+      wayCache.add(newWay);
 
       // 1.0 is the traffic value
       trafficCache.put(id, 1.0);
@@ -391,10 +385,14 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         Tile insert = new Tile(topLatitude, bottomLatitude, leftLongitude,
             rightLongitude);
 
-        tileCache.add(insert);
+        for (Way way : wayCache) {
+          if (insert.inTile(way.getStartLatitude(), way.getStartLongitude())) {
+            insert.insertWay(way);
+          }
+        }
+        tileCache.put(insert.getId(), insert);
       }
     }
-    setTile();
   }
 
   @Override
@@ -405,86 +403,12 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       setTiles();
     }
 
-    for (Tile tile : tileCache) {
+    for (Tile tile : tileCache.values()) {
       if (tile.inTile(lat, lng)) {
         return tile;
       }
     }
     throw new NoSuchElementException();
-  }
-
-  @Override
-  public void setTile() throws SQLException, NoSuchElementException {
-    if (wayCache.isEmpty()) {
-      fillWayCache();
-    }
-    if (pointCache.isEmpty()) {
-      fillPointCache();
-    }
-
-    // run through all the LatLng values
-    for (Way way : wayCachee) {
-      // System.out.println(start.getLat());
-      // System.out.println(start.getLng());
-      // System.out.println(wayCache.get(start).getLat());
-      // System.out.println(wayCache.get(start).getLng());
-      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way);
-    }
-  }
-
-  /**
-   * fills the WayCache.
-   *
-   * @throws SQLException
-   */
-  private void fillWayCache() throws SQLException {
-    String query = "SELECT start, end FROM Way";
-
-    // Create a PreparedStatement
-    PreparedStatement prep;
-    prep = conn.prepareStatement(query);
-
-    // Execute the query and retrieve a ResultStatement
-    ResultSet rs = prep.executeQuery();
-
-    while (rs.next()) {
-      String start = rs.getString(1);
-      String end = rs.getString(2);
-      if (pointCache.isEmpty()) {
-        fillPointCache();
-      }
-      LatLng startPoint = pointCache.get(start);
-      LatLng endPoint = pointCache.get(end);
-      wayCache.put(startPoint, endPoint);
-    }
-    rs.close();
-    prep.close();
-  }
-
-  /**
-   * fills the point Cache.
-   *
-   * @throws SQLException
-   */
-  private void fillPointCache() throws SQLException {
-    String query = "SELECT id, latitude, longitude FROM Node";
-
-    // Create a PreparedStatement
-    PreparedStatement prep;
-    prep = conn.prepareStatement(query);
-
-    // Execute the query and retrieve a ResultStatement
-    ResultSet rs = prep.executeQuery();
-
-    while (rs.next()) {
-      double lat = rs.getDouble(2);
-      double lng = rs.getDouble(3);
-      String id = rs.getString(1);
-      LatLng add = new LatLng(lat, lng, id);
-      pointCache.put(id, add);
-    }
-    rs.close();
-    prep.close();
   }
 
   /**

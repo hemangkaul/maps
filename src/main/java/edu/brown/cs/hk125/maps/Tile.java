@@ -60,8 +60,7 @@ public class Tile {
     this.blat = bottomLat;
     this.llng = leftLng;
     this.rlng = rightLng;
-    this.id = "<" + Double.toString(bottomLat) + ":" + Double.toString(leftLng)
-        + ">";
+    this.id = Double.toString(bottomLat) + ":" + Double.toString(leftLng);
   }
 
   /**
@@ -126,10 +125,21 @@ public class Tile {
   }
 
   /**
+   * gets the tileWays.
+   *
    * @return the tileWays
    */
   public List<Way> getTileWays() {
     return tileWays;
+  }
+
+  /**
+   * gets the Tile id.
+   *
+   * @return the tile ID
+   */
+  public String getId() {
+    return id;
   }
 
 }
