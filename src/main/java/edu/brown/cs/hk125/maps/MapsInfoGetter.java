@@ -40,7 +40,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   private Map<String, Way> wayzCache = new HashMap<>();
   private Map<String, LatLng> pointCache = new HashMap<>();
   private Map<String, Double> trafficCache = new ConcurrentHashMap<>();
-  Map<LatLng, LatLng> wayCache = new HashMap<>();
+  private Map<LatLng, LatLng> wayCache = new HashMap<>();
+  private List<Way> wayCachee = new ArrayList<>();
   private List<Tile> tileCache = new ArrayList<>();
   private static final double TILESIZE = 0.01;
 
@@ -325,7 +326,10 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       String type = rs.getString(4);
       String id = rs.getString(5);
 
-      Way newWay = new Way(startNode, endNode, name, type, id);
+      Way newWay = new Way(start.getLat(), start.getLng(), end.getLat(),
+          end.getLng(), name, type, id);
+
+      wayCachee.add(newWay);
 
       wayzCache.put(id, newWay);
 
@@ -400,6 +404,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       System.out.println("check");
       setTiles();
     }
+
     for (Tile tile : tileCache) {
       if (tile.inTile(lat, lng)) {
         return tile;
@@ -418,14 +423,12 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     }
 
     // run through all the LatLng values
-    for (LatLng start : wayCache.keySet()) {
+    for (Way way : wayCachee) {
       // System.out.println(start.getLat());
       // System.out.println(start.getLng());
       // System.out.println(wayCache.get(start).getLat());
       // System.out.println(wayCache.get(start).getLng());
-      // getTile(start.getLat(), start.getLng()).insertWay(start,
-      // wayCache.get(start));
-
+      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way);
     }
   }
 

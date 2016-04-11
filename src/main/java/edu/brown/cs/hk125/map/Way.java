@@ -8,9 +8,13 @@ package edu.brown.cs.hk125.map;
  */
 public class Way {
 
-  private String start;
+  private double startLatitude;
 
-  private String end;
+  private double startLongitude;
+
+  private double endLatitude;
+
+  private double endLongitude;
 
   private String name;
 
@@ -18,43 +22,43 @@ public class Way {
 
   private String id;
 
-  public Way(String startNode, String endNode, String wayName, String wayType,
-      String wayId) {
-    this.start = startNode;
-    this.end = endNode;
+  public Way(double startLat, double startLng, double endLng, double endLat,
+      String wayName, String wayType, String wayId) {
+    this.startLatitude = startLat;
+    this.startLongitude = startLng;
+    this.endLatitude = endLat;
+    this.endLongitude = endLng;
     this.name = wayName;
     this.type = wayType;
     this.id = wayId;
   }
 
   /**
-   * @return the start, the start node
+   * @return the startLatitude
    */
-  public String getStart() {
-    return start;
+  public double getStartLatitude() {
+    return startLatitude;
   }
 
   /**
-   * @param start
-   *          the start to set
+   * @return the startLongitude
    */
-  public void setStart(String start) {
-    this.start = start;
+  public double getStartLongitude() {
+    return startLongitude;
   }
 
   /**
-   * @return the end
+   * @return the endLatitude
    */
-  public String getEnd() {
-    return end;
+  public double getEndLatitude() {
+    return endLatitude;
   }
 
   /**
-   * @param end
-   *          the end to set
+   * @return the endLongitude
    */
-  public void setEnd(String end) {
-    this.end = end;
+  public double getEndLongitude() {
+    return endLongitude;
   }
 
   /**

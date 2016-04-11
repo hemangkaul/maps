@@ -34,6 +34,7 @@ import com.google.gson.Gson;
 import edu.brown.cs.hk125.autocorrect.AutoCorrector;
 import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
+import edu.brown.cs.hk125.map.Way;
 import freemarker.template.Configuration;
 
 /**
@@ -130,6 +131,7 @@ public final class Main {
 
     try {
       ig = new MapsInfoGetter(db);
+      List<LatLng> elementList = ig.getLatLngList();
       mapsAC = ig.getMapsAutoCorrector();
     } catch (SQLException e) {
       System.out.println("ERROR: SQL exception: " + e);
@@ -160,7 +162,7 @@ public final class Main {
       String command;
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-      try {
+      try {// [INFO] Finished at: 2016-04-11T00:49:58-04:00
 
         List<LatLng> elementList = ig.getLatLngList();
         KDTree<LatLng> tree = new KDTree<>(elementList);
@@ -226,6 +228,8 @@ public final class Main {
    *
    */
   private static class FrontHandler implements TemplateViewRoute {
+    // @Override[INFO] Finished at: 2016-04-11T00:49:58-04:00
+
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables = ImmutableMap.of("title", "Maps");
@@ -255,34 +259,32 @@ public final class Main {
       }
 
       // This is the list of ways contained within the tile
-      Map<LatLng, LatLng> wayMap = tileToReturn.getTileWays();
+      List<Way> wayList = tileToReturn.getTileWays();
 
       // Here we convert the list of ways from LatLng format to individual
       // latitude / longitude elements
       Map<Map<Double, Double>, Map<Double, Double>> ways = new HashMap<>();
+      //
+      // System.out.println("aight");
 
-      System.out.println("aight");
-
-      // iterate through wayMap and add converted ways to ways
-      for (LatLng start : wayMap.keySet()) {
+      // iterate through wayList and add converted ways to ways
+      for (Way way : wayList) {
         Map<Double, Double> startMap = new HashMap<>();
         Map<Double, Double> endMap = new HashMap<>();
-        System.out.println(wayMap.get(start).getLat());
-        System.out.println(wayMap.get(start).getLng());
-        startMap.put(start.getLat(), start.getLng());
-        endMap.put(wayMap.get(start).getLat(), wayMap.get(start).getLng());
+        startMap.put(way.getStartLatitude(), way.getStartLongitude());
+        endMap.put(way.getEndLatitude(), way.getEndLongitude());
 
         ways.put(startMap, endMap);
       }
 
-      System.out.println("close");
+      // System.out.println("close");
 
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
           .put("l", Double.toString(tileToReturn.getLlng()))
           .put("r", Double.toString(tileToReturn.getRlng()))
           .put("t", Double.toString(tileToReturn.getTlat()))
-          .put("b", Double.toString(tileToReturn.getBlat())).put("map", ways)
-          .build();
+          .put("b", Double.toString(tileToReturn.getBlat()))
+          .put("ways", GSON.toJson(ways)).build();
 
       System.out.println("okie");
       return GSON.toJson(variables);

@@ -34,6 +34,11 @@ public class Tile {
   private double rlng;
 
   /**
+   * id.
+   */
+  private String id;
+
+  /**
    * a list of ways.
    */
   private List<Way> tileWays = new ArrayList<>();
@@ -55,6 +60,8 @@ public class Tile {
     this.blat = bottomLat;
     this.llng = leftLng;
     this.rlng = rightLng;
+    this.id = "<" + Double.toString(bottomLat) + ":" + Double.toString(leftLng)
+        + ">";
   }
 
   /**
