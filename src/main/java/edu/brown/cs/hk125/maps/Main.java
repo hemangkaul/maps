@@ -11,7 +11,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -128,7 +127,6 @@ public final class Main {
       ig = new MapsInfoGetter(db);
       tree = ig.getKDTree();
       mapsAC = ig.getMapsAutoCorrector();
-
       if (options.has("gui")) {
 
         if (options.has("port") && options.hasArgument("port")) {
@@ -140,7 +138,6 @@ public final class Main {
         }
 
         ig.setTiles();
-
         runSparkServer();
 
       } else {
@@ -253,32 +250,37 @@ public final class Main {
 
       // Here we convert the list of ways from LatLng format to individual
       // latitude / longitude elements
-      Map<String, String> ways = new HashMap<>();
+      // Map<String, String> ways = new HashMap<>();
       //
       // System.out.println("aight");
 
       // iterate through wayList and add converted ways to ways
-      for (Way way : wayList) {
-        Map<String, Double> startMap = new HashMap<>();
-        Map<String, Double> endMap = new HashMap<>();
-        startMap.put("lat", way.getStartLatitude());
-        startMap.put("lng", way.getStartLongitude());
-        endMap.put("lat", way.getEndLatitude());
-        endMap.put("lng", way.getEndLongitude());
+      // for (Way way : wayList) {
+      // Map<String, Double> startMap = new HashMap<>();
+      // Map<String, Double> endMap = new HashMap<>();
+      // startMap.put("lat", way.getStartLatitude());
+      // startMap.put("lng", way.getStartLongitude());
+      // endMap.put("lat", way.getEndLatitude());
+      // endMap.put("lng", way.getEndLongitude());
+      //
+      // ways.put(GSON.toJson(startMap), GSON.toJson(endMap));
+      // }
+      //
 
-        ways.put(GSON.toJson(startMap), GSON.toJson(endMap));
+      List<String> jsonWayList = new ArrayList<>();
+
+      for (Way way : wayList) {
+        jsonWayList.add(GSON.toJson(way));
       }
 
-      // System.out.println("close");
-
       Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("id", tileToReturn.getId())
           .put("l", Double.toString(tileToReturn.getLlng()))
           .put("r", Double.toString(tileToReturn.getRlng()))
           .put("t", Double.toString(tileToReturn.getTlat()))
           .put("b", Double.toString(tileToReturn.getBlat()))
-          .put("ways", GSON.toJson(ways)).build();
+          .put("ways", GSON.toJson(jsonWayList)).build();
 
-      System.out.println("okie");
       return GSON.toJson(variables);
 
     }

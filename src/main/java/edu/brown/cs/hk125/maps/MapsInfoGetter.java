@@ -37,7 +37,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
 
   private Connection conn;
   private Map<String, LatLng> pointCache = new HashMap<>();
-  private Map<String, Tile> tileCache = new HashMap<>();
+  private List<Tile> tileCache = new ArrayList<>();
   private Map<String, Double> trafficCache = new ConcurrentHashMap<>();
   private List<Way> wayCache = new ArrayList<>();
   private static final double TILESIZE = 0.01;
@@ -385,13 +385,21 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         Tile insert = new Tile(topLatitude, bottomLatitude, leftLongitude,
             rightLongitude);
 
-        for (Way way : wayCache) {
-          if (insert.inTile(way.getStartLatitude(), way.getStartLongitude())) {
-            insert.insertWay(way);
-          }
-        }
-        tileCache.put(insert.getId(), insert);
+        tileCache.add(insert);
       }
+    }
+    setWays();
+  }
+
+  /**
+   * set ways sets the ways for each tile.
+   *
+   * @throws SQLException
+   *           if it cannot query the tile
+   */
+  private void setWays() throws SQLException, NoSuchElementException {
+    for (Way way : wayCache) {
+      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way);
     }
   }
 
@@ -403,7 +411,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       setTiles();
     }
 
-    for (Tile tile : tileCache.values()) {
+    for (Tile tile : tileCache) {
       if (tile.inTile(lat, lng)) {
         return tile;
       }

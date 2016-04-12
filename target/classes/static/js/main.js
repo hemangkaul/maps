@@ -8,9 +8,9 @@ var tLLong = -71.414850;
 var bRLat = 41.818704;
 var bRLong = -71.390550;
 
-// zoomLevels arbitrarily set for [0, 1, 2, 3], 
+// zoomLevels arbitrarily set for [0, 1, 2, 3, 4], 
 // where the larger the number the greater the zoom.
-var zoomLevel = 0;
+var zoomLevel = 2;
 
 var canvas = document.getElementById("map");
 var ctx = canvas.getContext("2d");
@@ -30,9 +30,11 @@ var isDown = false;
 // Used for panning
 var last_position = {};
 
-// Caching the tiles as a map (though more of a list for our purposes) 
-// of tile coordinates to the tiles to draw
-var cache = {};
+// Caching the tiles
+// Since the cache key must be a string
+// We 
+var idCache = {};
+var tileCache = {};
 
 // cache format:
 // var cache = {
@@ -68,7 +70,7 @@ $("#map").on('mousewheel', function(e) {
   
   // we are zooming in, and we are not currently at max zoom
   // or we are zooming out, and we are not currently at min zoom
-  if (((zoomFactor < 1) && (zoomLevel != 3)) || 
+  if (((zoomFactor < 1) && (zoomLevel != 4)) || 
 		  ((zoomFactor > 1) && (zoomLevel != 0))) {
 	// We want new tLLat, tLLong, bRLat, and bRLong which 
     // satisfy four restraints:
@@ -169,9 +171,9 @@ $("#map").on('mousemove', function(e) {
 	  var deltaLat = height*proportionHeight;
 	  
 	  tLLat += deltaLat;
-	  tLLong += deltaLong;
+	  tLLong -= deltaLong;
 	  bRLat += deltaLat;
-	  bRLong += deltaLong;
+	  bRLong -= deltaLong;
 	  
 	  drawMap(tLLat, tLLong, bRLat, bRLong);
   }
