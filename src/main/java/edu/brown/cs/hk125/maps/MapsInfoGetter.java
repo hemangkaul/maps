@@ -175,7 +175,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         double neighborLat = rs.getDouble(3);
         double neighborLng = rs.getDouble(4);
         // length between the start and end points of the Way
-        double wayLength = LatLng.distance(lat, lng, neighborLat, neighborLng);
+        double wayLength = LatLng.distance(lat, lng, neighborLat,
+            neighborLng);
 
         // We could use the heuristicValue method but this is literally the same
         // thing, plus it vastly reduces the amount of querying necessary (i.e.
@@ -211,8 +212,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    * Not needed, so we return null!
    */
   @Override
-  public List<Link> getNeighbors(String nodeName, HashMap<String, Link> hm,
-      double extraDist) throws SQLException {
+  public List<Link> getNeighbors(String nodeName,
+      HashMap<String, Link> hm, double extraDist) throws SQLException {
     // Write the query as a string
     return null;
   }
@@ -261,7 +262,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    * @throws SQLException
    *           , if there is an error with the query
    */
-  public Map<String, Double> getLatLng(String nodeName) throws SQLException {
+  public Map<String, Double> getLatLng(String nodeName)
+      throws SQLException {
     String query = "SELECT latitude, longitude FROM Node WHERE id = ?";
 
     // Create a PreparedStatement
@@ -430,8 +432,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    */
   private void setWays() throws SQLException {
     for (Way way : wayCache.values()) {
-      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way,
-          trafficCache.get(way.getId()));
+      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(
+          way, trafficCache.get(way.getId()));
     }
   }
 
@@ -446,8 +448,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   private void setTraffic(List<String> wayIDs) throws SQLException {
     for (String wayID : wayIDs) {
       Way way = wayCache.get(wayID);
-      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way,
-          trafficCache.get(wayID));
+      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(
+          way, trafficCache.get(wayID));
     }
   }
 
@@ -461,10 +463,12 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    * @throws SQLException
    *           if there is an error querying
    */
+  @SuppressWarnings("unchecked")
   public void setInitialTraffic(int port) throws IOException, SQLException {
     String request = "http://localhost:" + port + "?last=0";
     URL url = new URL(request);
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    HttpURLConnection connection = (HttpURLConnection) url
+        .openConnection();
     connection.setRequestMethod("GET");
     BufferedReader br = new BufferedReader(new InputStreamReader(
         connection.getInputStream()));
@@ -498,12 +502,14 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    *           if there is an error with the query
    *
    */
+  @SuppressWarnings("unchecked")
   public void updateTraffic(int port) throws IOException, SQLException {
 
     String requestPrefix = "http://localhost:" + port + "?last=";
     long unixTimestamp = Instant.now().getEpochSecond();
     URL url = new URL(requestPrefix + Long.toString(unixTimestamp));
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    HttpURLConnection connection = (HttpURLConnection) url
+        .openConnection();
     connection.setRequestMethod("GET");
     BufferedReader br = new BufferedReader(new InputStreamReader(
         connection.getInputStream()));
@@ -622,7 +628,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    * Haversine formula.
    */
   @Override
-  public Double heuristicValue(String node, String endNode) throws SQLException {
+  public Double heuristicValue(String node, String endNode)
+      throws SQLException {
     Map<String, Double> nodeCoords = getLatLng(node);
     Map<String, Double> endCoords = getLatLng(endNode);
 
