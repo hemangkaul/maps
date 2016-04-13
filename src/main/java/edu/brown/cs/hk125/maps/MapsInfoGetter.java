@@ -48,9 +48,12 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   private List<Tile> tileCache = new ArrayList<>();
   private Map<String, Double> trafficCache = new ConcurrentHashMap<>();
   private Map<String, Way> wayCache = new HashMap<>();
+  private boolean trafficOn;
   private static final double TILESIZE = 0.01;
 
-  public MapsInfoGetter(String db) throws ClassNotFoundException, SQLException {
+  public MapsInfoGetter(String db, boolean trafficServerRunning)
+      throws ClassNotFoundException, SQLException {
+    this.trafficOn = trafficServerRunning;
     // Set up a connection
     Class.forName("org.sqlite.JDBC");
     // Store the connection in a field
@@ -163,7 +166,6 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         double neighborLng = rs.getDouble(4);
         // length between the start and end points of the Way
         double wayLength = LatLng.distance(lat, lng, neighborLat, neighborLng);
-        double traffic = wayLength * trafficCache.get(wayID);
 
         // We could use the heuristicValue method but this is literally the same
         // thing, plus it vastly reduces the amount of querying necessary (i.e.
@@ -171,8 +173,17 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         double heuristicLength = LatLng.distance(neighborLat, neighborLng,
             endLat, endLng);
 
-        Link toAdd = new Link(nodeName, neighbor, traffic + heuristicLength
-            + extraDist, wayID); // make
+        Link toAdd;
+        if (trafficOn) {
+          double traffic = wayLength * trafficCache.get(wayID);
+          toAdd = new Link(nodeName, neighbor, traffic + heuristicLength
+              + extraDist, wayID);
+        } else {
+          toAdd = new Link(nodeName, neighbor, wayLength + heuristicLength
+              + extraDist, wayID);
+        }
+        // make
+
         // sure
         // to
         // add

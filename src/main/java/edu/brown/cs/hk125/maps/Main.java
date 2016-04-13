@@ -114,6 +114,7 @@ public final class Main {
 
     parser.accepts("gui"); // so gui is accepted!
     parser.accepts("port").withOptionalArg().ofType(Integer.class);
+    parser.accepts("traffic");
     OptionSpec<File> database = parser.nonOptions().ofType(File.class);
     OptionSet options = parser.parse(args);
 
@@ -125,7 +126,7 @@ public final class Main {
     tree = null;
 
     try {
-      ig = new MapsInfoGetter(db);
+      ig = new MapsInfoGetter(db, options.has("traffic"));
       tree = ig.getKDTree();
       mapsAC = ig.getMapsAutoCorrector();
       if (options.has("gui")) {
