@@ -22,8 +22,10 @@ public class Way {
 
   private String id;
 
+  private double traffic;
+
   public Way(double startLat, double startLng, double endLat, double endLng,
-      String wayName, String wayType, String wayId) {
+      String wayName, String wayType, String wayId, double trafficVal) {
     this.startLatitude = startLat;
     this.startLongitude = startLng;
     this.endLatitude = endLat;
@@ -31,6 +33,22 @@ public class Way {
     this.name = wayName;
     this.type = wayType;
     this.id = wayId;
+    this.traffic = trafficVal;
+  }
+
+  /**
+   * @return the traffic
+   */
+  public double getTraffic() {
+    return traffic;
+  }
+
+  /**
+   * @param traffic
+   *          the traffic to set
+   */
+  public void setTraffic(double traffic) {
+    this.traffic = traffic;
   }
 
   /**

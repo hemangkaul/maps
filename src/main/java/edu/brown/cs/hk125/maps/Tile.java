@@ -1,7 +1,8 @@
 package edu.brown.cs.hk125.maps;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 import edu.brown.cs.hk125.map.Way;
 
@@ -41,7 +42,7 @@ public class Tile {
   /**
    * a list of ways.
    */
-  private List<Way> tileWays = new ArrayList<>();
+  private Map<String, Way> tileWays = new HashMap<>();
 
   /**
    * the constructor for a Tile.
@@ -84,8 +85,12 @@ public class Tile {
    * @param end
    *          the end point
    */
-  public void insertWay(Way way) {
-    tileWays.add(way);
+  public void insertWay(Way way, double traffic) {
+    if (tileWays.containsKey(way.getId())) {
+      tileWays.get(way.getId()).setTraffic(traffic);
+    } else {
+      tileWays.put(way.getId(), way);
+    }
   }
 
   /**
@@ -129,8 +134,8 @@ public class Tile {
    *
    * @return the tileWays
    */
-  public List<Way> getTileWays() {
-    return tileWays;
+  public Collection<Way> getTileWays() {
+    return tileWays.values();
   }
 
   /**
