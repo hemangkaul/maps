@@ -1,7 +1,6 @@
 package edu.brown.cs.hk125.maps;
 
 import java.sql.SQLException;
-import java.util.NoSuchElementException;
 
 /**
  * Tiler is an interface which models tiling.
@@ -27,8 +26,6 @@ public interface Tiler {
    * @param lng
    *          the longitude of the point
    * @return the Tile it is in
-   * @throws NoSuchElementException
-   *           if no such tile exists
    * @throws SQLException
    *           if there is an issue with the query
    */
