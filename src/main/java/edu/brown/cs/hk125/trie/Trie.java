@@ -30,6 +30,12 @@ public class Trie {
 
   /**
    * the constructor of the Trie.
+   *
+   * @param corpus
+   *          the words
+   * @param single
+   *          a boolean which decides whether to look at each word in the corpus
+   *          as a full word or as each of its composite parts
    */
   public Trie(List<String> corpus, boolean single) {
     this.root = new Node(null, false);
@@ -124,6 +130,8 @@ public class Trie {
    *
    * @param corpus
    *          the list of all the words to be added.
+   * @param single
+   *          the boolean representing whether to consider multi-words
    */
   private void setTrie(List<String> corpus, boolean single) {
     unigrams = HashMultiset.create();

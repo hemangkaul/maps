@@ -11,9 +11,19 @@ package edu.brown.cs.hk125.dijkstra;
  * @author sl234
  *
  */
-public class groupLink extends Link {
+public class GroupLink extends Link {
 
-  public groupLink(String source, Double distance, String name) {
+  /**
+   * the constructor for a grouplink.
+   *
+   * @param source
+   *          the source
+   * @param distance
+   *          the distance
+   * @param name
+   *          the name
+   */
+  public GroupLink(String source, Double distance, String name) {
     super(source, "", distance, name);
   }
 }

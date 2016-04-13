@@ -28,8 +28,7 @@ public class AStar extends Dijkstra {
    *           infoGetter; if that process requires querying, an error may be
    *           produced here.
    */
-  public AStar(String startNode, InfoGetterAStar ig)
-      throws IllegalArgumentException, SQLException {
+  public AStar(String startNode, InfoGetterAStar ig) throws SQLException {
     super(startNode, ig);
   }
 
@@ -38,6 +37,10 @@ public class AStar extends Dijkstra {
    *
    * The distances of these neighbors is adjusted to account for A* search
    *
+   * @param discovered
+   *          the discovered nodes so far
+   * @param endNode
+   *          the endNode
    * @throws SQLException
    *           , if the infogetter uses SQL querying and there is an error in
    *           the querying
@@ -45,7 +48,7 @@ public class AStar extends Dijkstra {
    *           , if the stop node isn't in the database
    */
   private void addNewestNeighborsAStar(HashMap<String, Link> discovered,
-      String endNode) throws SQLException, IllegalArgumentException {
+      String endNode) throws SQLException {
     String newest = getNewest();
     PriorityQueue<Link> closestUndiscovered = getClosestUndiscovered();
     InfoGetterAStar ig = (InfoGetterAStar) getIg();
@@ -96,8 +99,7 @@ public class AStar extends Dijkstra {
    *           , if the stopNode is not in the database
    */
   @Override
-  public HashMap<String, Link> findPaths(String stop) throws SQLException,
-      IllegalArgumentException {
+  public HashMap<String, Link> findPaths(String stop) throws SQLException {
 
     HashMap<String, Link> discovered = getDiscovered();
     // A copy of our current HashMap of discovered nodes

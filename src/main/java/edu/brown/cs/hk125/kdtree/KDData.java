@@ -12,7 +12,7 @@ public interface KDData {
    *
    * @return the number of dimensions
    */
-  public int dimensions();
+  int dimensions();
 
   /**
    * compareDimension compares along a dimension.
@@ -24,7 +24,7 @@ public interface KDData {
    * @return positive, if current is greater than other on dimension dim,
    *         negative if current is less and 0 if they are equal.
    */
-  public double compareDimension(int dim, KDData other);
+  double compareDimension(int dim, KDData other);
 
   /**
    * distance gives the distance between two KDData.
@@ -34,6 +34,6 @@ public interface KDData {
    * @return a non negative double representing the distance between the two
    *         data
    */
-  public double distance(KDData other);
+  double distance(KDData other);
 
 }

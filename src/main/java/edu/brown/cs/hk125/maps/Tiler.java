@@ -15,8 +15,9 @@ public interface Tiler {
    * sets the tiles.
    *
    * @throws SQLException
+   *           if there is an issue with the query
    */
-  public void setTiles() throws SQLException;
+  void setTiles() throws SQLException;
 
   /**
    * given a point return the tile it is in.
@@ -31,7 +32,6 @@ public interface Tiler {
    * @throws SQLException
    *           if there is an issue with the query
    */
-  public Tile getTile(double lat, double lng) throws NoSuchElementException,
-      SQLException;
+  Tile getTile(double lat, double lng) throws SQLException;
 
 }

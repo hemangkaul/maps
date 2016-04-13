@@ -56,7 +56,8 @@ public class Tile {
    * @param rightLng
    *          the rightmost longitude value
    */
-  public Tile(double topLat, double bottomLat, double leftLng, double rightLng) {
+  public Tile(double topLat, double bottomLat, double leftLng,
+      double rightLng) {
     this.tlat = topLat;
     this.blat = bottomLat;
     this.llng = leftLng;
@@ -80,10 +81,10 @@ public class Tile {
   /**
    * inserts a kv pair of start and end to the tileWays.
    *
-   * @param start
-   *          the start point
-   * @param end
-   *          the end point
+   * @param way
+   *          the way to be added
+   * @param traffic
+   *          the traffic of the way
    */
   public void insertWay(Way way, double traffic) {
     if (tileWays.containsKey(way.getId())) {

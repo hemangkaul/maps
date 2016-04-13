@@ -1,5 +1,7 @@
 package edu.brown.cs.hk125.point;
 
+import com.google.common.base.Objects;
+
 import edu.brown.cs.hk125.kdtree.KDData;
 
 /**
@@ -63,6 +65,11 @@ public class Point implements KDData {
   @Override
   public String toString() {
     return "(" + x + ", " + y + ")";
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.x, this.y);
   }
 
   @Override

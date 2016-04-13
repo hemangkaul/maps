@@ -81,22 +81,46 @@ public final class Main {
 
   // args is the command line argument, returned as an array of strings
   // does not include ./run or ./runCorrect if present
+  /**
+   * the command line arguments.
+   */
   private String[] args;
 
+  /**
+   * the database.
+   */
   private String db;
 
+  /**
+   * the infogetter.
+   */
   private MapsInfoGetter ig;
 
+  /**
+   * the kdtree.
+   */
   private KDTree<LatLng> tree;
 
+  /**
+   * the autoCorrector.
+   */
   private AutoCorrector mapsAC;
 
+  /**
+   * the Gson.
+   */
   private static final Gson GSON = new Gson();
 
   // GSOn used to handle Json translations between backend / frontend
 
-  private Main(String[] args) {
-    this.args = args;
+  /**
+   * a private main method to keep the main method simple.
+   *
+   * @param arguments
+   *          the arguments given
+   */
+  private Main(String[] arguments) {
+    this.args = arguments;
   }
 
   /**
@@ -148,7 +172,8 @@ public final class Main {
       } else {
 
         String command;
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(
+            System.in));
 
         System.out.println("Ready");
 
@@ -188,9 +213,15 @@ public final class Main {
     }
   }
 
+  /**
+   * creates an engine.
+   *
+   * @return the freemarker engine
+   */
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
-    File templates = new File("src/main/resources/spark/template/freemarker");
+    File templates = new File(
+        "src/main/resources/spark/template/freemarker");
     try {
       config.setDirectoryForTemplateLoading(templates);
     } catch (IOException ioe) {
@@ -201,6 +232,9 @@ public final class Main {
     return new FreeMarkerEngine(config);
   }
 
+  /**
+   * runs the spark server.
+   */
   private void runSparkServer() {
     Spark.externalStaticFileLocation("src/main/resources/static");
     Spark.exception(Exception.class, new ExceptionPrinter());
@@ -211,8 +245,8 @@ public final class Main {
     Spark.get("/home", new FrontHandler(), freeMarker);
     Spark.post("/autocorrect", new AutoCorrectHandler());
     Spark.post("/tile", new TileHandler());
-    Spark.post("/getPath", new getPathHandler());
-    Spark.post("/nearestNeighbor", new nearestHandler());
+    Spark.post("/getPath", new GetPathHandler());
+    Spark.post("/nearestNeighbor", new NearestHandler());
   }
 
   /**
@@ -302,7 +336,14 @@ public final class Main {
    *
    */
   private class AutoCorrectHandler implements Route {
+    /**
+     * index five.
+     */
     public static final int IND_FIVE = 4;
+
+    /**
+     * index four.
+     */
     public static final int IND_FOUR = 3;
 
     // we need these to avoid Magic Style error
@@ -340,7 +381,8 @@ public final class Main {
 
       Map<String, String> variables = new ImmutableMap.Builder<String, String>()
           .put("first", topFive.get(0)).put("second", topFive.get(1))
-          .put("third", topFive.get(2)).put("fourth", topFive.get(IND_FOUR))
+          .put("third", topFive.get(2))
+          .put("fourth", topFive.get(IND_FOUR))
           .put("fifth", topFive.get(IND_FIVE)).build();
 
       return GSON.toJson(variables);
@@ -354,7 +396,7 @@ public final class Main {
    * @author hk125
    *
    */
-  private class getPathHandler implements Route {
+  private class GetPathHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
@@ -434,7 +476,7 @@ public final class Main {
    * @author hk125
    *
    */
-  private class nearestHandler implements Route {
+  private class NearestHandler implements Route {
     @Override
     public Object handle(final Request req, final Response res) {
       QueryParamsMap qm = req.queryMap();
@@ -464,6 +506,9 @@ public final class Main {
    *
    */
   private static class ExceptionPrinter implements ExceptionHandler {
+    /**
+     * the status number.
+     */
     public static final int STATUS_NUM = 500; // needed to prevent magic
                                               // number
                                               // error

@@ -13,36 +13,36 @@ import java.util.List;
  * @author sl234
  *
  */
-public interface InfoGetterAStar extends infoGetter {
+public interface InfoGetterAStar extends InfoGetter {
 
   /**
-   * Returns a list of the given node's undiscovered neighbors, where the
-   * distances of those neighbors are altered by the specifications of A*
-   * search.
+   * Returns a list of all the node's undiscovered neighbors, with one
+   * additional consideration: the "distance" value for the neighbor is the
+   * normal distance value (distance from neighbor to start node + extraDist)
+   * plus the distance from the neighbor to the end node (A* search).
+   *
+   * The distance from the neighbor to the end node is added to implement A*
+   * search; this optimizes the search algorithm to try and get it to search
+   * more in the general direction of the destination, thus
    *
    * @param nodeName
-   *          , name of the node whose neighbors we are searching for
+   *          , the id of the Node
    * @param endNode
-   *          , name of the node we are searching for in the overall dijkstra
-   *          process
+   *          , the id of the end Node
    * @param hm
-   *          , a hashMap containing neighbors which are 'not allowed.' I.e. we
-   *          want to find the neighbors NOT in this hashmap!
+   *          , a hashmap of discovered nodes
    * @param extraDist
-   *          , when we return our neighbors, we add 'extraDist' to the distance
-   *          variable of the neighbor.
-   * @return a list of the given node's undiscovered neighbors, where the
-   *         distances of those neighbors are altered by the specifications of
-   *         A* search.
-   * @throws SQLException
-   *           , if SQL querying is used and there is an issue with the query
+   *          , the distance from the node to the start node, added to the
+   *          distance value of each neighbor
+   * @return a list of all the node's undiscovered neighbors
    *
+   * @throws SQLException
+   *           , if there are errors in the query!
    * @throws IllegalArgumentException
-   *           , if the end Node is not in the database
+   *           , if there are Illegal arguments given!
    */
-  public List<Link> getNeighborsAStar(String nodeName, String endNode,
-      HashMap<String, Link> hm, double extraDist) throws SQLException,
-      IllegalArgumentException;
+  List<Link> getNeighborsAStar(String nodeName, String endNode,
+      HashMap<String, Link> hm, double extraDist) throws SQLException;
 
   /**
    * Returns the heuristic value of a node, given a specified endNode.
@@ -57,6 +57,5 @@ public interface InfoGetterAStar extends infoGetter {
    * @throws IllegalArgumentException
    *           , if node or endNode are not in the infoGetter! Wah!
    */
-  public Double heuristicValue(String node, String endNode)
-      throws SQLException, IllegalArgumentException;
+  Double heuristicValue(String node, String endNode) throws SQLException;
 }

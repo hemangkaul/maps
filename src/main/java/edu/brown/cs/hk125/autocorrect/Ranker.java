@@ -39,7 +39,7 @@ public class Ranker {
   private String previous;
 
   /**
-   * the max matches
+   * the max matches.
    */
   private static final int MAX = 10;
 
@@ -63,6 +63,14 @@ public class Ranker {
     this.previous = prev;
   }
 
+  /**
+   * the constructor for the ranker.
+   *
+   * @param unis
+   *          the unigrams
+   * @param matches
+   *          the matches
+   */
   public Ranker(Multiset<String> unis, Multiset<String> matches) {
     this.unigrams = unis;
     this.bigrams = null;

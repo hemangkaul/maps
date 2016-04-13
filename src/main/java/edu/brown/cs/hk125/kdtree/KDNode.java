@@ -1,8 +1,12 @@
 package edu.brown.cs.hk125.kdtree;
 
+import com.google.common.base.Objects;
+
 /**
  * KDNode represents a node of the KD Tree.
  *
+ * @param <T>
+ *          the type of the KDData
  * @author hk125
  *
  */
@@ -42,15 +46,15 @@ public class KDNode<T extends KDData> {
   /**
    * checks if the datum is valid.
    *
-   * @param datum
+   * @param data
    *          the datum to be set
    * @return the KDData
    */
-  private T checkDatum(T datum) {
-    if (datum.equals(null)) {
+  private T checkDatum(T data) {
+    if (data.equals(null)) {
       throw new IllegalArgumentException(datum + "is null");
     } else {
-      return datum;
+      return data;
     }
   }
 
@@ -122,7 +126,13 @@ public class KDNode<T extends KDData> {
     }
     KDNode<T> other = (KDNode<T>) o;
     return ((this.datum.equals(other.datum))
-        && (this.right.equals(other.right)) && (this.left.equals(other.left)));
+        && (this.right.equals(other.right)) && (this.left
+          .equals(other.left)));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.datum, this.right, this.left);
   }
 
   @Override

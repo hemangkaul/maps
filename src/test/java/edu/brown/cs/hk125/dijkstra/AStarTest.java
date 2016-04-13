@@ -149,7 +149,7 @@ public class AStarTest {
     }
 
     @Override
-    public ArrayList<Link> expandGroupLink(groupLink g, HashMap<String, Link> hm)
+    public ArrayList<Link> expandGroupLink(GroupLink g, HashMap<String, Link> hm)
         throws SQLException {
       // We will not be using expandGroupLink here
       return null;

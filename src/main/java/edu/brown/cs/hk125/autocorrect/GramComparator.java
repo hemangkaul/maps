@@ -32,14 +32,15 @@ public class GramComparator implements Comparator<String> {
   /**
    * the constructor for GramComparator.
    *
-   * @param unigrams
+   * @param unis
    *          the set of unigrams
-   * @param bigrams
+   * @param bis
    *          the set of bigrams
-   * @param previous
+   * @param prev
    *          the previous string
    */
-  public GramComparator(Multiset<String> unis, Multiset<Bigram> bis, String prev) {
+  public GramComparator(Multiset<String> unis, Multiset<Bigram> bis,
+      String prev) {
     this.unigrams = unis;
     this.bigrams = bis;
     this.previous = prev;

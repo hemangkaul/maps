@@ -13,12 +13,12 @@ public class Bigram {
   /**
    * the previous word.
    */
-  public String prev;
+  private String prev;
 
   /**
    * the word itself.
    */
-  public String word;
+  private String word;
 
   /**
    * constructor for Bigram class.
@@ -31,6 +31,24 @@ public class Bigram {
   public Bigram(String previous, String current) {
     this.prev = previous;
     this.word = current;
+  }
+
+  /**
+   * gets the previous.
+   *
+   * @return the prev
+   */
+  public String getPrev() {
+    return prev;
+  }
+
+  /**
+   * gets the word.
+   *
+   * @return the word
+   */
+  public String getWord() {
+    return word;
   }
 
   @Override
@@ -52,6 +70,7 @@ public class Bigram {
       return false;
     }
     Bigram other = (Bigram) o;
-    return ((this.prev.equals(other.prev)) && (this.word.equals(other.word)));
+    return ((this.prev.equals(other.prev)) && (this.word
+        .equals(other.word)));
   }
 }

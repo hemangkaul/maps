@@ -3,6 +3,8 @@ package edu.brown.cs.hk125.trie;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.google.common.base.Objects;
+
 /**
  * Node class for Trie.
  *
@@ -114,7 +116,7 @@ public class Node {
 
   @Override
   public boolean equals(Object o) {
-    if (o.equals(null)) {
+    if (o == null) {
       return false;
     }
     if (!(o instanceof Node)) {
@@ -125,6 +127,11 @@ public class Node {
         && (this.terminal == other.terminal)
         && (this.children.equals(other.children));
     return isEqual;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.c, this.terminal, this.children);
   }
 
   @Override

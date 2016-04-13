@@ -31,7 +31,7 @@ public class Generator {
    * Returns a Generator with sorting properties (prefix, whitespace, led, etc.)
    * that will be able to generate suggestions for inputed words.
    *
-   * @param trie
+   * @param inputTrie
    *          , the trie for the Generator to access for information
    */
   public Generator(Trie inputTrie) {
@@ -39,6 +39,8 @@ public class Generator {
   }
 
   /**
+   * gets the trie.
+   *
    * @return the trie
    */
   public Trie getTrie() {
@@ -46,9 +48,10 @@ public class Generator {
   }
 
   /**
-   * @param trie
-   *          the trie to setimport com.google.common.collect.Multimap; import
-   *          com.google.common.collect.TreeMultimap;
+   * sets the Trie.
+   *
+   * @param inputTrie
+   *          the trie to set
    */
   public void setTrie(Trie inputTrie) {
     this.trie = inputTrie;

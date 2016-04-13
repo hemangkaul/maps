@@ -2,12 +2,15 @@ package edu.brown.cs.hk125.kdtree;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.google.common.collect.MinMaxPriorityQueue;
 
 /**
  * KDTree is a class which represents the KDTree data structure.
  *
+ * @param <T>
+ *          the type of the KDData
  * @author hk125
  *
  */
@@ -142,7 +145,7 @@ public class KDTree<T extends KDData> {
   }
 
   /**
-   * findkNN returns a list of k nearest neighbors
+   * findkNN returns a list of k nearest neighbors.
    *
    * @param target
    *          the target you wish to compare to
@@ -157,7 +160,8 @@ public class KDTree<T extends KDData> {
     MinMaxPriorityQueue<T> best = MinMaxPriorityQueue
         .orderedBy(new KDDistanceComparator(target)).maximumSize(k + 1)
         .create();
-    MinMaxPriorityQueue<T> bestQ = findkNNHelper(0, target, best, root, k + 1);
+    MinMaxPriorityQueue<T> bestQ = findkNNHelper(0, target, best, root,
+        k + 1);
     List<T> bestList = new ArrayList<>();
     bestList.addAll(bestQ);
     bestList.remove(target);
@@ -166,7 +170,7 @@ public class KDTree<T extends KDData> {
   }
 
   /**
-   * helper function for findkNN
+   * helper function for findkNN.
    *
    * @param dimension
    *          dimension to search on
@@ -194,8 +198,8 @@ public class KDTree<T extends KDData> {
     boolean wentLeft;
 
     if (target.compareDimension(dimension, current) < 0) {
-      best = findkNNHelper((dimension + 1) % dim, target, best, curr.getLeft(),
-          k);
+      best = findkNNHelper((dimension + 1) % dim, target, best,
+          curr.getLeft(), k);
       wentLeft = true;
     } else {
       best = findkNNHelper((dimension + 1) % dim, target, best,
@@ -203,8 +207,9 @@ public class KDTree<T extends KDData> {
       wentLeft = false;
     }
 
-    boolean bestYet = (Math.abs(target.compareDimension(dimension, current)) < best
-        .peekLast().distance(target));
+    boolean bestYet = (Math.abs(target
+        .compareDimension(dimension, current)) < best.peekLast().distance(
+        target));
 
     if (bestYet || !(best.size() == k)) {
       if (wentLeft) {
@@ -264,18 +269,22 @@ public class KDTree<T extends KDData> {
     boolean wentLeft;
 
     if (target.compareDimension(dimension, curr.getDatum()) < 0) {
-      rsHelper((dimension + 1) % dim, inside, target, radius, curr.getLeft());
+      rsHelper((dimension + 1) % dim, inside, target, radius,
+          curr.getLeft());
       wentLeft = true;
     } else {
-      rsHelper((dimension + 1) % dim, inside, target, radius, curr.getRight());
+      rsHelper((dimension + 1) % dim, inside, target, radius,
+          curr.getRight());
       wentLeft = false;
     }
 
     if (Math.abs(target.compareDimension(dimension, curr.getDatum())) < radius) {
       if (wentLeft) {
-        rsHelper((dimension + 1) % dim, inside, target, radius, curr.getRight());
+        rsHelper((dimension + 1) % dim, inside, target, radius,
+            curr.getRight());
       } else {
-        rsHelper((dimension + 1) % dim, inside, target, radius, curr.getLeft());
+        rsHelper((dimension + 1) % dim, inside, target, radius,
+            curr.getLeft());
       }
     }
 
@@ -296,11 +305,23 @@ public class KDTree<T extends KDData> {
   }
 
   @Override
+  public int hashCode() {
+    return Objects.hashCode(this.root);
+  }
+
+  @Override
   public String toString() {
     return toStringHelp(root).toString();
   }
 
-  private StringBuilder toStringHelp(KDNode<T> root) {
+  /**
+   * helps to build the string.
+   *
+   * @param origin
+   *          the root of the KDTree
+   * @return the top three kd nodes.
+   */
+  private StringBuilder toStringHelp(KDNode<T> origin) {
     // if (root == null) {
     // return new StringBuilder("");
     // }
@@ -308,9 +329,9 @@ public class KDTree<T extends KDData> {
     // main.append(toStringHelp(root.getLeft()).toString());
     // main.append(toStringHelp(root.getRight()).toString());
     // return main;
-    StringBuilder main = new StringBuilder(root.getDatum().toString());
-    main.append(root.getLeft().toString());
-    main.append(root.getRight().toString());
+    StringBuilder main = new StringBuilder(origin.getDatum().toString());
+    main.append(origin.getLeft().toString());
+    main.append(origin.getRight().toString());
     return main;
 
   }
