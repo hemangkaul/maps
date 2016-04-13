@@ -5,11 +5,13 @@
 // we use the clear variable to clear the map... i.e. 
 // when clear is true, no shortest paths are drawn!
 var clear = true;
-var wayList = [];
+var shortestPathWays = [];
 
-("#submit").on('click', function() {
-	$.post('/getPath', $("#inputForm").serialize(), function(responseJSON) {
+$("#inputForm").on('submit', function() {
+	$.post('/getPath', $("#inputForm").serializeArray(), function(responseJSON) {
 		responseObject = JSON.parse(responseJSON);
+		
+		console.log(responseObject.message);
 		
 		// Set the error message!
 		$("#first").text(responseObject.message);
@@ -25,16 +27,16 @@ var wayList = [];
 		}
 		else { // we have found a valid path!
 			clear = false;
-			wayList = JSON.parse(responseObject.ways);
+			shortestPathWays = JSON.parse(responseObject.ways);
 			drawShortestPath();
 		}
-	});		
+	});
+	// stop the get in the html descriptoin
+	return false;
 })
 
 function drawShortestPath() {
 	
-	// blue, not red, for the path!
-	ctx.fillStyle = "#0000FF";
 	// geographic length of map
 	var length = rightLong - leftLong;
 	// geographic height of map
@@ -43,7 +45,12 @@ function drawShortestPath() {
 	if (clear == true)
 		return;
 	
-	$.each(wayList, function(index, value) {
+	// blue, not red, for the path!
+	
+	ctx.beginPath();
+	$.each(shortestPathWays, function(index, value) {
+		
+		console.log(shortestPathWays);
 		
 		var parsedWay = JSON.parse(value);
 		
@@ -66,6 +73,7 @@ function drawShortestPath() {
 			endX = (eLng - leftLong)/length * ctx.canvas.width;
 			endY = (topLat - eLat)/height * ctx.canvas.height;
 			
+			ctx.strokeStyle = "#0000FF";
 			ctx.moveTo(startX, startY);
 	    	ctx.lineTo(endX, endY); 	
 		}

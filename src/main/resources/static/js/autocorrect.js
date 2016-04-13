@@ -9,6 +9,11 @@ $("#streetOne").on('keyup', function() {
 	var postParameters = {"street": sOne};
 	$.post("/autocorrect", postParameters, function(responseJSON){
 		responseObject = JSON.parse(responseJSON);
+		
+		// make background green if not already
+		$("#first").css('background', '#D0FBE0');
+		
+		//set text
 		$("#first").text(responseObject.first);
 		$("#second").text(responseObject.second);
 		$("#third").text(responseObject.third);
@@ -23,6 +28,11 @@ $("#crossOne").on('keyup', function() {
 	var postParameters = {"street": cOne};
 	$.post("/autocorrect", postParameters, function(responseJSON){
 		responseObject = JSON.parse(responseJSON);
+		
+		// make background green if not already
+		$("#first").css('background', '#D0FBE0');
+		
+		// set text
 		$("#first").text(responseObject.first);
 		$("#second").text(responseObject.second);
 		$("#third").text(responseObject.third);
@@ -37,6 +47,11 @@ $("#streetTwo").on('keyup', function() {
 	var postParameters = {"street": sTwo};
 	$.post("/autocorrect", postParameters, function(responseJSON){
 		responseObject = JSON.parse(responseJSON);
+		
+		// make background green if not already
+		$("#first").css('background', '#D0FBE0');
+		
+		// set text
 		$("#first").text(responseObject.first);
 		$("#second").text(responseObject.second);
 		$("#third").text(responseObject.third);
@@ -51,6 +66,11 @@ $("#crossTwo").on('keyup', function() {
 	var postParameters = {"street": cTwo};
 	$.post("/autocorrect", postParameters, function(responseJSON){
 		responseObject = JSON.parse(responseJSON);
+		
+		// make background green if not already
+		$("#first").css('background', '#D0FBE0');
+		
+		// set text
 		$("#first").text(responseObject.first);
 		$("#second").text(responseObject.second);
 		$("#third").text(responseObject.third);

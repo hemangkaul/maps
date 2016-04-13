@@ -163,8 +163,8 @@ public final class Main {
           //
           // System.out.println(ac.suggestions(command));
           ig.setTiles();
-          ig.setInitialTraffic(3456);
-          System.out.println("Traffic updated");
+          // ig.setInitialTraffic(3456);
+          // System.out.println("Traffic updated");
           ReadEvaluatePrintLoop.execute(command, tree, ig);
           System.out.println("Ready");
         }
@@ -365,6 +365,11 @@ public final class Main {
       String streetTwo = qm.value("streetTwo");
       String crossTwo = qm.value("crossTwo");
 
+      System.out.println(streetOne);
+      System.out.println(crossOne);
+      System.out.println(streetTwo);
+      System.out.println(crossTwo);
+
       // Getting the intersection nodes...
       String startNode;
       String endNode;
@@ -373,8 +378,10 @@ public final class Main {
       List<String> jsonWayList = new ArrayList<>();
 
       try {
-        startNode = ig.getIntersection(streetOne, crossOne);
-        endNode = ig.getIntersection(streetTwo, crossTwo);
+        startNode = ig.getIntersection(streetOne.toLowerCase(),
+            crossOne.toLowerCase());
+        endNode = ig.getIntersection(streetTwo.toLowerCase(),
+            crossTwo.toLowerCase());
 
         // A new AStar search!
         Dijkstra maps = new AStar(startNode, ig);

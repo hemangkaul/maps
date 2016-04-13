@@ -24,7 +24,7 @@
           <h3>End Point</h3>
           <label>Street </label><input type="text" name="streetTwo" id="streetTwo" /><br>
           <label>Cross Street </label><input type="text" name="crossTwo" id="crossTwo" /><br><br><br>
-          <input type="submit" id="submit" value="Find Path!" />
+          <input type="submit" id="submit" value="Find Path!"/>
         </form>
       </div>
       <div class="autocorrect" id="first"></div>
@@ -39,9 +39,11 @@
 
     <!-- Again, we're serving up the unminified source for clarity. -->
     <script type="text/javascript" src="js/jquery-2.1.1.js"></script>
+    <script type="text/javascript" src="js/getPath.js"></script>
     <script type="text/javascript" src="js/draw.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
     <script type="text/javascript" src="js/autocorrect.js"></script>
+
 </body>
 <!-- See http://html5boilerplate.com/ for a good place to start
        dealing with real world issues like old browsers.  -->

@@ -529,13 +529,18 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    */
   public String getIntersection(String street, String crossStreet)
       throws SQLException, IllegalArgumentException {
-    String query = "SELECT name, start, end FROM Way WHERE (name == ?) OR (name == ?)";
+    String query = "SELECT name, start, end FROM Way WHERE (LOWER(name) == ?) OR (LOWER(name) == ?)";
 
     // Create a PreparedStatement
     PreparedStatement prep;
     prep = conn.prepareStatement(query);
-    prep.setString(1, street);
-    prep.setString(2, crossStreet);
+
+    // Making our program case agnostic...
+    String lowerStreet = street.toLowerCase();
+    String lowerCross = crossStreet.toLowerCase();
+
+    prep.setString(1, lowerStreet);
+    prep.setString(2, lowerCross);
     // Sets the street names in the query
 
     // Execute the query and retrieve a ResultStatement
@@ -548,12 +553,12 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     List<String> crossNodes = new ArrayList<>();
 
     while (rs.next()) {
-      if (rs.getString(1).equals(street)) {
+      if (rs.getString(1).toLowerCase().equals(lowerStreet)) {
         // is the street named 'street'
         streetNodes.add(rs.getString(2));
         streetNodes.add(rs.getString(3));
       }
-      if (rs.getString(1).equals(crossStreet)) {
+      if (rs.getString(1).toLowerCase().equals(lowerCross)) {
         // is the street named 'crossStreet?'
         // Note if street and crossStreet have the same name,
         // the nodes will be added to both lists!

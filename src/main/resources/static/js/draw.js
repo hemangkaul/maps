@@ -70,7 +70,6 @@ function drawTile(wayList) {
 //    	ctx.moveTo(startX, startY);
 //    	ctx.lineTo(endX, endY);    	        
 //	})
-	
 	ctx.stroke();
 }
 
@@ -79,6 +78,8 @@ function drawTile(wayList) {
  */
 function drawMap(topLat, leftLong, bottomLat, rightLong) {	
 	
+	
+	ctx.strokeStyle = "#00FF00";
 	// clear previous canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -96,11 +97,8 @@ function drawMap(topLat, leftLong, bottomLat, rightLong) {
 		curLat += tileHeight;
 		curLng = leftLong;
 	}
-	
 	// if there is currently a search query for the shortest path, 
 	// we draw that too
+	ctx.beginPath();
 	drawShortestPath();
-	
-	ctx.closePath();
-//	console.log(idCache);
 }

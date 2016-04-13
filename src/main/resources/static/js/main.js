@@ -157,7 +157,7 @@ $("#map").on('mousewheel', function(e) {
  */
 $("#map").on('mousedown', function(e) {
   isDown = true;
-  last_position = { x: e.pageX, y: e.pageY}
+  last_position = {x: e.pageX, y: e.pageY}
 });
 
 $("#map").on('mousemove', function(e) {
