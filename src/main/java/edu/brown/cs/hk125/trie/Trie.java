@@ -158,6 +158,9 @@ public class Trie {
               bigrams.add(bigram);
             }
           }
+        } else {
+          unigrams.add(token);
+          insert(token);
         }
       }
     }
