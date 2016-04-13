@@ -96,6 +96,11 @@ function drawMap(topLat, leftLong, bottomLat, rightLong) {
 		curLat += tileHeight;
 		curLng = leftLong;
 	}
+	
+	// if there is currently a search query for the shortest path, 
+	// we draw that too
+	drawShortestPath();
+	
 	ctx.closePath();
 //	console.log(idCache);
 }
