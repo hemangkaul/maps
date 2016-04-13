@@ -51,7 +51,7 @@ public class KDNode<T extends KDData> {
    * @return the KDData
    */
   private T checkDatum(T data) {
-    if (data.equals(null)) {
+    if (data == null) {
       throw new IllegalArgumentException(datum + "is null");
     } else {
       return data;
@@ -118,7 +118,7 @@ public class KDNode<T extends KDData> {
   @SuppressWarnings("unchecked")
   @Override
   public boolean equals(Object o) {
-    if (o.equals(null)) {
+    if (o == null) {
       return false;
     }
     if (!(o instanceof KDNode)) {
@@ -126,8 +126,7 @@ public class KDNode<T extends KDData> {
     }
     KDNode<T> other = (KDNode<T>) o;
     return ((this.datum.equals(other.datum))
-        && (this.right.equals(other.right)) && (this.left
-          .equals(other.left)));
+        && (this.right.equals(other.right)) && (this.left.equals(other.left)));
   }
 
   @Override

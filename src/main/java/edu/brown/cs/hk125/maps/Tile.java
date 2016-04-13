@@ -1,5 +1,6 @@
 package edu.brown.cs.hk125.maps;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,8 +55,7 @@ public class Tile {
    * @param rightLng
    *          the rightmost longitude value
    */
-  public Tile(double topLat, double bottomLat, double leftLng,
-      double rightLng) {
+  public Tile(double topLat, double bottomLat, double leftLng, double rightLng) {
     this.tlat = topLat;
     this.blat = bottomLat;
     this.llng = leftLng;
@@ -134,6 +134,10 @@ public class Tile {
    * @return the tileWays
    */
   public Collection<Way> getTileWays() {
+    if (tileWays.isEmpty()) {
+      Collection<Way> ways = new ArrayList<Way>();
+      return ways;
+    }
     return tileWays.values();
   }
 

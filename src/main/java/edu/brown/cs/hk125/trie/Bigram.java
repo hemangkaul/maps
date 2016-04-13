@@ -1,5 +1,7 @@
 package edu.brown.cs.hk125.trie;
 
+import java.io.Serializable;
+
 import com.google.common.base.Objects;
 
 /**
@@ -8,7 +10,12 @@ import com.google.common.base.Objects;
  * @author hk125
  *
  */
-public class Bigram {
+public class Bigram implements Serializable {
+
+  /**
+   * the default serialVersion UID.
+   */
+  private static final long serialVersionUID = 1L;
 
   /**
    * the previous word.
@@ -70,7 +77,6 @@ public class Bigram {
       return false;
     }
     Bigram other = (Bigram) o;
-    return ((this.prev.equals(other.prev)) && (this.word
-        .equals(other.word)));
+    return ((this.prev.equals(other.prev)) && (this.word.equals(other.word)));
   }
 }

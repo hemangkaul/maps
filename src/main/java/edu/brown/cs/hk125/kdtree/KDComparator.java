@@ -1,5 +1,6 @@
 package edu.brown.cs.hk125.kdtree;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -8,7 +9,12 @@ import java.util.Comparator;
  * @author hk125
  *
  */
-public class KDComparator implements Comparator<KDData> {
+public class KDComparator implements Comparator<KDData>, Serializable {
+
+  /**
+   * the default serial version UID.
+   */
+  private static final long serialVersionUID = 1L;
 
   /**
    * the current dimension.

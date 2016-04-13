@@ -1,5 +1,6 @@
 package edu.brown.cs.hk125.autocorrect;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 import com.google.common.collect.Multiset;
@@ -12,7 +13,12 @@ import edu.brown.cs.hk125.trie.Bigram;
  * @author hk125
  *
  */
-public class GramComparator implements Comparator<String> {
+public class GramComparator implements Comparator<String>, Serializable {
+
+  /**
+   * default serial version UID.
+   */
+  private static final long serialVersionUID = 1L;
 
   /**
    * the set of unigrams.
@@ -39,8 +45,7 @@ public class GramComparator implements Comparator<String> {
    * @param prev
    *          the previous string
    */
-  public GramComparator(Multiset<String> unis, Multiset<Bigram> bis,
-      String prev) {
+  public GramComparator(Multiset<String> unis, Multiset<Bigram> bis, String prev) {
     this.unigrams = unis;
     this.bigrams = bis;
     this.previous = prev;

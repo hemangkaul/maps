@@ -171,8 +171,7 @@ public final class Main {
       } else {
 
         String command;
-        BufferedReader br = new BufferedReader(new InputStreamReader(
-            System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
         System.out.println("Ready");
 
@@ -196,19 +195,14 @@ public final class Main {
 
     } catch (SQLException e) {
       System.out.println("ERROR: SQL exception: " + e);
-      System.exit(1);
     } catch (ClassNotFoundException e) {
       System.out.println("ERROR: ClassNotFound Exception: " + e);
-      System.exit(1);
     } catch (IOException e) {
       System.out.println("ERROR: IOException: " + e);
-      System.exit(1);
     } catch (IllegalArgumentException e) {
       System.out.println("ERROR: IllegalArgumentException: " + e);
-      System.exit(1);
     } catch (NoSuchElementException e) {
       System.out.println("ERROR: NoSuchElementException: " + e);
-      System.exit(1);
     }
   }
 
@@ -219,14 +213,12 @@ public final class Main {
    */
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
-    File templates = new File(
-        "src/main/resources/spark/template/freemarker");
+    File templates = new File("src/main/resources/spark/template/freemarker");
     try {
       config.setDirectoryForTemplateLoading(templates);
     } catch (IOException ioe) {
-      System.out.printf("ERROR: Unable use %s for template loading.\n",
+      System.out.printf("ERROR: Unable use %s for template loading.%n",
           templates);
-      System.exit(1);
     }
     return new FreeMarkerEngine(config);
   }
@@ -380,8 +372,7 @@ public final class Main {
 
       Map<String, String> variables = new ImmutableMap.Builder<String, String>()
           .put("first", topFive.get(0)).put("second", topFive.get(1))
-          .put("third", topFive.get(2))
-          .put("fourth", topFive.get(IND_FOUR))
+          .put("third", topFive.get(2)).put("fourth", topFive.get(IND_FOUR))
           .put("fifth", topFive.get(IND_FIVE)).build();
 
       return GSON.toJson(variables);

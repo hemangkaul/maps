@@ -52,18 +52,14 @@ public class KDTree<T extends KDData> {
     }
 
     int size = elementList.size();
+
     if (size == 1) {
       return new KDNode<T>(elementList.get(0), null, null);
     }
+
     elementList.sort(new KDComparator(dimension));
 
-    int length;
-
-    if ((size % 2) != 0) {
-      length = Math.round(size / 2);
-    } else {
-      length = size / 2;
-    }
+    int length = size / 2;
 
     T rootVal = elementList.get(length);
 
@@ -160,8 +156,7 @@ public class KDTree<T extends KDData> {
     MinMaxPriorityQueue<T> best = MinMaxPriorityQueue
         .orderedBy(new KDDistanceComparator(target)).maximumSize(k + 1)
         .create();
-    MinMaxPriorityQueue<T> bestQ = findkNNHelper(0, target, best, root,
-        k + 1);
+    MinMaxPriorityQueue<T> bestQ = findkNNHelper(0, target, best, root, k + 1);
     List<T> bestList = new ArrayList<>();
     bestList.addAll(bestQ);
     bestList.remove(target);
@@ -198,8 +193,8 @@ public class KDTree<T extends KDData> {
     boolean wentLeft;
 
     if (target.compareDimension(dimension, current) < 0) {
-      best = findkNNHelper((dimension + 1) % dim, target, best,
-          curr.getLeft(), k);
+      best = findkNNHelper((dimension + 1) % dim, target, best, curr.getLeft(),
+          k);
       wentLeft = true;
     } else {
       best = findkNNHelper((dimension + 1) % dim, target, best,
@@ -207,9 +202,8 @@ public class KDTree<T extends KDData> {
       wentLeft = false;
     }
 
-    boolean bestYet = (Math.abs(target
-        .compareDimension(dimension, current)) < best.peekLast().distance(
-        target));
+    boolean bestYet = (Math.abs(target.compareDimension(dimension, current)) < best
+        .peekLast().distance(target));
 
     if (bestYet || !(best.size() == k)) {
       if (wentLeft) {
@@ -269,22 +263,18 @@ public class KDTree<T extends KDData> {
     boolean wentLeft;
 
     if (target.compareDimension(dimension, curr.getDatum()) < 0) {
-      rsHelper((dimension + 1) % dim, inside, target, radius,
-          curr.getLeft());
+      rsHelper((dimension + 1) % dim, inside, target, radius, curr.getLeft());
       wentLeft = true;
     } else {
-      rsHelper((dimension + 1) % dim, inside, target, radius,
-          curr.getRight());
+      rsHelper((dimension + 1) % dim, inside, target, radius, curr.getRight());
       wentLeft = false;
     }
 
     if (Math.abs(target.compareDimension(dimension, curr.getDatum())) < radius) {
       if (wentLeft) {
-        rsHelper((dimension + 1) % dim, inside, target, radius,
-            curr.getRight());
+        rsHelper((dimension + 1) % dim, inside, target, radius, curr.getRight());
       } else {
-        rsHelper((dimension + 1) % dim, inside, target, radius,
-            curr.getLeft());
+        rsHelper((dimension + 1) % dim, inside, target, radius, curr.getLeft());
       }
     }
 
@@ -294,14 +284,14 @@ public class KDTree<T extends KDData> {
   @SuppressWarnings("unchecked")
   @Override
   public boolean equals(Object o) {
-    if (o.equals(null)) {
+    if (o == null) {
       return false;
     }
     if (!(o instanceof KDTree)) {
       return false;
     }
     KDTree<T> other = (KDTree<T>) o;
-    return (this.root.equals(other));
+    return (this.root.equals(other.root));
   }
 
   @Override
