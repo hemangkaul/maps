@@ -1,22 +1,22 @@
 // top left latitude and longitude.
 // Start points are currently set to Rhode Island State House
-var tLLat = 41.831080;
-var tLLong = -71.414850;
+var topLat = 41.831080;
+var leftLong = -71.414850;
 
 // bottom right latitude and longitude.
 // Start points currently set to Wyndham Garden Providence
-var bRLat = 41.818704;
-var bRLong = -71.390550;
+var bottomLat = 41.818704;
+var rightLong = -71.390550;
 
-// zoomLevels arbitrarily set for [0, 1, 2, 3, 4], 
+// zoomLevels arbitrarily set for [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], 
 // where the larger the number the greater the zoom.
-var zoomLevel = 2;
+var zoomLevel = 5;
 
 var canvas = document.getElementById("map");
 var ctx = canvas.getContext("2d");
 
 // setting the width and height will be tricky tricky shmumpkin shmicky
-ctx.canvas.width = this.innerWidth;
+ctx.canvas.width = this.innerWidth * 0.7;
 ctx.canvas.height = this.innerHeight;
 
 //arbitrarily we set all drawn lines to Red for now.
@@ -32,14 +32,26 @@ var last_position = {};
 
 // Caching the tiles
 // Since the cache key must be a string
-// We 
+// We can't store a map that likes like this:
+// var impossibleMap = 
+// {{'l': -71.34, 'r': -71.2, 't': 42.34, 'b': 42.2} : [List-of-ways-to-draw]}
+
+// Thus we make two makes
+// idCache is of form: {tileId : {'l': -71.34, 'r': -71.2, 't': 42.34, 'b': 42.2}}
+// tileCache is of form: {tileID : [List-of-ways-to-draw]}
+
+// To access the cache, we find the tile ID using idCache, and then use that to find
+// the list of ways to draw in tileCache
 var idCache = {};
 var tileCache = {};
 
-// cache format:
-// var cache = {
-// 	  {'l': left, 'r': right, 't': top, 'b': bottom} : {{startX: x, startY: y}: {endX: x, endY: y}}
-// }
+
+/**
+ * **********************************
+ * Zooming function
+ * **********************************
+ */
+
 
 // The idea is we re-set the top left and top right coordinates,
 // and then re-draw the map using a function that only takes in those coordinates.
@@ -66,26 +78,26 @@ $("#map").on('mousewheel', function(e) {
   
   // zoomFactor will equal 1/1.5 = 2/3 if the user scrolls up,
   // and 1.5 if the user scrolls down
-  var zoomFactor = Math.pow(1.5, zoomExp*-1);
+  var zoomFactor = Math.pow(1.2, zoomExp*-1);
   
   // we are zooming in, and we are not currently at max zoom
   // or we are zooming out, and we are not currently at min zoom
-  if (((zoomFactor < 1) && (zoomLevel != 4)) || 
-		  ((zoomFactor > 1) && (zoomLevel != 0))) {
-	// We want new tLLat, tLLong, bRLat, and bRLong which 
+  if (((zoomFactor < 1) && (zoomLevel < 12)) || 
+		  ((zoomFactor > 1) && (zoomLevel > 0))) {
+	// We want new topLat, leftLong, bottomLat, and rightLong which 
     // satisfy four restraints:
   
-    // 1. [new bRLat] - [new tLLat] = zoomFactor*([old bRLat] - [old tLLat])
-    // 2. [new tLLong] - [new bRLong] = zoomFactor*([old tLLong] - [old bRLong])
-    // 3. (P_lat - tLLat)/(brLat - tLLat) stays constant
-    // 4. (P_long - bRLong)/(tLLong - brLong) stays constant
+    // 1. [new bottomLat] - [new topLat] = zoomFactor*([old bottomLat] - [old topLat])
+    // 2. [new leftLong] - [new rightLong] = zoomFactor*([old leftLong] - [old rightLong])
+    // 3. (P_lat - topLat)/(brLat - topLat) stays constant
+    // 4. (P_long - rightLong)/(leftLong - brLong) stays constant
     //
     // where P_lat and P_long refer to the coordinates the mouse is pointing at
   
     //geographic length of map
-    var length = bRLong - tLLong;
+    var length = rightLong - leftLong;
     // geographic height of map
-    var height = tLLat - bRLat;
+    var height = topLat - bottomLat;
   
     // x and y coordinates of current cursor, adjusted to the 
     // leftmost and topmost coordinates of the canvas
@@ -97,43 +109,53 @@ $("#map").on('mousewheel', function(e) {
     var proportionLength = cursorX / ctx.canvas.width;
     var proportionHeight = cursorY / ctx.canvas.height;
     
+    console.log(ctx.canvas.width);
+    console.log(ctx.canvas.height);
+    
     // the latitude and longitude of the cursor point
-    var cursorLat = proportionHeight * height + bRLat;
-    var cursorLong = proportionLength * length + tLLong;
+    var cursorLat = topLat - proportionHeight * height;
+    var cursorLong = proportionLength * length + leftLong;
     
-    console.log(cursorLat);
-    console.log(cursorLong);
+    console.log(cursorX);
+    console.log(cursorY);
+    console.log(proportionLength);
+    console.log(proportionHeight);
     
-    // So (cursorLat - bRLat)/height should not change after zooming.
+    // So (cursorLat - bottomLat)/height should not change after zooming.
     // We know height changes by a factor of zoomFactor
     // and cursorLat doesn't change.
     // Thus we can write
     // 
-    //    (cursorLat - new_bRLat)/(zoomFactor * height) = 
-    // 	                            (cursorLat - old_bRLat)/ height
-    // -> (cursorLat - new_bRLat)/zoomFactor = cursorLat - old_ bRLat
-    // -> cursorLat - new_bRLat = zoomFactor*(cursorLat - old_bRLat)
-    // -> - new_bRLat = cursorLat(zoomFactor - 1) - zoomFactor*old_bRLat
-    // -> new_bRLat = cursorLat(1 - zoomFactor) + zoomFactor*old_bRLat
-    var newBRLat = cursorLat*(1 - zoomFactor) + zoomFactor*bRLat;
-    var newTLLat = newBRLat + height*zoomFactor;
+    //    (cursorLat - new_bottomLat)/(zoomFactor * height) = 
+    // 	                            (cursorLat - old_bottomLat)/ height
+    // -> (cursorLat - new_bottomLat)/zoomFactor = cursorLat - old_ bottomLat
+    // -> cursorLat - new_bottomLat = zoomFactor*(cursorLat - old_bottomLat)
+    // -> - new_bottomLat = cursorLat(zoomFactor - 1) - zoomFactor*old_bottomLat
+    // -> new_bottomLat = cursorLat(1 - zoomFactor) + zoomFactor*old_bottomLat
+    var newBottomLat = cursorLat*(1 - zoomFactor) + zoomFactor*bottomLat;
+    var newTopLat = newBottomLat + height*zoomFactor;
     
     // similar calculations are done to find newTLLong and newBRLong
-    var newTLLong = cursorLong*(1 - zoomFactor) + zoomFactor*tLLong;
-    var newBRLong = newTLLong + length*zoomFactor;
+    var newLeftLong = cursorLong*(1 - zoomFactor) + zoomFactor*leftLong;
+    var newRightLong = newLeftLong + length*zoomFactor;
     
-    tLLat = newTLLat;
-    tLLong = newTLLong;
-    bRLat = newBRLat;
-    bRLong = newBRLong;
+    topLat = newTopLat;
+    leftLong = newLeftLong;
+    bottomLat = newBottomLat;
+    rightLong = newRightLong;
     
     zoomLevel += zoomExp;
     
     // draw new map
-    drawMap(tLLat, tLLong, bRLat, bRLong);
+    drawMap(topLat, leftLong, bottomLat, rightLong);
   }  
 });
 
+/**
+ * ****************************************
+ * Panning functions
+ * ****************************************
+ */
 $("#map").on('mousedown', function(e) {
   isDown = true;
   last_position = { x: e.pageX, y: e.pageY}
@@ -163,19 +185,19 @@ $("#map").on('mousemove', function(e) {
 	  var proportionHeight = deltaY / ctx.canvas.height;
 	  
 	  //geographic length of map
-	  var length = bRLong - tLLong;
+	  var length = rightLong - leftLong;
 	  // geographic height of map
-	  var height = tLLat - bRLat; 
+	  var height = topLat - bottomLat; 
 	  
 	  var deltaLong = length*proportionWidth;
 	  var deltaLat = height*proportionHeight;
 	  
-	  tLLat += deltaLat;
-	  tLLong -= deltaLong;
-	  bRLat += deltaLat;
-	  bRLong -= deltaLong;
+	  topLat += deltaLat;
+	  leftLong -= deltaLong;
+	  bottomLat += deltaLat;
+	  rightLong -= deltaLong;
 	  
-	  drawMap(tLLat, tLLong, bRLat, bRLong);
+	  drawMap(topLat, leftLong, bottomLat, rightLong);
   }
   last_position = {x: e.pageX, y: e.pageY};
   })
@@ -184,6 +206,45 @@ $("#map").on('mouseup', function(e) {
   isDown = false;
 })
 
+///**
+// * ***************************************
+// * Click to input the nearest intersection / point
+// * ***************************************
+// */
+//
+//$("#map").on('click', function(e) {
+//	//geographic length of map
+//    var length = rightLong - leftLong;
+//    // geographic height of map
+//    var height = topLat - bottomLat;
+//  
+//    // x and y coordinates of current cursor, adjusted to the 
+//    // leftmost and topmost coordinates of the canvas
+//    var cursorX = e.pageX - this.offsetLeft;
+//    var cursorY = e.pageY - this.offsetTop;
+//        
+//    // what fraction of the total canvas width is the x value?
+//    // what fraction of the total canvas height is the y value?
+//    var proportionLength = cursorX / ctx.canvas.width;
+//    var proportionHeight = cursorY / ctx.canvas.height;
+//    
+//    // the latitude and longitude of the cursor point
+//    var cursorLat = topLat - proportionHeight * height;
+//    var cursorLong = proportionLength * length + leftLong;
+//    
+//    // the latitude and longitude of the nearest node to the cursor point
+//    
+//    //Getting the nearest neighbor
+//    var postParameters = {"lat": cursorLat, "lng" : cursorLong};
+//	$.post("/nearestNeighbor", postParameters, function(responseJSON) {
+//		// responseObject is a map / JS Dictionary / object
+//		responseObject = JSON.parse(responseJSON);
+//		nearestLat = responseObject.newLat;
+//		nearestLng = responseObject.newLng;
+//	})    
+//})
+//    
+    
 // draw the initial map
-drawMap(tLLat, tLLong, bRLat, bRLong);
+drawMap(topLat, leftLong, bottomLat, rightLong);
 

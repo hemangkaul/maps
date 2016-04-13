@@ -202,9 +202,8 @@ public final class Main {
     // Setup Spark Routes
     Spark.get("/home", new FrontHandler(), freeMarker);
     Spark.post("/autocorrect", new AutoCorrectHandler());
-
     Spark.post("/tile", new TileHandler());
-
+    Spark.post("/nearestNeighbor", new nearestHandler());
   }
 
   /**
@@ -336,6 +335,36 @@ public final class Main {
           .put("fifth", topFive.get(IND_FIVE)).build();
 
       return GSON.toJson(variables);
+    }
+  }
+
+  /**
+   * Returns the nearest neighbor to a point.
+   *
+   * Used for when the user clicks on the map on the front end.
+   *
+   * @author hk125
+   *
+   */
+  private class nearestHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+      Double lat = Double.valueOf(qm.value("lat"));
+      Double lng = Double.valueOf(qm.value("lng"));
+
+      // making LatLng objects that we use in the nearestNeighbor function
+      LatLng clickPoint = new LatLng(lat, lng, "");
+
+      // finding the nearest neighbors!
+      LatLng nearestPoint = tree.findNN(clickPoint);
+
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("newLat", nearestPoint.getLat())
+          .put("newLng", nearestPoint.getLng()).build();
+
+      return GSON.toJson(variables);
+
     }
   }
 

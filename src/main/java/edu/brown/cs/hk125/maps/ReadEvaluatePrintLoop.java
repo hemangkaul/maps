@@ -63,18 +63,21 @@ public class ReadEvaluatePrintLoop {
       latlng = true;
     }
     if (latlng) {
-      // given lat/lon values
+      // the inputed lat/lon values
       Double lat1 = Double.parseDouble(commands.get(0));
       Double lng1 = Double.parseDouble(commands.get(1));
       Double lat2 = Double.parseDouble(commands.get(2));
       Double lng2 = Double.parseDouble(commands.get(3));
 
+      // making LatLng objects that we use in the nearestNeighbor function
       LatLng source = new LatLng(lat1, lng1, "");
       LatLng target = new LatLng(lat2, lng2, "");
 
+      // finding the nearest neighbors!
       LatLng sourcePoint = tree.findNN(source);
       LatLng targetPoint = tree.findNN(target);
 
+      // the ID's of the nearest neighbors, used in the AStar search
       String startNode = sourcePoint.getID();
       String endNode = targetPoint.getID();
 
