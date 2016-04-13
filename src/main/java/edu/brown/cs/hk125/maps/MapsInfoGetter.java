@@ -1,17 +1,25 @@
 package edu.brown.cs.hk125.maps;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
+
+import com.google.gson.Gson;
 
 import edu.brown.cs.hk125.autocorrect.AutoCorrector;
 import edu.brown.cs.hk125.dijkstra.InfoGetterAStar;
@@ -39,7 +47,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   private Map<String, LatLng> pointCache = new HashMap<>();
   private List<Tile> tileCache = new ArrayList<>();
   private Map<String, Double> trafficCache = new ConcurrentHashMap<>();
-  private List<Way> wayCache = new ArrayList<>();
+  private Map<String, Way> wayCache = new HashMap<>();
   private static final double TILESIZE = 0.01;
 
   public MapsInfoGetter(String db) throws ClassNotFoundException, SQLException {
@@ -150,10 +158,12 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     while (rs.next()) {
       String neighbor = rs.getString(2);
       if (!(hm.containsKey(neighbor))) {
+        String wayID = rs.getString(1);
         double neighborLat = rs.getDouble(3);
         double neighborLng = rs.getDouble(4);
         // length between the start and end points of the Way
         double wayLength = LatLng.distance(lat, lng, neighborLat, neighborLng);
+        double traffic = wayLength * trafficCache.get(wayID);
 
         // We could use the heuristicValue method but this is literally the same
         // thing, plus it vastly reduces the amount of querying necessary (i.e.
@@ -161,8 +171,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         double heuristicLength = LatLng.distance(neighborLat, neighborLng,
             endLat, endLng);
 
-        Link toAdd = new Link(nodeName, neighbor, wayLength + heuristicLength
-            + extraDist, rs.getString(1)); // make
+        Link toAdd = new Link(nodeName, neighbor, traffic + heuristicLength
+            + extraDist, wayID); // make
         // sure
         // to
         // add
@@ -325,9 +335,9 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       String id = rs.getString(5);
 
       Way newWay = new Way(start.getLat(), start.getLng(), end.getLat(),
-          end.getLng(), name, type, id);
+          end.getLng(), name, type, id, 1.0);
 
-      wayCache.add(newWay);
+      wayCache.put(id, newWay);
 
       // 1.0 is the traffic value
       trafficCache.put(id, 1.0);
@@ -398,9 +408,39 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    *           if it cannot query the tile
    */
   private void setWays() throws SQLException, NoSuchElementException {
-    for (Way way : wayCache) {
-      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way);
+    for (Way way : wayCache.values()) {
+      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way,
+          trafficCache.get(way.getId()));
     }
+  }
+
+  /**
+   * @throws IOException
+   * @throws SQLException
+   * @throws NoSuchElementException
+   *
+   */
+  public void updateTraffic(int port) throws IOException,
+      NoSuchElementException, SQLException {
+
+    String requestPrefix = "http://localhost:" + port + "?last=";
+    long unixTimestamp = Instant.now().getEpochSecond();
+    URL url = new URL(requestPrefix + Long.toString(unixTimestamp));
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("GET");
+    BufferedReader br = new BufferedReader(new InputStreamReader(
+        conn.getInputStream()));
+    String array = "";
+    // use parallel threads to fill trafficCache
+    while ((array = br.readLine()) != null) {
+      List<List<Object>> read = new Gson().fromJson(array, ArrayList.class);
+      System.out.println(read);
+      System.out.println(array);
+    }
+    String wayId = null;
+    double traffic = 0.0;
+    trafficCache.put(wayId, traffic);
+    setWays();
   }
 
   @Override

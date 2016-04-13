@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -157,6 +158,7 @@ public final class Main {
           // AutoCorrector ac = ig.getAutoCorrector();
           //
           // System.out.println(ac.suggestions(command));
+          ig.updateTraffic(3456);
           ReadEvaluatePrintLoop.execute(command, tree, ig);
           System.out.println("Ready");
         }
@@ -246,7 +248,7 @@ public final class Main {
       }
 
       // This is the list of ways contained within the tile
-      List<Way> wayList = tileToReturn.getTileWays();
+      Collection<Way> wayList = tileToReturn.getTileWays();
 
       // Here we convert the list of ways from LatLng format to individual
       // latitude / longitude elements
