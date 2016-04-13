@@ -42,7 +42,7 @@ public class DijkstraTest {
   // @Test
   // public void hello() {}
 
-  class testInfoGetter implements infoGetter {
+  class testInfoGetter implements InfoGetter {
     // a info getter we will be using for testing
     // aka a graph which we will retrieve information from
 
@@ -123,7 +123,7 @@ public class DijkstraTest {
     }
 
     @Override
-    public ArrayList<Link> expandGroupLink(groupLink g, HashMap<String, Link> hm)
+    public ArrayList<Link> expandGroupLink(GroupLink g, HashMap<String, Link> hm)
         throws SQLException {
       // We will not be using expandGroupLink here
       return null;

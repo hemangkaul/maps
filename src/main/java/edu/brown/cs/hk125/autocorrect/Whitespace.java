@@ -7,20 +7,20 @@ import edu.brown.cs.hk125.trie.Node;
 import edu.brown.cs.hk125.trie.Trie;
 
 /**
- * Represents the whitespace algorithm
+ * Represents the whitespace algorithm.
  *
  * @author hk125
  *
  */
-public class Whitespace {
+class Whitespace {
   /**
    * Generates a list of suggested words under the presumption that the user
    * forgot to type a space. Returns all the possible splits of the word such
-   * that both of the split output words are in the Trie
+   * that both of the split output words are in the Trie.
    *
    * @param word
    *          , any String
-   * 
+   *
    * @param trie
    *          the trie to be searched
    * @return a set of words which appear in the Trie which are edited versions

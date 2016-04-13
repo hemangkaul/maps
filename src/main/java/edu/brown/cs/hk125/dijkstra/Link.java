@@ -1,5 +1,7 @@
 package edu.brown.cs.hk125.dijkstra;
 
+import com.google.common.base.Objects;
+
 /**
  * A Link represents an edge connecting, or 'linking' two nodes. A Link contains
  * a source, an end, a distance, and a name.
@@ -12,46 +14,61 @@ package edu.brown.cs.hk125.dijkstra;
  */
 public class Link implements Comparable<Link> {
 
+  /**
+   * the source of the link.
+   */
   private String source;
+
+  /**
+   * the end of the link.
+   */
   private String end;
+
+  /**
+   * the distance of the link.
+   */
   private Double distance;
   // distance refers to the distance from the end node to the start node, NOT
   // the distance from the end node to the source node.
+
+  /**
+   * the name of the link.
+   */
   private String name;
 
   /**
    * Constructs a link; sets source, end, distance, and link.
    *
-   * @param source
+   * @param start
    *          , the name of the source of the link
-   * @param end
+   * @param last
    *          , the name of the end of the link
-   * @param distance
+   * @param dist
    *          , the distance between the source and the end
-   * @param name
+   * @param id
    *          , the name of the link
    */
-  public Link(String source, String end, Double distance, String name) {
-    this.setSource(source);
-    this.setEnd(end);
-    this.setDistance(distance);
-    this.setName(name);
+  public Link(String start, String last, Double dist, String id) {
+    this.setSource(start);
+    this.setEnd(last);
+    this.setDistance(dist);
+    this.setName(id);
   }
 
   /**
    * Another constructor; sometimes link isn't needed.
    *
-   * @param source
+   * @param start
    *          , the name of the source of the link
-   * @param end
+   * @param last
    *          , the name of the end of the link
-   * @param distance
+   * @param dist
    *          , the distance between the source and the end
    */
-  public Link(String source, String end, Double distance) {
-    this.setSource(source);
-    this.setEnd(end);
-    this.setDistance(distance);
+  public Link(String start, String last, Double dist) {
+    this.setSource(start);
+    this.setEnd(last);
+    this.setDistance(dist);
     this.setName("");
   }
 
@@ -63,11 +80,11 @@ public class Link implements Comparable<Link> {
   }
 
   /**
-   * @param source
+   * @param start
    *          the source to set
    */
-  public void setSource(String source) {
-    this.source = source;
+  public void setSource(String start) {
+    this.source = start;
   }
 
   /**
@@ -78,11 +95,11 @@ public class Link implements Comparable<Link> {
   }
 
   /**
-   * @param end
+   * @param last
    *          the neighborName to set
    */
-  public void setEnd(String end) {
-    this.end = end;
+  public void setEnd(String last) {
+    this.end = last;
   }
 
   /**
@@ -93,11 +110,11 @@ public class Link implements Comparable<Link> {
   }
 
   /**
-   * @param distance
+   * @param dist
    *          the distance to set
    */
-  public void setDistance(Double distance) {
-    this.distance = distance;
+  public void setDistance(Double dist) {
+    this.distance = dist;
   }
 
   /**
@@ -108,11 +125,11 @@ public class Link implements Comparable<Link> {
   }
 
   /**
-   * @param name
+   * @param id
    *          the name of the link to set
    */
-  public void setName(String name) {
-    this.name = name;
+  public void setName(String id) {
+    this.name = id;
   }
 
   /**
@@ -138,7 +155,8 @@ public class Link implements Comparable<Link> {
 
   @Override
   /**
-   * Simply checking for equality by checking each of the four components are equal.
+   * Simply checking for equality by checking each of the four
+   * components are equal.
    */
   public boolean equals(Object other) {
     if (!(other instanceof Link)) {
@@ -159,5 +177,11 @@ public class Link implements Comparable<Link> {
       return false;
     }
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(this.getSource(), this.getEnd(),
+        this.getDistance(), this.getName());
   }
 }

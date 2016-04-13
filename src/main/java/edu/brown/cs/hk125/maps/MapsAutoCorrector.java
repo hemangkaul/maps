@@ -9,6 +9,12 @@ import edu.brown.cs.hk125.autocorrect.Generator;
 import edu.brown.cs.hk125.autocorrect.Ranker;
 import edu.brown.cs.hk125.trie.Trie;
 
+/**
+ * the Maps auto corrector class.
+ *
+ * @author sl234
+ *
+ */
 public class MapsAutoCorrector implements AutoCorrector {
 
   /**

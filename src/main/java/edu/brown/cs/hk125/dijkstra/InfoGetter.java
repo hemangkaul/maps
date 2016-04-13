@@ -10,7 +10,7 @@ import java.util.List;
  * @author sl234
  *
  */
-public interface infoGetter {
+public interface InfoGetter {
 
   /**
    * Returns a list of the given node's undiscovered neighbors.
@@ -27,7 +27,7 @@ public interface infoGetter {
    * @throws SQLException
    *           , if SQL querying is used and there is an issue with the query
    */
-  public List<Link> getNeighbors(String nodeName, HashMap<String, Link> hm,
+  List<Link> getNeighbors(String nodeName, HashMap<String, Link> hm,
       double extraDist) throws SQLException;
 
   /**
@@ -39,7 +39,7 @@ public interface infoGetter {
    * @throws SQLException
    *           if SQL querying is used and there is an issue with the query
    */
-  public boolean isIn(String nodeName) throws SQLException;
+  boolean isIn(String nodeName) throws SQLException;
 
   /**
    * Expands a groupLink into an array of links.
@@ -52,6 +52,6 @@ public interface infoGetter {
    * @throws SQLException
    *           if SQL querying is used and ther is an issue with the query
    */
-  public List<Link> expandGroupLink(groupLink g, HashMap<String, Link> hm)
+  List<Link> expandGroupLink(GroupLink g, HashMap<String, Link> hm)
       throws SQLException;
 }

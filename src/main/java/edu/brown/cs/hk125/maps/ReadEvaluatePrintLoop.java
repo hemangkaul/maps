@@ -17,7 +17,7 @@ import edu.brown.cs.hk125.latlng.LatLng;
  * @author hk125
  *
  */
-public class ReadEvaluatePrintLoop {
+class ReadEvaluatePrintLoop {
 
   /**
    * Execute is a static method which evaluates and prints the results.
@@ -26,6 +26,8 @@ public class ReadEvaluatePrintLoop {
    *          is the command the user inputs
    * @param tree
    *          is the tree
+   * @param ig
+   *          the infogetter for the REPL
    * @throws IllegalArgumentException
    *           if the argument is illegal
    * @throws NumberFormatException
@@ -34,8 +36,7 @@ public class ReadEvaluatePrintLoop {
    *           , if querying is used and there is an error with the query
    */
   public static void execute(String input, KDTree<LatLng> tree,
-      MapsInfoGetter ig) throws IllegalArgumentException,
-      NumberFormatException, SQLException {
+      MapsInfoGetter ig) throws SQLException {
     String command = input.trim();
     List<String> commands = new ArrayList<>();
     boolean latlng = false;
@@ -90,8 +91,10 @@ public class ReadEvaluatePrintLoop {
 
     } else {
       // given street names, not lat/lon values
-      String startNode = ig.getIntersection(commands.get(0), commands.get(1));
-      String endNode = ig.getIntersection(commands.get(2), commands.get(3));
+      String startNode = ig.getIntersection(commands.get(0),
+          commands.get(1));
+      String endNode = ig
+          .getIntersection(commands.get(2), commands.get(3));
 
       Dijkstra maps = new AStar(startNode, ig);
 
@@ -109,6 +112,7 @@ public class ReadEvaluatePrintLoop {
    * Prints the results if there are any.
    *
    * @param results
+   *          the results of the repl.
    */
   private static void printResults(List<Link> results) {
     // we don't want to print out the first element of the path,

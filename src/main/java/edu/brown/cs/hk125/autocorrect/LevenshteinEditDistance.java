@@ -13,7 +13,7 @@ import edu.brown.cs.hk125.trie.Trie;
  * @author hk125
  *
  */
-public class LevenshteinEditDistance {
+class LevenshteinEditDistance {
 
   /**
    * the levenshtein algorithm.
@@ -26,7 +26,8 @@ public class LevenshteinEditDistance {
    *          the edit distance
    * @return a set of the possible edits
    */
-  public static Set<String> levenshtein(String word, Trie trie, int distance) {
+  public static Set<String> levenshtein(String word, Trie trie,
+      int distance) {
     Set<String> words = new HashSet<>();
     return levenshteinHelp(trie, word, distance, words);
   }

@@ -8,24 +8,69 @@ package edu.brown.cs.hk125.map;
  */
 public class Way {
 
+  /**
+   * the start lat.
+   */
   private double startLatitude;
 
+  /**
+   * the start lng.
+   */
   private double startLongitude;
 
+  /**
+   * the end lat.
+   */
   private double endLatitude;
 
+  /**
+   * the end lng.
+   */
   private double endLongitude;
 
+  /**
+   * the name.
+   */
   private String name;
 
+  /**
+   * the type.
+   */
   private String type;
 
+  /**
+   * the id.
+   */
   private String id;
 
+  /**
+   * the traffic value.
+   */
   private double traffic;
 
-  public Way(double startLat, double startLng, double endLat, double endLng,
-      String wayName, String wayType, String wayId, double trafficVal) {
+  /**
+   * the constructor for a way.
+   *
+   * @param startLat
+   *          the start lat
+   * @param startLng
+   *          the start lng
+   * @param endLat
+   *          the end lat
+   * @param endLng
+   *          the end lng
+   * @param wayName
+   *          the name of the way
+   * @param wayType
+   *          the type of the way
+   * @param wayId
+   *          the id of the way
+   * @param trafficVal
+   *          the value of the traffic
+   */
+  public Way(double startLat, double startLng, double endLat,
+      double endLng, String wayName, String wayType, String wayId,
+      double trafficVal) {
     this.startLatitude = startLat;
     this.startLongitude = startLng;
     this.endLatitude = endLat;
@@ -37,6 +82,8 @@ public class Way {
   }
 
   /**
+   * gets the traffic.
+   *
    * @return the traffic
    */
   public double getTraffic() {
@@ -44,14 +91,18 @@ public class Way {
   }
 
   /**
-   * @param traffic
+   * sets the traffic.
+   *
+   * @param trafficVal
    *          the traffic to set
    */
-  public void setTraffic(double traffic) {
-    this.traffic = traffic;
+  public void setTraffic(double trafficVal) {
+    this.traffic = trafficVal;
   }
 
   /**
+   * gets the start latitude.
+   *
    * @return the startLatitude
    */
   public double getStartLatitude() {
@@ -59,6 +110,8 @@ public class Way {
   }
 
   /**
+   * gets the start longitude.
+   *
    * @return the startLongitude
    */
   public double getStartLongitude() {
@@ -66,6 +119,8 @@ public class Way {
   }
 
   /**
+   * gets the end latitude.
+   *
    * @return the endLatitude
    */
   public double getEndLatitude() {
@@ -73,6 +128,8 @@ public class Way {
   }
 
   /**
+   * gets the end longitude.
+   *
    * @return the endLongitude
    */
   public double getEndLongitude() {
@@ -80,6 +137,8 @@ public class Way {
   }
 
   /**
+   * gets the name.
+   *
    * @return the name
    */
   public String getName() {
@@ -87,14 +146,8 @@ public class Way {
   }
 
   /**
-   * @param name
-   *          the name to set
-   */
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  /**
+   * gets the type.
+   *
    * @return the type
    */
   public String getType() {
@@ -102,26 +155,12 @@ public class Way {
   }
 
   /**
-   * @param type
-   *          the type to set
-   */
-  public void setType(String type) {
-    this.type = type;
-  }
-
-  /**
+   * gets the id.
+   *
    * @return the id
    */
   public String getId() {
     return id;
-  }
-
-  /**
-   * @param id
-   *          the id to set
-   */
-  public void setId(String id) {
-    this.id = id;
   }
 
 }

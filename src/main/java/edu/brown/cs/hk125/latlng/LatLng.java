@@ -33,12 +33,24 @@ public class LatLng implements KDData {
   private String id;
 
   /**
+   * the max of the lat.
+   */
+  private static final double MAXLAT = 90;
+
+  /**
+   * the maxlng.
+   */
+  private static final double MAXLNG = 180;
+
+  /**
    * The constructor method for the LatLng class.
    *
    * @param latitude
    *          is the latitude of the point
    * @param longitude
    *          is the longitude of the point
+   * @param name
+   *          the id of the latlng
    */
   public LatLng(double latitude, double longitude, String name) {
     setLat(latitude);
@@ -50,7 +62,9 @@ public class LatLng implements KDData {
    * an alternate constructor for the LatLng class.
    *
    * @param latitude
+   *          the latitude of the latlng
    * @param longitude
+   *          the longitude of the latlng
    */
   public LatLng(double latitude, double longitude) {
     setLat(latitude);
@@ -92,7 +106,8 @@ public class LatLng implements KDData {
     double lat2 = Math.toRadians(latlng.lat);
 
     double a = Math.pow(Math.sin(dLat / 2), 2)
-        + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+        + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1)
+        * Math.cos(lat2);
     double c = 2 * Math.asin(Math.sqrt(a));
     return RADIUS * c;
   }
@@ -120,7 +135,8 @@ public class LatLng implements KDData {
     lat2 = Math.toRadians(lat2);
 
     double a = Math.pow(Math.sin(dLat / 2), 2)
-        + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1) * Math.cos(lat2);
+        + Math.pow(Math.sin(dLon / 2), 2) * Math.cos(lat1)
+        * Math.cos(lat2);
     double c = 2 * Math.asin(Math.sqrt(a));
     return RADIUS * c;
   }
@@ -138,10 +154,12 @@ public class LatLng implements KDData {
    * set the lat, check for -90 < lat < 90.
    *
    * @param latitude
+   *          the latitude to set
    */
   private void setLat(double latitude) {
-    if (latitude > 90 || latitude < -90) {
-      throw new IllegalArgumentException("Latitude must be between 90 and -90");
+    if (latitude >= MAXLAT || latitude <= -MAXLAT) {
+      throw new IllegalArgumentException(
+          "Latitude must be between 90 and -90");
     }
     this.lat = latitude;
   }
@@ -159,9 +177,10 @@ public class LatLng implements KDData {
    * set the lng, check for -90 < lng < 90.
    *
    * @param longitude
+   *          the latitude to set
    */
   private void setLng(double longitude) {
-    if (longitude > 180 || longitude < -180) {
+    if (longitude >= MAXLNG || longitude <= -MAXLNG) {
       throw new IllegalArgumentException(
           "Longitude must be between 180 and -180");
     }

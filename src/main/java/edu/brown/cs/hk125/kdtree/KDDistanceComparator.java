@@ -12,7 +12,7 @@ import java.util.Comparator;
 public class KDDistanceComparator implements Comparator<KDData> {
 
   /**
-   * the target for the distance
+   * the target for the distance.
    */
   private KDData target;
 

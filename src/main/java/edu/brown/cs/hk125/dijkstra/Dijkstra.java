@@ -13,37 +13,54 @@ import java.util.PriorityQueue;
  * ArrayList of 'Links' from the start node to a specified node, where the
  * overall path is the shortest possible per Dijkstra's algorithm.
  *
+ * A Dijkstra object contains a startNode, an infoGetter which retrieves
+ * information about a graph, a list of discovered nodes, and a ranked queue of
+ * undiscovered neighboring nodes.
+ *
+ * Dijkstra is able to find the shortest / lightest path to any node from the
+ * start node.
+ *
+ * Users need only specify the startNode and the infoGetter when creating a
+ * Dijkstra variable.
+ *
  * @author sl234
  *
  */
 public class Dijkstra {
 
   /**
-   * A Dijkstra object contains a startNode, an infoGetter which retrieves
-   * information about a graph, a list of discovered nodes, and a ranked queue
-   * of undiscovered neighboring nodes.
-   *
-   * Dijkstra is able to find the shortest / lightest path to any node from the
-   * start node.
-   *
-   * Users need only specify the startNode and the infoGetter when creating a
-   * Dijkstra variable.
-   *
+   * the startNode.
    */
   private String startNode;
-  private infoGetter ig;
+
+  /**
+   * the infogetter.
+   */
+  private InfoGetter ig;
+
+  /**
+   * the discovered Links.
+   */
   private HashMap<String, Link> discovered;
+
+  /**
+   * the most recently discovered node.
+   */
   private String newest; // the most recently
                          // discovered node
+
+  /**
+   * the closest undiscovered links.
+   */
   private PriorityQueue<Link> closestUndiscovered;
 
   /**
    * Creates a Dijkstra object with a startNode and an infoGetter for accessing
    * information.
    *
-   * @param startNode
+   * @param start
    *          , the node which Dijkstra will calculate distances from and to.
-   * @param ig
+   * @param infog
    *          , an infoGetter which retrieves information about neighbors and
    *          their distances
    * @throws IllegalArgumentException
@@ -53,15 +70,14 @@ public class Dijkstra {
    *           , if the infogetter uses querying, and there is an error, an
    *           exception may be thrown.
    */
-  public Dijkstra(String startNode, infoGetter ig)
-      throws IllegalArgumentException, SQLException {
+  public Dijkstra(String start, InfoGetter infog) throws SQLException {
     if (!ig.isIn(startNode)) {
       throw new IllegalArgumentException();
       // there is an error if the startNode is not in the graph, according to
       // the infoGetter!
     } else {
-      this.ig = ig;
-      this.setStartNode(startNode);
+      this.ig = infog;
+      this.setStartNode(start);
       this.newest = startNode;
       setDiscovered(new HashMap<String, Link>());
       discovered.put(startNode, new Link(startNode, startNode, 0.0, ""));
@@ -77,11 +93,11 @@ public class Dijkstra {
   }
 
   /**
-   * @param startNode
+   * @param start
    *          the startNode to set
    */
-  public void setStartNode(String startNode) {
-    this.startNode = startNode;
+  public void setStartNode(String start) {
+    this.startNode = start;
   }
 
   /**
@@ -94,16 +110,17 @@ public class Dijkstra {
   /**
    * Sets newest to something else.
    *
-   * @param newest
+   * @param newer
+   *          the newest to be set
    */
-  protected void setNewest(String newest) {
-    this.newest = newest;
+  protected void setNewest(String newer) {
+    this.newest = newer;
   }
 
   /**
-   * Returns the HashMap of Discovered Nodes
+   * Returns the HashMap of Discovered Nodes.
    *
-   * @return
+   * @return the hashmap of discovered nodes
    */
   protected HashMap<String, Link> getDiscovered() {
     return discovered;
@@ -112,10 +129,11 @@ public class Dijkstra {
   /**
    * Sets discovered to something else.
    *
-   * @param discovered
+   * @param justDiscovered
+   *          the discovered to be set
    */
-  protected void setDiscovered(HashMap<String, Link> discovered) {
-    this.discovered = discovered;
+  protected void setDiscovered(HashMap<String, Link> justDiscovered) {
+    this.discovered = justDiscovered;
   }
 
   // You're not allowed to set the newest node though. Makes no sense in
@@ -132,18 +150,19 @@ public class Dijkstra {
   }
 
   /**
-   * @param closestUndiscovered
+   * @param closeUndiscovered
    *          the closestUndiscovered to set
    */
-  protected void setClosestUndiscovered(PriorityQueue<Link> closestUndiscovered) {
-    this.closestUndiscovered = closestUndiscovered;
+  protected void setClosestUndiscovered(
+      PriorityQueue<Link> closeUndiscovered) {
+    this.closestUndiscovered = closeUndiscovered;
   }
 
   /**
    * @return the ig, note that infoGetter is immutable; it has no private
    *         fields!
    */
-  protected infoGetter getIg() {
+  protected InfoGetter getIg() {
     return ig;
   }
 
@@ -189,8 +208,8 @@ public class Dijkstra {
    *
    * Also, if the head of the queue points to a node that's already been
    * discovered, that's invalid. for example, suppose we add nodes using
-   * Dijkstra in this order: start --> n1 --> n2 --> n3 --> ... (undiscovered as
-   * of now) ...
+   * Dijkstra in this order: start -- n1 -- n2 -- n3 --... (undiscovered as of
+   * now) ...
    *
    * if n1 is connected to n3, and n2 is connected to n3, but the path through
    * n2 is closer, we will add n3 to our discovered list as linked to n2.
@@ -201,6 +220,8 @@ public class Dijkstra {
    * We could choose to remove all 'repeated' links from "closestUndiscovered"
    * after every loop in findPaths But that would be at minimum an O(n)
    * operation each time. And it may not actually save too much space.
+   *
+   * @return the top Link option
    *
    * @throws SQLException
    *           , if querying is used in the infogetter and there is an error in
@@ -214,10 +235,10 @@ public class Dijkstra {
     } else {
       Link curHead = getClosestUndiscovered().poll();
       // poll also removes the link while retrieving it
-      if (curHead instanceof groupLink) { // if it's a groupLink, it's time to
+      if (curHead instanceof GroupLink) { // if it's a groupLink, it's time to
                                           // expand!
         getClosestUndiscovered().addAll(
-            getIg().expandGroupLink((groupLink) curHead, discovered));
+            getIg().expandGroupLink((GroupLink) curHead, discovered));
       } else { // curHead is a normal Link
         if (!(discovered.containsKey(curHead.getEnd()))) {
           return curHead;
@@ -282,12 +303,14 @@ public class Dijkstra {
    * @param hm
    *          , a hashmap of links which contains all the links from start to
    *          stop
+   *
+   * @return a list of the links
    * @throws SQLException
    *           , if querying is used in the infogetter and there is an error in
    *           the querying
    */
-  private ArrayList<Link> getPathHelper(String stop, HashMap<String, Link> hm)
-      throws SQLException {
+  private ArrayList<Link> getPathHelper(String stop,
+      HashMap<String, Link> hm) throws SQLException {
     if (startNode.equals(stop)) { // base case
       ArrayList<Link> listToReturn = new ArrayList<Link>();
       listToReturn.add(hm.get(startNode));

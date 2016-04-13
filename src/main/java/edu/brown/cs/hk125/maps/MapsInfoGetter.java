@@ -22,9 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.hk125.autocorrect.AutoCorrector;
+import edu.brown.cs.hk125.dijkstra.GroupLink;
 import edu.brown.cs.hk125.dijkstra.InfoGetterAStar;
 import edu.brown.cs.hk125.dijkstra.Link;
-import edu.brown.cs.hk125.dijkstra.groupLink;
 import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
 import edu.brown.cs.hk125.map.Way;
@@ -43,14 +43,53 @@ import edu.brown.cs.hk125.trie.Trie;
  */
 public class MapsInfoGetter implements InfoGetterAStar, Tiler {
 
+  /**
+   * The connection to the database.
+   */
   private Connection conn;
+
+  /**
+   * the cache which holds the points.
+   */
   private Map<String, LatLng> pointCache = new HashMap<>();
+
+  /**
+   * the cache which holds the tiles.
+   */
   private List<Tile> tileCache = new ArrayList<>();
+
+  /**
+   * the cache which holds the traffic.
+   */
   private Map<String, Double> trafficCache = new ConcurrentHashMap<>();
+
+  /**
+   * the cache which holds the ways.
+   */
   private Map<String, Way> wayCache = new HashMap<>();
+
+  /**
+   * the boolean which says whether traffic is on.
+   */
   private boolean trafficOn;
+
+  /**
+   * the tile size factor.
+   */
   private static final double TILESIZE = 0.01;
 
+  /**
+   * the constructor for the infogetter.
+   *
+   * @param db
+   *          the database to access
+   * @param trafficServerRunning
+   *          is the traffic server on
+   * @throws ClassNotFoundException
+   *           if the class is not found
+   * @throws SQLException
+   *           if there is an error with the query
+   */
   public MapsInfoGetter(String db, boolean trafficServerRunning)
       throws ClassNotFoundException, SQLException {
     this.trafficOn = trafficServerRunning;
@@ -64,38 +103,9 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     stat.executeUpdate("PRAGMA foreign_keys = ON;");
   }
 
-  /**
-   * Returns a list of all the node's undiscovered neighbors, with one
-   * additional consideration: the "distance" value for the neighbor is the
-   * normal distance value (distance from neighbor to start node + extraDist)
-   * plus the distance from the neighbor to the end node (A* search).
-   *
-   * The distance from the neighbor to the end node is added to implement A*
-   * search; this optimizes the search algorithm to try and get it to search
-   * more in the general direction of the destination, thus
-   *
-   * @param nodeName
-   *          , the id of the Node
-   * @param endLat
-   *          , the latitude of the end node
-   * @param endLng
-   *          , the longitude of the end node
-   * @param hm
-   *          , a hashmap of discovered nodes
-   * @param extraDist
-   *          , the distance from the node to the start node, added to the
-   *          distance value of each neighbor
-   * @return a list of all the node's undiscovered neighbors
-   *
-   * @throws SQLException
-   *           , if there are errors in the query!
-   * @throws IllegalArgumentException
-   *           , if there are Illegal arguments given!
-   */
   @Override
   public List<Link> getNeighborsAStar(String nodeName, String endNode,
-      HashMap<String, Link> hm, double extraDist) throws SQLException,
-      IllegalArgumentException {
+      HashMap<String, Link> hm, double extraDist) throws SQLException {
 
     // Here we get the latitude and longitude of the present node.
 
@@ -117,7 +127,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     if ((lat == null) || (lng == null)) {
       throw new IllegalArgumentException(
           "The node you inputed does not have an associated latitude or "
-              + "longitude in the database. Please check if your id is correct!");
+              + "longitude in the database. "
+              + "Please check if your id is correct!");
     }
 
     // Here we get the latitude and longitude of the end node.
@@ -165,7 +176,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         double neighborLat = rs.getDouble(3);
         double neighborLng = rs.getDouble(4);
         // length between the start and end points of the Way
-        double wayLength = LatLng.distance(lat, lng, neighborLat, neighborLng);
+        double wayLength = LatLng.distance(lat, lng, neighborLat,
+            neighborLng);
 
         // We could use the heuristicValue method but this is literally the same
         // thing, plus it vastly reduces the amount of querying necessary (i.e.
@@ -197,12 +209,12 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     return toReturn;
   }
 
-  /**
+  /*
    * Not needed, so we return null!
    */
   @Override
-  public List<Link> getNeighbors(String nodeName, HashMap<String, Link> hm,
-      double extraDist) throws SQLException {
+  public List<Link> getNeighbors(String nodeName,
+      HashMap<String, Link> hm, double extraDist) throws SQLException {
     // Write the query as a string
     return null;
   }
@@ -231,11 +243,11 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     // if the list is empty, then nodeName is NOT in the database!
   }
 
-  /**
+  /*
    * Not needed, so we return null!
    */
   @Override
-  public List<Link> expandGroupLink(groupLink g, HashMap<String, Link> hm)
+  public List<Link> expandGroupLink(GroupLink g, HashMap<String, Link> hm)
       throws SQLException {
     return null;
   }
@@ -251,7 +263,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    * @throws SQLException
    *           , if there is an error with the query
    */
-  public Map<String, Double> getLatLng(String nodeName) throws SQLException {
+  public Map<String, Double> getLatLng(String nodeName)
+      throws SQLException {
     String query = "SELECT latitude, longitude FROM Node WHERE id = ?";
 
     // Create a PreparedStatement
@@ -316,9 +329,9 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    * gets all the way names and adds them to the trie, while adding all the ways
    * to the wayCache.
    *
-   *
    * @return trie with all the names of the ways
    * @throws SQLException
+   *           if there is an error querying
    */
   public AutoCorrector getMapsAutoCorrector() throws SQLException {
     String query = "SELECT start, end, name, type, id FROM Way";
@@ -363,7 +376,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   }
 
   @Override
-  public void setTiles() throws SQLException, NoSuchElementException {
+  public void setTiles() throws SQLException {
     String query = "SELECT MAX(latitude), MAX(longitude), "
         + "MIN(latitude), MIN(longitude) FROM Node";
 
@@ -418,30 +431,47 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    * @throws SQLException
    *           if it cannot query the tile
    */
-  private void setWays() throws SQLException, NoSuchElementException {
+  private void setWays() throws SQLException {
     for (Way way : wayCache.values()) {
-      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way,
-          trafficCache.get(way.getId()));
+      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(
+          way, trafficCache.get(way.getId()));
     }
   }
 
-  private void setTraffic(List<String> wayIDs) throws SQLException,
-      NoSuchElementException {
+  /**
+   * sets the traffic.
+   *
+   * @param wayIDs
+   *          the list of ways to set the traffic for
+   * @throws SQLException
+   *           if there is an error querying
+   */
+  private void setTraffic(List<String> wayIDs) throws SQLException {
     for (String wayID : wayIDs) {
       Way way = wayCache.get(wayID);
-      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way,
-          trafficCache.get(wayID));
+      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(
+          way, trafficCache.get(wayID));
     }
   }
 
-  public void setInitialTraffic(int port) throws IOException,
-      NoSuchElementException, SQLException {
+  /**
+   * sets the initial traffic.
+   *
+   * @param port
+   *          the port
+   * @throws IOException
+   *           if there is an input output issue
+   * @throws SQLException
+   *           if there is an error querying
+   */
+  public void setInitialTraffic(int port) throws IOException, SQLException {
     String request = "http://localhost:" + port + "?last=0";
     URL url = new URL(request);
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    conn.setRequestMethod("GET");
+    HttpURLConnection connection = (HttpURLConnection) url
+        .openConnection();
+    connection.setRequestMethod("GET");
     BufferedReader br = new BufferedReader(new InputStreamReader(
-        conn.getInputStream()));
+        connection.getInputStream()));
     String array = "";
     // use parallel threads to fill trafficCache
     array = br.readLine();
@@ -456,6 +486,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
 
     // trafficCache.put(wayId, traffic);
     setTraffic(waysToUpdate);
+
+    // REMEMBER TO CLOSE CONNECTION SOMEHOW
   }
 
   /**
@@ -468,20 +500,18 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    *           if there is an input output exception
    * @throws SQLException
    *           if there is an error with the query
-   * @throws NoSuchElementException
-   *           if there exists no such element
    *
    */
-  public void updateTraffic(int port) throws IOException,
-      NoSuchElementException, SQLException {
+  public void updateTraffic(int port) throws IOException, SQLException {
 
     String requestPrefix = "http://localhost:" + port + "?last=";
     long unixTimestamp = Instant.now().getEpochSecond();
     URL url = new URL(requestPrefix + Long.toString(unixTimestamp));
-    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-    conn.setRequestMethod("GET");
+    HttpURLConnection connection = (HttpURLConnection) url
+        .openConnection();
+    connection.setRequestMethod("GET");
     BufferedReader br = new BufferedReader(new InputStreamReader(
-        conn.getInputStream()));
+        connection.getInputStream()));
     String array = "";
     // use parallel threads to fill trafficCache
     array = br.readLine();
@@ -494,13 +524,13 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       trafficCache.put(wayID, traffic);
     }
 
-    // trafficCache.put(wayId, traffic);
     setTraffic(waysToUpdate);
+    // REMEMBER TO CLOSE CONNECTION SOMEHOW!!!!!!!
+
   }
 
   @Override
-  public Tile getTile(double lat, double lng) throws NoSuchElementException,
-      SQLException {
+  public Tile getTile(double lat, double lng) throws SQLException {
     if (tileCache.isEmpty()) {
       System.out.println("got a tile");
       setTiles();
@@ -528,8 +558,9 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    *           , if the streets don't intersect, or if the streets don't exist
    */
   public String getIntersection(String street, String crossStreet)
-      throws SQLException, IllegalArgumentException {
-    String query = "SELECT name, start, end FROM Way WHERE (name == ?) OR (name == ?)";
+      throws SQLException {
+    String query = "SELECT name, start, end FROM Way "
+        + "WHERE (name == ?) OR (name == ?)";
 
     // Create a PreparedStatement
     PreparedStatement prep;
@@ -592,7 +623,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    */
   @Override
   public Double heuristicValue(String node, String endNode)
-      throws SQLException, IllegalArgumentException {
+      throws SQLException {
     Map<String, Double> nodeCoords = getLatLng(node);
     Map<String, Double> endCoords = getLatLng(endNode);
 

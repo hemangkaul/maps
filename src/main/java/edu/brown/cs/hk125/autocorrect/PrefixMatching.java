@@ -13,7 +13,7 @@ import edu.brown.cs.hk125.trie.Trie;
  * @author hk125
  *
  */
-public class PrefixMatching {
+class PrefixMatching {
 
   /**
    * the prefix matching algorithm.
