@@ -32,7 +32,7 @@ public class MapsInfoGetterTest {
   @Before
   public void setUp() throws ClassNotFoundException, SQLException {
     smallMapsMig = new MapsInfoGetter(
-        "/course/cs032/data/maps/smallMaps.sqlite3");
+        "/course/cs032/data/maps/smallMaps.sqlite3", false);
   }
 
   @After
