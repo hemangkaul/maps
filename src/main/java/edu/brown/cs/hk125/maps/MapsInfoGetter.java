@@ -174,7 +174,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
             endLat, endLng);
 
         Link toAdd;
-        if (trafficOn) {
+        if (trafficOn && trafficCache.containsKey(wayID)) {
           double traffic = wayLength * trafficCache.get(wayID);
           toAdd = new Link(nodeName, neighbor, traffic + heuristicLength
               + extraDist, wayID);
@@ -425,10 +425,51 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
     }
   }
 
+  private void setTraffic(List<String> wayIDs) throws SQLException,
+      NoSuchElementException {
+    for (String wayID : wayIDs) {
+      Way way = wayCache.get(wayID);
+      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way,
+          trafficCache.get(wayID));
+    }
+  }
+
+  public void setInitialTraffic(int port) throws IOException,
+      NoSuchElementException, SQLException {
+    String request = "http://localhost:" + port + "?last=0";
+    URL url = new URL(request);
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setRequestMethod("GET");
+    BufferedReader br = new BufferedReader(new InputStreamReader(
+        conn.getInputStream()));
+    String array = "";
+    // use parallel threads to fill trafficCache
+    array = br.readLine();
+    List<List<Object>> read = new Gson().fromJson(array, ArrayList.class);
+    List<String> waysToUpdate = new ArrayList<>();
+    for (List<Object> element : read) {
+      String wayID = (String) element.get(0);
+      double traffic = (double) element.get(1);
+      waysToUpdate.add(wayID);
+      trafficCache.put(wayID, traffic);
+    }
+
+    // trafficCache.put(wayId, traffic);
+    setTraffic(waysToUpdate);
+  }
+
   /**
+   * updates the trafficCache.
+   *
+   * @param port
+   *          the port of the traffic server
+   *
    * @throws IOException
+   *           if there is an input output exception
    * @throws SQLException
+   *           if there is an error with the query
    * @throws NoSuchElementException
+   *           if there exists no such element
    *
    */
   public void updateTraffic(int port) throws IOException,
@@ -443,22 +484,25 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         conn.getInputStream()));
     String array = "";
     // use parallel threads to fill trafficCache
-    while ((array = br.readLine()) != null) {
-      List<List<Object>> read = new Gson().fromJson(array, ArrayList.class);
-      System.out.println(read);
-      System.out.println(array);
+    array = br.readLine();
+    List<List<Object>> read = new Gson().fromJson(array, ArrayList.class);
+    List<String> waysToUpdate = new ArrayList<>();
+    for (List<Object> element : read) {
+      String wayID = (String) element.get(0);
+      double traffic = (double) element.get(1);
+      waysToUpdate.add(wayID);
+      trafficCache.put(wayID, traffic);
     }
-    String wayId = null;
-    double traffic = 0.0;
-    trafficCache.put(wayId, traffic);
-    setWays();
+
+    // trafficCache.put(wayId, traffic);
+    setTraffic(waysToUpdate);
   }
 
   @Override
   public Tile getTile(double lat, double lng) throws NoSuchElementException,
       SQLException {
     if (tileCache.isEmpty()) {
-      System.out.println("check");
+      System.out.println("got a tile");
       setTiles();
     }
 
@@ -564,7 +608,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
 
   /**
    * Given a wayID, accesses the cache to return the way.
-   * 
+   *
    * @param wayID
    *          , the id of the way.
    * @return the full Way associated with the wayID

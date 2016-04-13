@@ -162,7 +162,9 @@ public final class Main {
           // AutoCorrector ac = ig.getAutoCorrector();
           //
           // System.out.println(ac.suggestions(command));
-          ig.updateTraffic(3456);
+          ig.setTiles();
+          ig.setInitialTraffic(3456);
+          System.out.println("Traffic updated");
           ReadEvaluatePrintLoop.execute(command, tree, ig);
           System.out.println("Ready");
         }

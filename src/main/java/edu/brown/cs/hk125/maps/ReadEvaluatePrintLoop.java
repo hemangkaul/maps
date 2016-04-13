@@ -86,8 +86,8 @@ public class ReadEvaluatePrintLoop {
       List<Link> path = maps.getPath(endNode);
       List<Link> pathWithoutFirst = path.subList(1, path.size());
 
-      System.out.println(path);
       printResults(pathWithoutFirst);
+
     } else {
       // given street names, not lat/lon values
       String startNode = ig.getIntersection(commands.get(0), commands.get(1));

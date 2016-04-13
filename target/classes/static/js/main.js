@@ -20,8 +20,7 @@ ctx.canvas.width = this.innerWidth * 0.7;
 ctx.canvas.height = this.innerHeight;
 
 //arbitrarily we set all drawn lines to Red for now.
-ctx.fillStyle = "#FF0000";
-ctx.strokeStyle = "#FF0000";
+ctx.strokeStyle = "#00FF00";
 
 // Is the mouse currently pressed down? Used for panning
 var isDown = false;
