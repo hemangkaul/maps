@@ -518,7 +518,8 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
       if (streetNodes.isEmpty()) {
         // if it's empty the streets have no nodes in common, and thus don't
         // intersect
-        throw new IllegalArgumentException("These streets don't intersect!");
+        throw new IllegalArgumentException(
+            "At least one of the street pairs don't intersect!");
       } else {
         // if it's not empty, the streets have at least one node in common. We
         // simply return the first
@@ -550,4 +551,14 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         endCoords.get("Longitude"));
   }
 
+  /**
+   * Given a wayID, accesses the cache to return the way.
+   * 
+   * @param wayID
+   *          , the id of the way.
+   * @return the full Way associated with the wayID
+   */
+  public Way getWay(String wayID) {
+    return wayCache.get(wayID);
+  }
 }

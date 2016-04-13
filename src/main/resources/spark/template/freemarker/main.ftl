@@ -17,7 +17,7 @@
   <section class="mapsContainer">
     <article class="left-input">
       <div class="inputs">
-        <form method="POST" action="/results">
+        <form id="inputForm" action="">
           <h3>Start Point</h3>
           <label>Street</label><input type="text" name="streetOne" id="streetOne" /><br>
           <label>Cross Street </label><input type="text" name="crossOne" id="crossOne" /><br><br><br>

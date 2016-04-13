@@ -33,6 +33,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.hk125.autocorrect.AutoCorrector;
+import edu.brown.cs.hk125.dijkstra.AStar;
+import edu.brown.cs.hk125.dijkstra.Dijkstra;
+import edu.brown.cs.hk125.dijkstra.Link;
 import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
 import edu.brown.cs.hk125.map.Way;
@@ -205,6 +208,7 @@ public final class Main {
     Spark.get("/home", new FrontHandler(), freeMarker);
     Spark.post("/autocorrect", new AutoCorrectHandler());
     Spark.post("/tile", new TileHandler());
+    Spark.post("/getPath", new getPathHandler());
     Spark.post("/nearestNeighbor", new nearestHandler());
   }
 
@@ -337,6 +341,78 @@ public final class Main {
           .put("fifth", topFive.get(IND_FIVE)).build();
 
       return GSON.toJson(variables);
+    }
+  }
+
+  /**
+   * Given two intersections, returns the list of ways which are part of the
+   * shortest path between the intersections.
+   *
+   * @author hk125
+   *
+   */
+  private class getPathHandler implements Route {
+    @Override
+    public Object handle(final Request req, final Response res) {
+      QueryParamsMap qm = req.queryMap();
+
+      // The four returned street names
+      String streetOne = qm.value("streetOne");
+      String crossOne = qm.value("crossOne");
+      String streetTwo = qm.value("streetTwo");
+      String crossTwo = qm.value("crossTwo");
+
+      // Getting the intersection nodes...
+      String startNode;
+      String endNode;
+      String message = "";
+
+      List<String> jsonWayList = new ArrayList<>();
+
+      try {
+        startNode = ig.getIntersection(streetOne, crossOne);
+        endNode = ig.getIntersection(streetTwo, crossTwo);
+
+        // A new AStar search!
+        Dijkstra maps = new AStar(startNode, ig);
+
+        // A list of links representing the path...
+        List<Link> path = maps.getPath(endNode);
+        List<Link> pathWithoutFirst = path.subList(1, path.size());
+
+        // Only the start node is in the path...
+        if (pathWithoutFirst.isEmpty()) {
+          message = "No path found between the start and end intersections.";
+        }
+
+        for (Link l : pathWithoutFirst) {
+
+          // Each link stores the wayID as its name
+          String wayID = l.getName();
+          // We use the wayID to access the way cache and get the full way,
+          // which has latitude and longitude values
+          Way wayToAdd = ig.getWay(wayID);
+
+          // Now we add this to our list
+          jsonWayList.add(GSON.toJson(wayToAdd));
+        }
+
+      } catch (IllegalArgumentException e) {
+        // TODO Auto-generated catch block
+        message = e.getMessage();
+      } catch (SQLException e) {
+        message = "Hmm, looks like there was a querying problem. This is"
+            + " not your fault; please try a different set of street names.";
+      }
+
+      // If the path is empty, then there is no path between the two
+
+      Map<String, Object> variables = new ImmutableMap.Builder<String, Object>()
+          .put("message", message).put("ways", GSON.toJson(jsonWayList))
+          .build();
+
+      return GSON.toJson(variables);
+
     }
   }
 
