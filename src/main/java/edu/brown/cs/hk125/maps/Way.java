@@ -1,4 +1,4 @@
-package edu.brown.cs.hk125.map;
+package edu.brown.cs.hk125.maps;
 
 /**
  * A class for storing ways; simply stores their components.

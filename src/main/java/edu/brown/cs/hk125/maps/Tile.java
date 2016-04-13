@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.brown.cs.hk125.map.Way;
-
 /**
  * Tile represents a tile which contains data points.
  *

@@ -38,7 +38,6 @@ import edu.brown.cs.hk125.dijkstra.Dijkstra;
 import edu.brown.cs.hk125.dijkstra.Link;
 import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
-import edu.brown.cs.hk125.map.Way;
 import freemarker.template.Configuration;
 
 /**

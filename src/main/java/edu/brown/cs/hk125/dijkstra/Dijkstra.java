@@ -71,16 +71,16 @@ public class Dijkstra {
    *           exception may be thrown.
    */
   public Dijkstra(String start, InfoGetter infog) throws SQLException {
-    if (!ig.isIn(startNode)) {
+    if (!infog.isIn(start)) {
       throw new IllegalArgumentException();
       // there is an error if the startNode is not in the graph, according to
       // the infoGetter!
     } else {
       this.ig = infog;
       this.setStartNode(start);
-      this.newest = startNode;
+      this.newest = start;
       setDiscovered(new HashMap<String, Link>());
-      discovered.put(startNode, new Link(startNode, startNode, 0.0, ""));
+      discovered.put(start, new Link(start, start, 0.0, ""));
       setClosestUndiscovered(new PriorityQueue<Link>());
     }
   }
@@ -153,8 +153,7 @@ public class Dijkstra {
    * @param closeUndiscovered
    *          the closestUndiscovered to set
    */
-  protected void setClosestUndiscovered(
-      PriorityQueue<Link> closeUndiscovered) {
+  protected void setClosestUndiscovered(PriorityQueue<Link> closeUndiscovered) {
     this.closestUndiscovered = closeUndiscovered;
   }
 
@@ -309,8 +308,8 @@ public class Dijkstra {
    *           , if querying is used in the infogetter and there is an error in
    *           the querying
    */
-  private ArrayList<Link> getPathHelper(String stop,
-      HashMap<String, Link> hm) throws SQLException {
+  private ArrayList<Link> getPathHelper(String stop, HashMap<String, Link> hm)
+      throws SQLException {
     if (startNode.equals(stop)) { // base case
       ArrayList<Link> listToReturn = new ArrayList<Link>();
       listToReturn.add(hm.get(startNode));

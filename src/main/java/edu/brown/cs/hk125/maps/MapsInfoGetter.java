@@ -22,11 +22,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.google.gson.Gson;
 
 import edu.brown.cs.hk125.autocorrect.AutoCorrector;
+import edu.brown.cs.hk125.dijkstra.GroupLink;
 import edu.brown.cs.hk125.dijkstra.InfoGetterAStar;
 import edu.brown.cs.hk125.dijkstra.Link;
 import edu.brown.cs.hk125.kdtree.KDTree;
 import edu.brown.cs.hk125.latlng.LatLng;
-import edu.brown.cs.hk125.map.Way;
 import edu.brown.cs.hk125.trie.Trie;
 
 /**
@@ -553,10 +553,9 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    *           , if the streets don't intersect, or if the streets don't exist
    */
   public String getIntersection(String street, String crossStreet)
-
-  throws SQLException {
+      throws SQLException {
     String query = "SELECT name, start, end FROM Way "
-        + "WHERE (name == ?) OR (name == ?)";
+        + "WHERE (LOWER(name) == ?) OR (LOWER(name) == ?)";
 
     // Create a PreparedStatement
     PreparedStatement prep;
@@ -647,4 +646,5 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   public Way getWay(String wayID) {
     return wayCache.get(wayID);
   }
+
 }

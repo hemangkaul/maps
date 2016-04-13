@@ -118,6 +118,7 @@ public class MapsInfoGetterTest {
 
     // The first two test two ways with the same name... making sure our program
     // checks both
+
     assertTrue(smallMapsMig
         .getIntersection("Radish Spirit Blvd", "Chihiro Ave").equals("/n/0"));
     assertTrue(smallMapsMig.getIntersection("Kamaji Pl", "Chihiro Ave").equals(
