@@ -27,12 +27,32 @@ function getTile(lat, lng) {
 		// We will add tileCoords to our cache
 		var tileCoords = {'l': responseObject.l, 'r': responseObject.r, 
 				't': responseObject.t, 'b': responseObject.b};
-		// tileWays is the List of ways
-		var tileWays = JSON.parse(responseObject.ways);
+
+		// right now all the ways are in JSON format. Rather than parsing 
+		// it every time we draw the way, we parse it upfront and store it
+		// already parsed
+		var deJSONedWays = deJSON(JSON.parse(responseObject.ways));
+		
+		
+		// storing in the cache
 		idCache[responseObject.id] = tileCoords;
-		tileCache[responseObject.id] = tileWays;
-		drawTile(tileWays);
+		tileCache[responseObject.id] = deJSONedWays;
+		drawTile(deJSONedWays);
 	});
+}
+
+/**
+ * converts a list of JSON ways into a list of ways that are easily accessible by JQuery
+ * @param wayList
+ */
+function deJSON(wayList) {
+	
+	var deJSONedList = [];
+	$.each(wayList, function(index, value) {
+		deJSONedList.push(JSON.parse(value));
+	})
+	
+	return deJSONedList;
 }
 
 /**
@@ -44,42 +64,28 @@ function drawTile(wayList) {
 	// geographic height of map
 	var height = topLat - bottomLat;
 	
+	ctx.beginPath();
 	$.each(wayList, function(index, value) {
-		var parsedWay = JSON.parse(value);
 		
-		startX = (parsedWay.startLongitude - leftLong)/length * ctx.canvas.width;
+		startX = (value.startLongitude - leftLong)/length * ctx.canvas.width;
 		// We have to do (topLat - lat) instead of (lat - bottomLat) since the coordinates
 		// on the canvas start at (0, 0) in the top left corner.
-		startY = (topLat - parsedWay.startLatitude)/height * ctx.canvas.height;
-		endX = (parsedWay.endLongitude - leftLong)/length * ctx.canvas.width;
-		endY = (topLat - parsedWay.endLatitude)/height * ctx.canvas.height;
+		startY = (topLat - value.startLatitude)/height * ctx.canvas.height;
+		endX = (value.endLongitude - leftLong)/length * ctx.canvas.width;
+		endY = (topLat - value.endLatitude)/height * ctx.canvas.height;
 		
 		ctx.moveTo(startX, startY);
     	ctx.lineTo(endX, endY); 
 	})
-//	$.each(wayMap, function(key, value) {
-//		// convert each LatLng to an (x, y)
-//		var parsedKey = JSON.parse(key);
-//		var parsedVal = JSON.parse(value);
-//		
-//		startX = (parsedKey.lng - leftLong)/length * ctx.canvas.width;
-//		startY = (parsedKey.lat - bottomLat)/height * ctx.canvas.height;
-//		endX = (parsedVal.lng - leftLong)/length * ctx.canvas.width;
-//		endY = (parsedVal.lat - bottomLat)/height * ctx.canvas.height;
-//		
-//    	ctx.moveTo(startX, startY);
-//    	ctx.lineTo(endX, endY);    	        
-//	})
+	ctx.closePath();
 	ctx.stroke();
 }
 
 /**
  * Drawing the map.
  */
-function drawMap(topLat, leftLong, bottomLat, rightLong) {	
+function drawMap() {	
 	
-	
-	ctx.strokeStyle = "#00FF00";
 	// clear previous canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     
@@ -87,7 +93,6 @@ function drawMap(topLat, leftLong, bottomLat, rightLong) {
     var curLng = leftLong;
     
     // draw new canvas
-	ctx.beginPath();
 	
 	while (curLat - tileHeight <= topLat) {
 		while (curLng - tileWidth<= rightLong) {
@@ -99,6 +104,14 @@ function drawMap(topLat, leftLong, bottomLat, rightLong) {
 	}
 	// if there is currently a search query for the shortest path, 
 	// we draw that too
-	ctx.beginPath();
+	
 	drawShortestPath();
 }
+
+///**
+// * Overall Draw Function
+// */
+//function draw(topLat, leftLong, bottomLat, rightLong) {
+//	$.when(drawMap(topLat, leftLong, bottomLat, rightLong)).then(drawShortestPath());
+//}
+

@@ -11,8 +11,6 @@ $("#inputForm").on('submit', function() {
 	$.post('/getPath', $("#inputForm").serializeArray(), function(responseJSON) {
 		responseObject = JSON.parse(responseJSON);
 		
-		console.log(responseObject.message);
-		
 		// Set the error message!
 		$("#first").text(responseObject.message);
 		$("#second").text("");
@@ -26,8 +24,10 @@ $("#inputForm").on('submit', function() {
 			clear = true;
 		}
 		else { // we have found a valid path!
+			$("#clear").css('visibility', 'visible');
 			clear = false;
 			shortestPathWays = JSON.parse(responseObject.ways);
+			drawMap();
 			drawShortestPath();
 		}
 	});
@@ -49,8 +49,6 @@ function drawShortestPath() {
 	
 	ctx.beginPath();
 	$.each(shortestPathWays, function(index, value) {
-		
-		console.log(shortestPathWays);
 		
 		var parsedWay = JSON.parse(value);
 		
@@ -74,14 +72,20 @@ function drawShortestPath() {
 			endY = (topLat - eLat)/height * ctx.canvas.height;
 			
 			ctx.strokeStyle = "#0000FF";
+			ctx.lineWidth = 10;
 			ctx.moveTo(startX, startY);
 	    	ctx.lineTo(endX, endY); 	
 		}
 	})
 	
+	ctx.closePath();
 	ctx.stroke();
+	ctx.strokeStyle = "#000000";
+	ctx.lineWidth = 1;
 }
 
-function clearPath() {
-	clear == true;
-}
+$("#clear").on('click', function() {
+	clear = true;
+	drawMap();
+	$("#clear").css('visibility', 'hidden');
+});

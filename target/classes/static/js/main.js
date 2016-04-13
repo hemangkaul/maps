@@ -20,7 +20,8 @@ ctx.canvas.width = this.innerWidth * 0.7;
 ctx.canvas.height = this.innerHeight;
 
 //arbitrarily we set all drawn lines to Red for now.
-ctx.strokeStyle = "#00FF00";
+ctx.strokeStyle = "#000000";
+ctx.lineWidth = 1;
 
 // Is the mouse currently pressed down? Used for panning
 var isDown = false;
@@ -146,7 +147,7 @@ $("#map").on('mousewheel', function(e) {
     zoomLevel += zoomExp;
     
     // draw new map
-    drawMap(topLat, leftLong, bottomLat, rightLong);
+    drawMap();
   }  
 });
 
@@ -196,7 +197,7 @@ $("#map").on('mousemove', function(e) {
 	  bottomLat += deltaLat;
 	  rightLong -= deltaLong;
 	  
-	  drawMap(topLat, leftLong, bottomLat, rightLong);
+	  drawMap();
   }
   last_position = {x: e.pageX, y: e.pageY};
   })
@@ -245,5 +246,5 @@ $("#map").on('mouseup', function(e) {
 //    
     
 // draw the initial map
-drawMap(topLat, leftLong, bottomLat, rightLong);
+drawMap();
 

@@ -32,6 +32,7 @@
       <div class="autocorrect" id="third"></div>
       <div class="autocorrect" id="fourth"></div>
       <div class="autocorrect" id="fifth"></div>
+      <input type="button" id="clear" value="Clear Path!"/>
     </article>
     <article class="right-canvas">
       <canvas id="map"></canvas>

@@ -60,10 +60,27 @@ input {
 }
 
 .autocorrect {
-  background-color: #D0FBE0;
+  background-color: #D6D8DD;
   text-align: center;
 }
 
+#clear {
+  visibility: hidden;
+  padding: 5px 10px;
+  float: bottom;
+  color: white;
+  background-color: #D01100;
+  border: none;
+  margin: 10px;
+  font-size: 16px;
+  border-radius: 4px;
+  width: 95%;
+}
+
+#clear:hover {
+  background-color: #FF0099;
+  color: white;
+}
 
 /* Pattern styles */
 
@@ -84,7 +101,7 @@ input {
 }
 
 .right-canvas {
-  background-color: #000000;
+  background-color: #D6D8DD;
   height: 100%;
   width: 70%;
   float: left;
