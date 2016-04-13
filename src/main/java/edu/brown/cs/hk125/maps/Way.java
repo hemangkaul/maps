@@ -65,12 +65,9 @@ public class Way {
    *          the type of the way
    * @param wayId
    *          the id of the way
-   * @param trafficVal
-   *          the value of the traffic
    */
-  public Way(double startLat, double startLng, double endLat,
-      double endLng, String wayName, String wayType, String wayId,
-      double trafficVal) {
+  public Way(double startLat, double startLng, double endLat, double endLng,
+      String wayName, String wayType, String wayId) {
     this.startLatitude = startLat;
     this.startLongitude = startLng;
     this.endLatitude = endLat;
@@ -78,7 +75,7 @@ public class Way {
     this.name = wayName;
     this.type = wayType;
     this.id = wayId;
-    this.traffic = trafficVal;
+    this.traffic = 1.0;
   }
 
   /**

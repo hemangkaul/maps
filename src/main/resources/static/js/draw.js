@@ -48,11 +48,31 @@ function getTile(lat, lng) {
 function deJSON(wayList) {
 	
 	var deJSONedList = [];
+	// for each way, we parse it and add it to deJSONedList
 	$.each(wayList, function(index, value) {
 		deJSONedList.push(JSON.parse(value));
 	})
 	
 	return deJSONedList;
+}
+
+/**
+ * Given a Way, determines the color to draw it
+ * @param way
+ */
+function wayAttributes(way) {
+	if (way.traffic < 2) {
+		ctx.strokeStyle("black");
+	} 
+	else if (way.traffic < 4) {
+		ctx.strokeStyle("yellow");
+	}
+	else if (way.traffic < 6) {
+		ctx.strokeStyle("orange");
+	}
+	else {
+		ctx.strokeStyle("red");
+	}
 }
 
 /**
@@ -67,6 +87,7 @@ function drawTile(wayList) {
 	ctx.beginPath();
 	$.each(wayList, function(index, value) {
 		
+		wayAttributes(value);
 		startX = (value.startLongitude - leftLong)/length * ctx.canvas.width;
 		// We have to do (topLat - lat) instead of (lat - bottomLat) since the coordinates
 		// on the canvas start at (0, 0) in the top left corner.

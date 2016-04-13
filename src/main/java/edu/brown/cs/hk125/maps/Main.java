@@ -150,9 +150,10 @@ public final class Main {
     // Set it to null in case if we don't there's an error
     ig = null;
     tree = null;
+    boolean trafficOn = options.has("traffic");
 
     try {
-      ig = new MapsInfoGetter(db, options.has("traffic"));
+      ig = new MapsInfoGetter(db, trafficOn);
       tree = ig.getKDTree();
       mapsAC = ig.getMapsAutoCorrector();
       if (options.has("gui")) {
@@ -166,7 +167,15 @@ public final class Main {
         }
 
         ig.setTiles();
+
         runSparkServer();
+
+        if (trafficOn) {
+          ig.setInitialTraffic(3456);
+          while (true) {
+            ig.updateTraffic(3456);
+          }
+        }
 
       } else {
 
