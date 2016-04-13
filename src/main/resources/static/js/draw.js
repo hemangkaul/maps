@@ -18,8 +18,9 @@ var tileHeight = 0.019371145999997452;
 function getTile(lat, lng) {
 	// 1. check if in front end cache. If so, return the map of latlng pairs
 	$.each(idCache, function(key, value) {
-		if (lng > key.l && lng < key.r && lat > key.b && lat < key.t) {
-			drawTile(tileCache.key);
+		if (lng > value.l && lng < value.r && lat > value.b && lat < value.t) {
+			console.log("in the cache!");
+			drawTile(tileCache[key]);
 		}
 	})
 
@@ -102,4 +103,5 @@ function drawMap(tLLat, tLLong, bRLat, bRLong) {
 		curLng = tLLong;
 	}
 	ctx.closePath();
+//	console.log(idCache);
 }
