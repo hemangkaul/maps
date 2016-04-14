@@ -58,6 +58,7 @@ function deJSON(wayList) {
 	return deJSONedList;
 }
 
+<<<<<<< HEAD
 ///**
 // * Given a Way, determines the color to draw it
 // * @param way
@@ -77,6 +78,8 @@ function deJSON(wayList) {
 //	}
 //}
 
+=======
+>>>>>>> 50bce1f6b44db3f6ed2f0f7b4c1f4f822b6cd4b1
 /**
  * @param map, is an 'object literal', map of (lat, lng) pair to (lat, lng) pair
  */
@@ -126,7 +129,7 @@ function drawMap() {
 	// if there is currently a search query for the shortest path, 
 	// we draw that too
 	
-	drawWays();
+	drawShortestPath();
 }
 
 ///**

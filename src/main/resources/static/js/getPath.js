@@ -28,14 +28,14 @@ $("#inputForm").on('submit', function() {
 			clear = false;
 			shortestPathWays = JSON.parse(responseObject.ways);
 			drawMap();
-			drawWays();
+			drawShortestPath();
 		}
 	});
 	// stop the get in the html descriptoin
 	return false;
 })
 
-function drawWays() {
+function drawShortestPath() {
 	
 	// geographic length of map
 	var length = rightLong - leftLong;
@@ -44,8 +44,6 @@ function drawWays() {
 	
 	if (clear == true)
 		return;
-	
-	// blue, not red, for the path!
 	
 	ctx.beginPath();
 	$.each(shortestPathWays, function(index, value) {
