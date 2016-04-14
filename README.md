@@ -12,6 +12,14 @@ Known Bugs - none that we know of.
 Design Details Specific to Code:
 - For our AutoCorrector we decided that an exact match wasn't always the best result. Consider the case where a user is beginning to input "Thayer Street"... the database contains ways which are named both "Thayer Street" and also "Thayer St". However, there are significantly more entries with the name "Thayer Street" than there are entries with the name "Thayer St"... therefore, it follows that, when a user reaches "Thayer St..." in typing their input, it is also significantly more likely that they mean to go to "Thayer Street", and not its cheap knock off "Thayer St". In other words, we intentionally deviate from the original Autocorrect suggestion algorithm where exact matches always appear first.
 
+-We have six main packages:
+	-autocorrect: our autocorrect package contains all of the meat of our autocorrect functionality besides the trie implementation, including the Levenshtein Edit Distance, Prefix Matching, and Whitespace algorithms. We made an interface called AutoCorrector, because we felt that the needs of your autocorrection differ based upon your 
+	-dijkstra:
+	-kdtree:
+	-latlng:
+	-trie:
+	-maps:
+
 - We faced a decision implementing the A* Search. 
 	
 	The dilemma was as follows:
@@ -36,17 +44,24 @@ Design Details Specific to Code:
 
 	We used Hemang's (hk125) KDTree implementation to find the nearest LatLng point to a given inputed latitude and longitude.
 
-	We used Steven's Dijkstra implementation from Bacon to perform the nearest neighbor search -- finding the shortest path from one point to another.
+	We used Steven's (sl234) Dijkstra implementation from Bacon to perform the nearest neighbor search -- finding the shortest path from one point to another.
+
+	We combined both of our Trie implementations from AutoCorrect to perform the autocorrection functionality.
 
 How to run your tests:
 	
-	Junit tests are automatically run when running "mvn package".
+	Junit tests are automatically run when running "mvn package" or "mvn test".
+	To run system tests run: "cs032_system_tester ./run ./tests/*"
+	In order to test our traffic server interactions, especially in regards to AStar, we checked the weight * traffic value = distance value, so that we could see that the Traffic was in fact adding weight to the AStar search. you can see these values in our traffic.txt and noTraffic.txt.
 
-	To run system tests, ...
 
 How to build / run your program from the command line:
 
 	After running mvn package, simply enter "./run /ltmp/hk125/maps.sqlite3" for the REPL, or "./run --gui /ltmp/hk125/maps.sqlite3" for the gui. The default port is :4567, but you can re-set it by adding "--port [port number]" to the run line ("./run -- gui ...").
+
+SWAG:
+	-- Predictive tile finding: Based on the manner we find tiles to draw, we draw tiles that are in the direction we're moving, but may be just outside of the current frame. This gives a more user friendly experience.
+
 
 Things to do if time avails (i.e. high time cost per expected increase in final grade) 
 
