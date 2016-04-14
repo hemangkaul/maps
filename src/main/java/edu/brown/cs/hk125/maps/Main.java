@@ -110,6 +110,11 @@ public final class Main {
    */
   private static final Gson GSON = new Gson();
 
+  /**
+   * Whether we will be activating traffic.
+   */
+  private boolean trafficOn;
+
   // GSOn used to handle Json translations between backend / frontend
 
   /**
@@ -150,7 +155,7 @@ public final class Main {
     // Set it to null in case if we don't there's an error
     ig = null;
     tree = null;
-    boolean trafficOn = options.has("traffic");
+    trafficOn = options.has("traffic");
 
     try {
       ig = new MapsInfoGetter(db, trafficOn);
@@ -177,7 +182,8 @@ public final class Main {
       } else {
 
         String command;
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(
+            System.in));
 
         System.out.println("Ready");
 
@@ -221,7 +227,8 @@ public final class Main {
    */
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
-    File templates = new File("src/main/resources/spark/template/freemarker");
+    File templates = new File(
+        "src/main/resources/spark/template/freemarker");
     try {
       config.setDirectoryForTemplateLoading(templates);
     } catch (IOException ioe) {
@@ -254,12 +261,13 @@ public final class Main {
    * @author sl234
    *
    */
-  private static class FrontHandler implements TemplateViewRoute {
+  private class FrontHandler implements TemplateViewRoute {
     // @Override[INFO] Finished at: 2016-04-11T00:49:58-04:00
 
     @Override
     public ModelAndView handle(Request req, Response res) {
-      Map<String, Object> variables = ImmutableMap.of("title", "Maps");
+      Map<String, Object> variables = ImmutableMap.of("title", "Maps",
+          "traffic", trafficOn);
       return new ModelAndView(variables, "main.ftl");
     }
   }
@@ -380,7 +388,8 @@ public final class Main {
 
       Map<String, String> variables = new ImmutableMap.Builder<String, String>()
           .put("first", topFive.get(0)).put("second", topFive.get(1))
-          .put("third", topFive.get(2)).put("fourth", topFive.get(IND_FOUR))
+          .put("third", topFive.get(2))
+          .put("fourth", topFive.get(IND_FOUR))
           .put("fifth", topFive.get(IND_FIVE)).build();
 
       return GSON.toJson(variables);

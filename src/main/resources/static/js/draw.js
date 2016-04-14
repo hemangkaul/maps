@@ -60,7 +60,7 @@ function deJSON(wayList) {
  * Given a Way, determines the color to draw it
  * @param way
  */
-function wayAttributes(way) {
+function wayColor(way) {
 	if (way.traffic < 2) {
 		ctx.strokeStyle("black");
 	} 
@@ -75,6 +75,8 @@ function wayAttributes(way) {
 	}
 }
 
+function wayWidth()
+
 /**
  * @param map, is an 'object literal', map of (lat, lng) pair to (lat, lng) pair
  */
@@ -86,8 +88,7 @@ function drawTile(wayList) {
 	
 	ctx.beginPath();
 	$.each(wayList, function(index, value) {
-		
-		wayAttributes(value);
+		wayColor(value);
 		startX = (value.startLongitude - leftLong)/length * ctx.canvas.width;
 		// We have to do (topLat - lat) instead of (lat - bottomLat) since the coordinates
 		// on the canvas start at (0, 0) in the top left corner.
@@ -126,7 +127,7 @@ function drawMap() {
 	// if there is currently a search query for the shortest path, 
 	// we draw that too
 	
-	drawShortestPath();
+	drawWays();
 }
 
 ///**

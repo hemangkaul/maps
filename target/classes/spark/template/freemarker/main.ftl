@@ -37,6 +37,8 @@
     <article class="right-canvas">
       <canvas id="map"></canvas>
     </article>
+    
+    <div id="traffic></div>
 
     <!-- Again, we're serving up the unminified source for clarity. -->
     <script type="text/javascript" src="js/jquery-2.1.1.js"></script>
