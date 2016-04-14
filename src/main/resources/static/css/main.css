@@ -82,6 +82,10 @@ input {
   color: white;
 }
 
+#traffic {
+  visibility: hidden;
+}
+
 /* Pattern styles */
 
 .mapsContainer {

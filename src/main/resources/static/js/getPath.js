@@ -28,14 +28,14 @@ $("#inputForm").on('submit', function() {
 			clear = false;
 			shortestPathWays = JSON.parse(responseObject.ways);
 			drawMap();
-			drawShortestPath();
+			drawWays();
 		}
 	});
 	// stop the get in the html descriptoin
 	return false;
 })
 
-function drawShortestPath() {
+function drawWays() {
 	
 	// geographic length of map
 	var length = rightLong - leftLong;
