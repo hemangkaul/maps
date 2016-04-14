@@ -176,10 +176,7 @@ public final class Main {
         runSparkServer();
 
         if (trafficOn) {
-          ig.setInitialTraffic(3456);
-          while (true) {
-            ig.updateTraffic(3456);
-          }
+          ig.updateTraffic(3456);
         }
 
       } else {
@@ -218,6 +215,8 @@ public final class Main {
       System.out.println("ERROR: IllegalArgumentException: " + e);
     } catch (NoSuchElementException e) {
       System.out.println("ERROR: NoSuchElementException: " + e);
+    } catch (InterruptedException e) {
+      System.out.println("ERROR: InterruptedException: " + e);
     }
   }
 

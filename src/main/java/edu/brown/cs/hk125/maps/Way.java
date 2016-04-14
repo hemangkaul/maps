@@ -44,11 +44,6 @@ public class Way {
   private String id;
 
   /**
-   * the traffic value.
-   */
-  private double traffic;
-
-  /**
    * the constructor for a way.
    *
    * @param startLat
@@ -75,26 +70,6 @@ public class Way {
     this.name = wayName;
     this.type = wayType;
     this.id = wayId;
-    this.traffic = 1.0;
-  }
-
-  /**
-   * gets the traffic.
-   *
-   * @return the traffic
-   */
-  public double getTraffic() {
-    return traffic;
-  }
-
-  /**
-   * sets the traffic.
-   *
-   * @param trafficVal
-   *          the traffic to set
-   */
-  public void setTraffic(double trafficVal) {
-    this.traffic = trafficVal;
   }
 
   /**
