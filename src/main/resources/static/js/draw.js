@@ -57,27 +57,6 @@ function deJSON(wayList) {
 }
 
 /**
- * Given a Way, determines the color to draw it
- * @param way
- */
-function wayColor(way) {
-	if (way.traffic < 2) {
-		ctx.strokeStyle("black");
-	} 
-	else if (way.traffic < 4) {
-		ctx.strokeStyle("yellow");
-	}
-	else if (way.traffic < 6) {
-		ctx.strokeStyle("orange");
-	}
-	else {
-		ctx.strokeStyle("red");
-	}
-}
-
-function wayWidth()
-
-/**
  * @param map, is an 'object literal', map of (lat, lng) pair to (lat, lng) pair
  */
 function drawTile(wayList) {
@@ -127,7 +106,7 @@ function drawMap() {
 	// if there is currently a search query for the shortest path, 
 	// we draw that too
 	
-	drawWays();
+	drawShortestPath();
 }
 
 ///**
