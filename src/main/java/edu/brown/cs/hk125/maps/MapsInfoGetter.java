@@ -78,11 +78,6 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   private static final double TILESIZE = 0.01;
 
   /**
-   * the initial traffic grab time.
-   */
-  private static final int TIME = 0;
-
-  /**
    * the constructor for the infogetter.
    *
    * @param db
@@ -441,65 +436,6 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
   }
 
   /**
-   * sets the traffic.
-   *
-   * @param wayIDs
-   *          the list of ways to set the traffic for
-   * @throws SQLException
-   *           if there is an error querying
-   */
-  private void setTraffic(List<String> wayIDs) throws SQLException {
-    for (String wayID : wayIDs) {
-      Way way = wayCache.get(wayID);
-      getTile(way.getStartLatitude(), way.getStartLongitude()).insertWay(way,
-          trafficCache.get(wayID));
-    }
-  }
-
-  /**
-   * sets the initial traffic.
-   *
-   * @param port
-   *          the port
-   * @throws IOException
-   *           if there is an input output issue
-   * @throws SQLException
-   *           if there is an error querying
-   */
-  @SuppressWarnings("unchecked")
-  public void setInitialTraffic(int port) throws IOException, SQLException {
-    String request = "http://localhost:" + port + "?last=0";
-    URL url = new URL(request);
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-    connection.setRequestMethod("GET");
-    BufferedReader br = new BufferedReader(new InputStreamReader(
-        connection.getInputStream()));
-    String array = "";
-    // use parallel threads to fill trafficCache
-    array = br.readLine();
-    List<List<Object>> read = new Gson().fromJson(array, ArrayList.class);
-    List<String> waysToUpdate = new ArrayList<>();
-    for (List<Object> element : read) {
-      String wayID = (String) element.get(0);
-      double traffic = (double) element.get(1);
-      waysToUpdate.add(wayID);
-      trafficCache.put(wayID, traffic);
-    }
-
-    int counter = 1;
-    while (counter != 0) {
-
-    }
-
-    // trafficCache.put(wayId, traffic);
-    setTraffic(waysToUpdate);
-
-    br.close();
-    connection.disconnect();
-    // REMEMBER TO CLOSE CONNECTION SOMEHOW
-  }
-
-  /**
    * updates the trafficCache.
    *
    * @param port
@@ -509,36 +445,36 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
    *           if there is an input output exception
    * @throws SQLException
    *           if there is an error with the query
+   * @throws InterruptedException
    *
    */
   @SuppressWarnings("unchecked")
-  public void updateTraffic(int port) throws IOException, SQLException {
+  public void updateTraffic(int port) throws IOException, SQLException,
+      InterruptedException {
 
-    String requestPrefix = "http://localhost:" + port + "?last=";
-    long unixTimestamp = Instant.now().getEpochSecond();
-    URL url = new URL(requestPrefix + Long.toString(unixTimestamp));
-    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    String unixTimestamp = "0";
+    while (true) {
+      String requestPrefix = "http://localhost:" + port + "?last=";
+      URL url = new URL(requestPrefix + unixTimestamp);
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-    connection.setRequestMethod("GET");
-    BufferedReader br = new BufferedReader(new InputStreamReader(
-        connection.getInputStream()));
-    String array = "";
-    // use parallel threads to fill trafficCache
-    array = br.readLine();
+      connection.setRequestMethod("GET");
+      BufferedReader br = new BufferedReader(new InputStreamReader(
+          connection.getInputStream()));
+      String array = "";
+      // use parallel threads to fill trafficCache
+      array = br.readLine();
 
-    List<List<Object>> read = new Gson().fromJson(array, ArrayList.class);
-    List<String> waysToUpdate = new ArrayList<>();
-    for (List<Object> element : read) {
-      String wayID = (String) element.get(0);
-      double traffic = (double) element.get(1);
-      waysToUpdate.add(wayID);
-      trafficCache.put(wayID, traffic);
+      List<List<Object>> read = new Gson().fromJson(array, ArrayList.class);
+      for (List<Object> element : read) {
+        String wayID = (String) element.get(0);
+        double traffic = (double) element.get(1);
+        trafficCache.put(wayID, traffic);
+      }
+
+      Thread.sleep(2);
+      unixTimestamp = Long.toString(Instant.now().getEpochSecond());
     }
-
-    setTraffic(waysToUpdate);
-
-    // REMEMBER TO CLOSE CONNECTION SOMEHOW!!!!!!!
-
   }
 
   @Override

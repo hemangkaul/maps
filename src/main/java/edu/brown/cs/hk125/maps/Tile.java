@@ -85,11 +85,7 @@ public class Tile {
    *          the traffic of the way
    */
   public void insertWay(Way way, double traffic) {
-    if (tileWays.containsKey(way.getId())) {
-      tileWays.get(way.getId()).setTraffic(traffic);
-    } else {
-      tileWays.put(way.getId(), way);
-    }
+    tileWays.put(way.getId(), way);
   }
 
   /**
