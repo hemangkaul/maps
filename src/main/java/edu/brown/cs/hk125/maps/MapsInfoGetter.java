@@ -472,7 +472,7 @@ public class MapsInfoGetter implements InfoGetterAStar, Tiler {
         trafficCache.put(wayID, traffic);
       }
 
-      Thread.sleep(2);
+      Thread.sleep(1);
       unixTimestamp = Long.toString(Instant.now().getEpochSecond());
     }
   }

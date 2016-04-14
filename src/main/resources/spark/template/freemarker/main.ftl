@@ -38,11 +38,12 @@
       <canvas id="map"></canvas>
     </article>
     
-    <div id="traffic></div>
+    <div id="traffic" value=${traffic}></div>
 
     <!-- Again, we're serving up the unminified source for clarity. -->
     <script type="text/javascript" src="js/jquery-2.1.1.js"></script>
     <script type="text/javascript" src="js/getPath.js"></script>
+    <script type="text/javascript" src="js/traffic.js"></script>
     <script type="text/javascript" src="js/draw.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
     <script type="text/javascript" src="js/autocorrect.js"></script>

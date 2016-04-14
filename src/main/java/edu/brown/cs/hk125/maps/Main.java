@@ -115,6 +115,11 @@ public final class Main {
    */
   private boolean trafficOn;
 
+  /**
+   * the default traffic port.
+   */
+  private static final int DEFAULTTRAFFICPORT = 3456;
+
   // GSOn used to handle Json translations between backend / frontend
 
   /**
@@ -176,33 +181,23 @@ public final class Main {
         runSparkServer();
 
         if (trafficOn) {
-          ig.updateTraffic(3456);
+          ig.updateTraffic(DEFAULTTRAFFICPORT);
         }
 
       } else {
 
         String command;
-        BufferedReader br = new BufferedReader(new InputStreamReader(
-            System.in));
-
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        if (trafficOn) {
+          ig.updateTraffic(DEFAULTTRAFFICPORT);
+        }
         System.out.println("Ready");
 
         while ((command = br.readLine()) != null) {
-          // String[] commands = command.split(" ");
-          // LatLng latlng = new LatLng(Double.parseDouble(commands[0]),
-          // Double.parseDouble(commands[1]));
-          //
-          // System.out.println(tree.findNN(latlng));
-
-          // AutoCorrector ac = ig.getAutoCorrector();
-          //
-          // System.out.println(ac.suggestions(command));
-          ig.setTiles();
-          // ig.setInitialTraffic(3456);
-          // System.out.println("Traffic updated");
           ReadEvaluatePrintLoop.execute(command, tree, ig);
           System.out.println("Ready");
         }
+        br.close();
       }
 
     } catch (SQLException e) {
@@ -227,8 +222,7 @@ public final class Main {
    */
   private static FreeMarkerEngine createEngine() {
     Configuration config = new Configuration();
-    File templates = new File(
-        "src/main/resources/spark/template/freemarker");
+    File templates = new File("src/main/resources/spark/template/freemarker");
     try {
       config.setDirectoryForTemplateLoading(templates);
     } catch (IOException ioe) {
@@ -267,7 +261,7 @@ public final class Main {
     @Override
     public ModelAndView handle(Request req, Response res) {
       Map<String, Object> variables = ImmutableMap.of("title", "Maps",
-          "traffic", trafficOn);
+          "traffic", Boolean.toString(trafficOn));
       return new ModelAndView(variables, "main.ftl");
     }
   }
@@ -388,8 +382,7 @@ public final class Main {
 
       Map<String, String> variables = new ImmutableMap.Builder<String, String>()
           .put("first", topFive.get(0)).put("second", topFive.get(1))
-          .put("third", topFive.get(2))
-          .put("fourth", topFive.get(IND_FOUR))
+          .put("third", topFive.get(2)).put("fourth", topFive.get(IND_FOUR))
           .put("fifth", topFive.get(IND_FIVE)).build();
 
       return GSON.toJson(variables);

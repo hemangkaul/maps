@@ -50,13 +50,14 @@ class ReadEvaluatePrintLoop {
         }
       }
       if (commands.size() != 4) {
-        System.out.println(commands.size());
-        throw new IllegalArgumentException("Wrong number of arguments!");
+        System.out.println("Wrong number of arguments!");
+        return;
       }
     } else {
       String[] splitSpaces = command.split(" ");
       if (splitSpaces.length != 4) {
-        throw new IllegalArgumentException("Wrong number of arguments!");
+        System.out.println("Wrong number of arguments!");
+        return;
       }
       for (String number : splitSpaces) {
         commands.add(number);
@@ -65,45 +66,53 @@ class ReadEvaluatePrintLoop {
     }
     if (latlng) {
       // the inputed lat/lon values
-      Double lat1 = Double.parseDouble(commands.get(0));
-      Double lng1 = Double.parseDouble(commands.get(1));
-      Double lat2 = Double.parseDouble(commands.get(2));
-      Double lng2 = Double.parseDouble(commands.get(3));
+      try {
+        Double lat1 = Double.parseDouble(commands.get(0));
+        Double lng1 = Double.parseDouble(commands.get(1));
+        Double lat2 = Double.parseDouble(commands.get(2));
+        Double lng2 = Double.parseDouble(commands.get(3));
+        // making LatLng objects that we use in the nearestNeighbor function
+        LatLng source = new LatLng(lat1, lng1, "");
+        LatLng target = new LatLng(lat2, lng2, "");
 
-      // making LatLng objects that we use in the nearestNeighbor function
-      LatLng source = new LatLng(lat1, lng1, "");
-      LatLng target = new LatLng(lat2, lng2, "");
+        // finding the nearest neighbors!
+        LatLng sourcePoint = tree.findNN(source);
+        LatLng targetPoint = tree.findNN(target);
 
-      // finding the nearest neighbors!
-      LatLng sourcePoint = tree.findNN(source);
-      LatLng targetPoint = tree.findNN(target);
+        // the ID's of the nearest neighbors, used in the AStar search
+        String startNode = sourcePoint.getID();
+        String endNode = targetPoint.getID();
 
-      // the ID's of the nearest neighbors, used in the AStar search
-      String startNode = sourcePoint.getID();
-      String endNode = targetPoint.getID();
+        AStar maps = new AStar(startNode, ig);
 
-      AStar maps = new AStar(startNode, ig);
+        List<Link> path = maps.getPath(endNode);
+        List<Link> pathWithoutFirst = path.subList(1, path.size());
 
-      List<Link> path = maps.getPath(endNode);
-      List<Link> pathWithoutFirst = path.subList(1, path.size());
-
-      printResults(pathWithoutFirst);
-
+        printResults(pathWithoutFirst);
+      } catch (IllegalArgumentException e) {
+        System.out.println("Either type in the coordinates "
+            + "or a valid intersection...");
+        return;
+      }
     } else {
       // given street names, not lat/lon values
-      String startNode = ig.getIntersection(commands.get(0),
-          commands.get(1));
-      String endNode = ig
-          .getIntersection(commands.get(2), commands.get(3));
+      try {
+        String startNode = ig.getIntersection(commands.get(0), commands.get(1));
+        String endNode = ig.getIntersection(commands.get(2), commands.get(3));
 
-      Dijkstra maps = new AStar(startNode, ig);
+        Dijkstra maps = new AStar(startNode, ig);
 
-      List<Link> path = maps.getPath(endNode);
-      List<Link> pathWithoutFirst = path.subList(1, path.size());
-      if (pathWithoutFirst.isEmpty()) {
-        System.out.println(startNode + " -/- " + endNode);
-      } else {
-        printResults(pathWithoutFirst);
+        List<Link> path = maps.getPath(endNode);
+        List<Link> pathWithoutFirst = path.subList(1, path.size());
+        if (pathWithoutFirst.isEmpty()) {
+          System.out.println(startNode + " -/- " + endNode);
+        } else {
+          printResults(pathWithoutFirst);
+        }
+      } catch (SQLException e) {
+        System.out.println("Either type in the coordinates "
+            + "or a valid  intersection...");
+        return;
       }
     }
   }

@@ -41,6 +41,8 @@ function getTile(lat, lng) {
 	});
 }
 
+console.log(Date.now());
+
 /**
  * converts a list of JSON ways into a list of ways that are easily accessible by JQuery
  * @param wayList
@@ -56,26 +58,24 @@ function deJSON(wayList) {
 	return deJSONedList;
 }
 
-/**
- * Given a Way, determines the color to draw it
- * @param way
- */
-function wayColor(way) {
-	if (way.traffic < 2) {
-		ctx.strokeStyle("black");
-	} 
-	else if (way.traffic < 4) {
-		ctx.strokeStyle("yellow");
-	}
-	else if (way.traffic < 6) {
-		ctx.strokeStyle("orange");
-	}
-	else {
-		ctx.strokeStyle("red");
-	}
-}
-
-function wayWidth()
+///**
+// * Given a Way, determines the color to draw it
+// * @param way
+// */
+//function wayColor(way) {
+//	if (way.traffic < 2) {
+//		ctx.strokeStyle("black");
+//	} 
+//	else if (way.traffic < 4) {
+//		ctx.strokeStyle("yellow");
+//	}
+//	else if (way.traffic < 6) {
+//		ctx.strokeStyle("orange");
+//	}
+//	else {
+//		ctx.strokeStyle("red");
+//	}
+//}
 
 /**
  * @param map, is an 'object literal', map of (lat, lng) pair to (lat, lng) pair
@@ -88,7 +88,6 @@ function drawTile(wayList) {
 	
 	ctx.beginPath();
 	$.each(wayList, function(index, value) {
-		wayColor(value);
 		startX = (value.startLongitude - leftLong)/length * ctx.canvas.width;
 		// We have to do (topLat - lat) instead of (lat - bottomLat) since the coordinates
 		// on the canvas start at (0, 0) in the top left corner.
